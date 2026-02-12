@@ -54,6 +54,7 @@
             MaxFrequency_label = new Label();
             FrequencyStep_label = new Label();
             Airflow_label = new Label();
+            AverageWithOriginal_checkBox = new CheckBox();
             contextMenuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)MAF_dataGridView).BeginInit();
             BucketType_groupBox.SuspendLayout();
@@ -100,6 +101,7 @@
             // 
             // Process_button
             // 
+            Process_button.Enabled = false;
             Process_button.Location = new Point(71, 220);
             Process_button.Name = "Process_button";
             Process_button.Size = new Size(94, 29);
@@ -168,9 +170,9 @@
             label1.AutoSize = true;
             label1.Location = new Point(71, 435);
             label1.Name = "label1";
-            label1.Size = new Size(115, 20);
+            label1.Size = new Size(439, 20);
             label1.TabIndex = 8;
-            label1.Text = "Buckets to Paste";
+            label1.Text = "Copy Buckets to Paste into scanner app Histogram Value text box";
             // 
             // AdjustmentBuckets_richTextBox
             // 
@@ -189,9 +191,9 @@
             label2.AutoSize = true;
             label2.Location = new Point(73, 529);
             label2.Name = "label2";
-            label2.Size = new Size(158, 20);
+            label2.Size = new Size(319, 20);
             label2.TabIndex = 10;
-            label2.Text = "Average Bucket Values";
+            label2.Text = "Paste bucket data from scanner app histogram.";
             // 
             // button1
             // 
@@ -305,11 +307,22 @@
             Airflow_label.TabIndex = 22;
             Airflow_label.Text = "Paste Airflow values from Tuning App";
             // 
+            // AverageWithOriginal_checkBox
+            // 
+            AverageWithOriginal_checkBox.AutoSize = true;
+            AverageWithOriginal_checkBox.Location = new Point(510, 621);
+            AverageWithOriginal_checkBox.Name = "AverageWithOriginal_checkBox";
+            AverageWithOriginal_checkBox.Size = new Size(286, 24);
+            AverageWithOriginal_checkBox.TabIndex = 23;
+            AverageWithOriginal_checkBox.Text = "Avergage Adjusted value with Original";
+            AverageWithOriginal_checkBox.UseVisualStyleBackColor = true;
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1191, 888);
+            Controls.Add(AverageWithOriginal_checkBox);
             Controls.Add(Airflow_label);
             Controls.Add(FrequencyStep_label);
             Controls.Add(MaxFrequency_label);
@@ -372,5 +385,6 @@
         private Label FrequencyStep_label;
         private Label Airflow_label;
         private ToolStripMenuItem copyToolStripMenuItem;
+        private CheckBox AverageWithOriginal_checkBox;
     }
 }
