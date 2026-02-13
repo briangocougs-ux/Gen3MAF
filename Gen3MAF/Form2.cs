@@ -21,6 +21,7 @@ namespace Gen3MAF
         private int m_MaxFrequency;
         private int m_FrequencyStep;
         private BucketStyleEnum m_BucketStyle;
+        private uint m_TuneCycleSequenceNumber;
 
 
         public Form2()
@@ -42,6 +43,13 @@ namespace Gen3MAF
         public int MaxFrequency { get { return m_MaxFrequency; } }
         public int FrequencyStep { get { return m_FrequencyStep; } }
         public BucketStyleEnum BucketStyle { get { return  m_BucketStyle; } }
+
+        internal SessionClass GetSessionInfo()
+        {
+            SessionClass NewSession = new SessionClass(m_VehicleName, m_ECU, m_OS, m_MinFrequency, m_MaxFrequency, m_FrequencyStep, m_BucketStyle, 1);
+            return NewSession;
+        }
+
 
 
         private void FrequncyMin_UpDown_ValueChanged(object sender, EventArgs e)
@@ -95,7 +103,14 @@ namespace Gen3MAF
             {
                 MessageBox.Show("Please select a bucket style");
                 return;
-            }   
+            }
+
+            if (VehicleName_textBox.Text.Length == 0)
+            {
+                MessageBox.Show("Vehicle Name must be supplied");
+                return;
+
+            }
 
             m_VehicleName = VehicleName_textBox.Text;
             m_ECU = ECU_textBox.Text;
@@ -107,11 +122,11 @@ namespace Gen3MAF
 
             if (BucketStyle_comboBox.SelectedIndex == 0) 
             {
-                m_BucketStyle = Form1.BucketStyleEnum.Double;
+                m_BucketStyle = BucketStyleEnum.Double;
             }
             else if (BucketStyle_comboBox.SelectedIndex == 1)
             {
-                m_BucketStyle = Form1.BucketStyleEnum.Single;   
+                m_BucketStyle = BucketStyleEnum.Single;   
             }
 
             Close();

@@ -252,6 +252,7 @@
             // tuneToolStripMenuItem
             // 
             tuneToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { newToolStripMenuItem, lastToolStripMenuItem });
+            tuneToolStripMenuItem.Enabled = false;
             tuneToolStripMenuItem.Name = "tuneToolStripMenuItem";
             tuneToolStripMenuItem.Size = new Size(94, 24);
             tuneToolStripMenuItem.Text = "Tune Cycle";
@@ -259,13 +260,14 @@
             // newToolStripMenuItem
             // 
             newToolStripMenuItem.Name = "newToolStripMenuItem";
-            newToolStripMenuItem.Size = new Size(122, 26);
+            newToolStripMenuItem.Size = new Size(224, 26);
             newToolStripMenuItem.Text = "New";
+            newToolStripMenuItem.Click += newToolStripMenuItem_Click;
             // 
             // lastToolStripMenuItem
             // 
             lastToolStripMenuItem.Name = "lastToolStripMenuItem";
-            lastToolStripMenuItem.Size = new Size(122, 26);
+            lastToolStripMenuItem.Size = new Size(224, 26);
             lastToolStripMenuItem.Text = "Last";
             // 
             // CurrentMafCurve_label

@@ -11,21 +11,25 @@ namespace Gen3MAF
     {
         Created = 0,
         InitialAirflowPopulated = 1,
-        AdjustmentAirflowPopulated = 2
+        AdjustmentAirflowPopulated = 2,
+        AdjustedAirflowBuilt = 3,
+        Completed = 5
 
     }
 
     internal class TuneCycle
     {
-        DateTime m_Timestamp;
+        public uint m_SchemaVersion = 1;
+        public DateTime m_Timestamp = DateTime.UtcNow;
+        public uint m_SequenceNumber = 0;
 
-        public TuneCycleStateEnum m_State;
-        int m_AdjustmentPercent;
-        bool m_AverageWithOriginal;
+        public TuneCycleStateEnum m_State = TuneCycleStateEnum.Created;
+        public int m_AdjustmentPercent = 100;
+        public bool m_AverageWithOriginal = true;
 
-        double[] m_InitialAirflow;
-        double[] m_AdjustmentAirflowData;
-        Double[] m_AdjustedAirflow;
+        public double[] m_InitialAirflow = Array.Empty<double>();
+        public double[] m_AdjustmentAirflowData = Array.Empty<double>();
+        public Double[] m_AdjustedAirflow = Array.Empty<double>();
 
         public TuneCycle(int AirflowCount, int AdjustmentAirflowCount)
         {
@@ -51,6 +55,7 @@ namespace Gen3MAF
         {
             if (Airflow.Length != m_AdjustmentAirflowData.Length)
                 throw new ArgumentException("Airflow length does not match AdjustmentAirflow length.");
+
             Array.Copy(Airflow, m_AdjustmentAirflowData, Airflow.Length);
 
             m_State = TuneCycleStateEnum.AdjustmentAirflowPopulated;
@@ -76,6 +81,16 @@ namespace Gen3MAF
             if (Index < 0 || Index >= m_AdjustmentAirflowData.Length)
                 throw new ArgumentOutOfRangeException("Index is out of range.");
             return m_AdjustmentAirflowData[Index];
+        }
+
+        public void PopulatedAdjustedAirflow(double[] AdjustedAirflow)
+        {
+            if (AdjustedAirflow.Length != m_AdjustedAirflow.Length)
+                throw new ArgumentException("Airflow length does not match AdjustmentAirflow length.");
+
+            Array.Copy(AdjustedAirflow, m_AdjustedAirflow, AdjustedAirflow.Length);
+
+            m_State = TuneCycleStateEnum.AdjustedAirflowBuilt;
         }
     }
 }
