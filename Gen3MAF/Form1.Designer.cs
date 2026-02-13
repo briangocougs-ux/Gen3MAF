@@ -29,6 +29,7 @@
         private void InitializeComponent()
         {
             components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             contextMenuStrip1 = new ContextMenuStrip(components);
             pasteToolStripMenuItem = new ToolStripMenuItem();
             copyToolStripMenuItem = new ToolStripMenuItem();
@@ -36,9 +37,6 @@
             Process_button = new Button();
             MAF_dataGridView = new DataGridView();
             Buckets_richTextBox = new RichTextBox();
-            SingleBucket_radioButton = new RadioButton();
-            DounbleBucket_radioButton = new RadioButton();
-            BucketType_groupBox = new GroupBox();
             label1 = new Label();
             AdjustmentBuckets_richTextBox = new RichTextBox();
             label2 = new Label();
@@ -46,23 +44,21 @@
             AdjustmentPercent_trackBar = new TrackBar();
             AdjustmentPercent_label = new Label();
             AdjustedAirflow_dataGridView = new DataGridView();
-            MinFrequency_numericUpDown = new NumericUpDown();
-            MaxFrequency_numericUpDown = new NumericUpDown();
-            FrequencyStep_numericUpDown = new NumericUpDown();
-            ValidateMAF_button = new Button();
-            MinFrequency_label = new Label();
-            MaxFrequency_label = new Label();
-            FrequencyStep_label = new Label();
             Airflow_label = new Label();
             AverageWithOriginal_checkBox = new CheckBox();
+            menuStrip1 = new MenuStrip();
+            session_ToolStripMenuItem = new ToolStripMenuItem();
+            create_ToolStripMenuItem = new ToolStripMenuItem();
+            open_ToolStripMenuItem = new ToolStripMenuItem();
+            tuneToolStripMenuItem = new ToolStripMenuItem();
+            newToolStripMenuItem = new ToolStripMenuItem();
+            lastToolStripMenuItem = new ToolStripMenuItem();
+            CurrentMafCurve_label = new Label();
             contextMenuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)MAF_dataGridView).BeginInit();
-            BucketType_groupBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)AdjustmentPercent_trackBar).BeginInit();
             ((System.ComponentModel.ISupportInitialize)AdjustedAirflow_dataGridView).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)MinFrequency_numericUpDown).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)MaxFrequency_numericUpDown).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)FrequencyStep_numericUpDown).BeginInit();
+            menuStrip1.SuspendLayout();
             SuspendLayout();
             // 
             // contextMenuStrip1
@@ -102,18 +98,18 @@
             // Process_button
             // 
             Process_button.Enabled = false;
-            Process_button.Location = new Point(71, 220);
+            Process_button.Location = new Point(71, 204);
             Process_button.Name = "Process_button";
-            Process_button.Size = new Size(94, 29);
+            Process_button.Size = new Size(188, 29);
             Process_button.TabIndex = 2;
-            Process_button.Text = "Process";
+            Process_button.Text = "Process Airflow Data";
             Process_button.UseVisualStyleBackColor = true;
             Process_button.Click += Process_button_Click;
             // 
             // MAF_dataGridView
             // 
             MAF_dataGridView.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            MAF_dataGridView.Location = new Point(71, 268);
+            MAF_dataGridView.Location = new Point(71, 280);
             MAF_dataGridView.Name = "MAF_dataGridView";
             MAF_dataGridView.ReadOnly = true;
             MAF_dataGridView.RowHeadersWidth = 51;
@@ -124,7 +120,7 @@
             // 
             Buckets_richTextBox.ContextMenuStrip = contextMenuStrip1;
             Buckets_richTextBox.Font = new Font("Courier New", 9F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            Buckets_richTextBox.Location = new Point(71, 458);
+            Buckets_richTextBox.Location = new Point(68, 52);
             Buckets_richTextBox.Name = "Buckets_richTextBox";
             Buckets_richTextBox.ReadOnly = true;
             Buckets_richTextBox.Size = new Size(1065, 49);
@@ -132,43 +128,10 @@
             Buckets_richTextBox.Text = "";
             Buckets_richTextBox.WordWrap = false;
             // 
-            // SingleBucket_radioButton
-            // 
-            SingleBucket_radioButton.AutoSize = true;
-            SingleBucket_radioButton.Location = new Point(20, 22);
-            SingleBucket_radioButton.Name = "SingleBucket_radioButton";
-            SingleBucket_radioButton.Size = new Size(119, 24);
-            SingleBucket_radioButton.TabIndex = 5;
-            SingleBucket_radioButton.Text = "Single Bucket";
-            SingleBucket_radioButton.UseVisualStyleBackColor = true;
-            // 
-            // DounbleBucket_radioButton
-            // 
-            DounbleBucket_radioButton.AutoSize = true;
-            DounbleBucket_radioButton.Checked = true;
-            DounbleBucket_radioButton.Location = new Point(161, 22);
-            DounbleBucket_radioButton.Name = "DounbleBucket_radioButton";
-            DounbleBucket_radioButton.Size = new Size(127, 24);
-            DounbleBucket_radioButton.TabIndex = 6;
-            DounbleBucket_radioButton.TabStop = true;
-            DounbleBucket_radioButton.Text = "Double Bucket";
-            DounbleBucket_radioButton.UseVisualStyleBackColor = true;
-            // 
-            // BucketType_groupBox
-            // 
-            BucketType_groupBox.Controls.Add(SingleBucket_radioButton);
-            BucketType_groupBox.Controls.Add(DounbleBucket_radioButton);
-            BucketType_groupBox.Location = new Point(71, 375);
-            BucketType_groupBox.Name = "BucketType_groupBox";
-            BucketType_groupBox.Size = new Size(299, 52);
-            BucketType_groupBox.TabIndex = 7;
-            BucketType_groupBox.TabStop = false;
-            BucketType_groupBox.Text = "Bucket Type";
-            // 
             // label1
             // 
             label1.AutoSize = true;
-            label1.Location = new Point(71, 435);
+            label1.Location = new Point(68, 28);
             label1.Name = "label1";
             label1.Size = new Size(439, 20);
             label1.TabIndex = 8;
@@ -237,71 +200,10 @@
             AdjustedAirflow_dataGridView.TabIndex = 14;
             AdjustedAirflow_dataGridView.KeyDown += AdjustedAirflow_dataGridView_KeyDown;
             // 
-            // MinFrequency_numericUpDown
-            // 
-            MinFrequency_numericUpDown.Location = new Point(73, 48);
-            MinFrequency_numericUpDown.Maximum = new decimal(new int[] { 10000, 0, 0, 0 });
-            MinFrequency_numericUpDown.Name = "MinFrequency_numericUpDown";
-            MinFrequency_numericUpDown.Size = new Size(150, 27);
-            MinFrequency_numericUpDown.TabIndex = 15;
-            // 
-            // MaxFrequency_numericUpDown
-            // 
-            MaxFrequency_numericUpDown.Location = new Point(242, 48);
-            MaxFrequency_numericUpDown.Maximum = new decimal(new int[] { 20000, 0, 0, 0 });
-            MaxFrequency_numericUpDown.Name = "MaxFrequency_numericUpDown";
-            MaxFrequency_numericUpDown.Size = new Size(150, 27);
-            MaxFrequency_numericUpDown.TabIndex = 16;
-            // 
-            // FrequencyStep_numericUpDown
-            // 
-            FrequencyStep_numericUpDown.Location = new Point(418, 48);
-            FrequencyStep_numericUpDown.Maximum = new decimal(new int[] { 1000, 0, 0, 0 });
-            FrequencyStep_numericUpDown.Name = "FrequencyStep_numericUpDown";
-            FrequencyStep_numericUpDown.Size = new Size(150, 27);
-            FrequencyStep_numericUpDown.TabIndex = 17;
-            // 
-            // ValidateMAF_button
-            // 
-            ValidateMAF_button.Location = new Point(595, 46);
-            ValidateMAF_button.Name = "ValidateMAF_button";
-            ValidateMAF_button.Size = new Size(188, 29);
-            ValidateMAF_button.TabIndex = 18;
-            ValidateMAF_button.Text = "Validate MAF config";
-            ValidateMAF_button.UseVisualStyleBackColor = true;
-            ValidateMAF_button.Click += ValidateMAF_button_Click;
-            // 
-            // MinFrequency_label
-            // 
-            MinFrequency_label.AutoSize = true;
-            MinFrequency_label.Location = new Point(74, 15);
-            MinFrequency_label.Name = "MinFrequency_label";
-            MinFrequency_label.Size = new Size(105, 20);
-            MinFrequency_label.TabIndex = 19;
-            MinFrequency_label.Text = "Min Frequency";
-            // 
-            // MaxFrequency_label
-            // 
-            MaxFrequency_label.AutoSize = true;
-            MaxFrequency_label.Location = new Point(245, 18);
-            MaxFrequency_label.Name = "MaxFrequency_label";
-            MaxFrequency_label.Size = new Size(108, 20);
-            MaxFrequency_label.TabIndex = 20;
-            MaxFrequency_label.Text = "Max Frequency";
-            // 
-            // FrequencyStep_label
-            // 
-            FrequencyStep_label.AutoSize = true;
-            FrequencyStep_label.Location = new Point(420, 17);
-            FrequencyStep_label.Name = "FrequencyStep_label";
-            FrequencyStep_label.Size = new Size(110, 20);
-            FrequencyStep_label.TabIndex = 21;
-            FrequencyStep_label.Text = "Frequency Step";
-            // 
             // Airflow_label
             // 
             Airflow_label.AutoSize = true;
-            Airflow_label.Location = new Point(72, 104);
+            Airflow_label.Location = new Point(71, 114);
             Airflow_label.Name = "Airflow_label";
             Airflow_label.Size = new Size(257, 20);
             Airflow_label.TabIndex = 22;
@@ -317,20 +219,73 @@
             AverageWithOriginal_checkBox.Text = "Avergage Adjusted value with Original";
             AverageWithOriginal_checkBox.UseVisualStyleBackColor = true;
             // 
+            // menuStrip1
+            // 
+            menuStrip1.ImageScalingSize = new Size(20, 20);
+            menuStrip1.Items.AddRange(new ToolStripItem[] { session_ToolStripMenuItem, tuneToolStripMenuItem });
+            menuStrip1.Location = new Point(0, 0);
+            menuStrip1.Name = "menuStrip1";
+            menuStrip1.Size = new Size(1191, 28);
+            menuStrip1.TabIndex = 24;
+            menuStrip1.Text = "menuStrip1";
+            // 
+            // session_ToolStripMenuItem
+            // 
+            session_ToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { create_ToolStripMenuItem, open_ToolStripMenuItem });
+            session_ToolStripMenuItem.Name = "session_ToolStripMenuItem";
+            session_ToolStripMenuItem.Size = new Size(72, 24);
+            session_ToolStripMenuItem.Text = "Session";
+            // 
+            // create_ToolStripMenuItem
+            // 
+            create_ToolStripMenuItem.Name = "create_ToolStripMenuItem";
+            create_ToolStripMenuItem.Size = new Size(135, 26);
+            create_ToolStripMenuItem.Text = "Create";
+            create_ToolStripMenuItem.Click += create_ToolStripMenuItem_Click;
+            // 
+            // open_ToolStripMenuItem
+            // 
+            open_ToolStripMenuItem.Name = "open_ToolStripMenuItem";
+            open_ToolStripMenuItem.Size = new Size(135, 26);
+            open_ToolStripMenuItem.Text = "Open";
+            // 
+            // tuneToolStripMenuItem
+            // 
+            tuneToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { newToolStripMenuItem, lastToolStripMenuItem });
+            tuneToolStripMenuItem.Name = "tuneToolStripMenuItem";
+            tuneToolStripMenuItem.Size = new Size(94, 24);
+            tuneToolStripMenuItem.Text = "Tune Cycle";
+            // 
+            // newToolStripMenuItem
+            // 
+            newToolStripMenuItem.Name = "newToolStripMenuItem";
+            newToolStripMenuItem.Size = new Size(122, 26);
+            newToolStripMenuItem.Text = "New";
+            // 
+            // lastToolStripMenuItem
+            // 
+            lastToolStripMenuItem.Name = "lastToolStripMenuItem";
+            lastToolStripMenuItem.Size = new Size(122, 26);
+            lastToolStripMenuItem.Text = "Last";
+            // 
+            // CurrentMafCurve_label
+            // 
+            CurrentMafCurve_label.AutoSize = true;
+            CurrentMafCurve_label.Location = new Point(76, 257);
+            CurrentMafCurve_label.Name = "CurrentMafCurve_label";
+            CurrentMafCurve_label.Size = new Size(239, 20);
+            CurrentMafCurve_label.TabIndex = 25;
+            CurrentMafCurve_label.Text = "Verify MAF Curve from Tuning app.";
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1191, 888);
+            Controls.Add(CurrentMafCurve_label);
+            Controls.Add(menuStrip1);
             Controls.Add(AverageWithOriginal_checkBox);
             Controls.Add(Airflow_label);
-            Controls.Add(FrequencyStep_label);
-            Controls.Add(MaxFrequency_label);
-            Controls.Add(MinFrequency_label);
-            Controls.Add(ValidateMAF_button);
-            Controls.Add(FrequencyStep_numericUpDown);
-            Controls.Add(MaxFrequency_numericUpDown);
-            Controls.Add(MinFrequency_numericUpDown);
             Controls.Add(AdjustedAirflow_dataGridView);
             Controls.Add(AdjustmentPercent_label);
             Controls.Add(AdjustmentPercent_trackBar);
@@ -338,23 +293,20 @@
             Controls.Add(label2);
             Controls.Add(AdjustmentBuckets_richTextBox);
             Controls.Add(label1);
-            Controls.Add(BucketType_groupBox);
             Controls.Add(Buckets_richTextBox);
             Controls.Add(MAF_dataGridView);
             Controls.Add(Process_button);
             Controls.Add(AirFlow_richTextBox);
+            Icon = (Icon)resources.GetObject("$this.Icon");
             Name = "Form1";
-            Text = "Form1";
+            Text = "Generation 3 LS MAF tuning";
             Load += Form1_Load;
             contextMenuStrip1.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)MAF_dataGridView).EndInit();
-            BucketType_groupBox.ResumeLayout(false);
-            BucketType_groupBox.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)AdjustmentPercent_trackBar).EndInit();
             ((System.ComponentModel.ISupportInitialize)AdjustedAirflow_dataGridView).EndInit();
-            ((System.ComponentModel.ISupportInitialize)MinFrequency_numericUpDown).EndInit();
-            ((System.ComponentModel.ISupportInitialize)MaxFrequency_numericUpDown).EndInit();
-            ((System.ComponentModel.ISupportInitialize)FrequencyStep_numericUpDown).EndInit();
+            menuStrip1.ResumeLayout(false);
+            menuStrip1.PerformLayout();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -366,9 +318,6 @@
         private ToolStripMenuItem pasteToolStripMenuItem;
         private DataGridView MAF_dataGridView;
         private RichTextBox Buckets_richTextBox;
-        private RadioButton SingleBucket_radioButton;
-        private RadioButton DounbleBucket_radioButton;
-        private GroupBox BucketType_groupBox;
         private Label label1;
         private RichTextBox AdjustmentBuckets_richTextBox;
         private Label label2;
@@ -376,15 +325,16 @@
         private TrackBar AdjustmentPercent_trackBar;
         private Label AdjustmentPercent_label;
         private DataGridView AdjustedAirflow_dataGridView;
-        private NumericUpDown MinFrequency_numericUpDown;
-        private NumericUpDown MaxFrequency_numericUpDown;
-        private NumericUpDown FrequencyStep_numericUpDown;
-        private Button ValidateMAF_button;
-        private Label MinFrequency_label;
-        private Label MaxFrequency_label;
-        private Label FrequencyStep_label;
         private Label Airflow_label;
         private ToolStripMenuItem copyToolStripMenuItem;
         private CheckBox AverageWithOriginal_checkBox;
+        private MenuStrip menuStrip1;
+        private ToolStripMenuItem session_ToolStripMenuItem;
+        private ToolStripMenuItem create_ToolStripMenuItem;
+        private ToolStripMenuItem open_ToolStripMenuItem;
+        private Label CurrentMafCurve_label;
+        private ToolStripMenuItem tuneToolStripMenuItem;
+        private ToolStripMenuItem newToolStripMenuItem;
+        private ToolStripMenuItem lastToolStripMenuItem;
     }
 }

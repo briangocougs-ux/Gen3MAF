@@ -1,0 +1,125 @@
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+using static Gen3MAF.Form1;
+
+namespace Gen3MAF
+{
+    public partial class Form2 : Form
+    {
+
+        private string m_VehicleName;
+        private string m_ECU;
+        private string m_OS;
+        private int m_MinFrequency;
+        private int m_MaxFrequency;
+        private int m_FrequencyStep;
+        private BucketStyleEnum m_BucketStyle;
+
+
+        public Form2()
+        {
+
+
+            InitializeComponent();
+
+            FrequncyMin_UpDown.Value = Form1.MIN_MAF_FREQUENCY;
+            MaxFrequency_numericUpDown.Value = Form1.MAX_MAF_FREQUENCY;
+            FrequencyStep_numericUpDown.Value = Form1.MAF_FREQUENCY_STEP;
+            BucketStyle_comboBox.SelectedIndex = 0;
+        }
+
+        public string VehicleName { get { return m_VehicleName; } }
+        public string ECU { get { return m_ECU; } }
+        public string OS { get { return m_OS; } }
+        public int MinFrequency { get { return m_MinFrequency; } }
+        public int MaxFrequency { get { return m_MaxFrequency; } }
+        public int FrequencyStep { get { return m_FrequencyStep; } }
+        public BucketStyleEnum BucketStyle { get { return  m_BucketStyle; } }
+
+
+        private void FrequncyMin_UpDown_ValueChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void MaxFrequency_label_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void FrequencyStep_label_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void FrequencyStep_numericUpDown_ValueChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void OK_button_Click(object sender, EventArgs e)
+        {
+
+            int MinFrequency = (int)FrequncyMin_UpDown.Value;
+            int MaxFrequency = (int)MaxFrequency_numericUpDown.Value;
+            int FrequencyStep = (int)FrequencyStep_numericUpDown.Value;
+
+
+            if (MinFrequency >= MaxFrequency)
+            {
+
+                MessageBox.Show("Min Frequency must be less than Max Frequency");
+                return;
+            }
+
+            if (FrequencyStep < 1)
+            {
+                MessageBox.Show("Frequency step must be greater than 0");
+                return;
+            }
+
+            if (((MaxFrequency - MinFrequency) % FrequencyStep) != 0)
+            {
+                MessageBox.Show("Frequency step must divide equally in difference between Max and Min Frequency");
+                return;
+            }
+
+            if (BucketStyle_comboBox.SelectedIndex < 0)
+            {
+                MessageBox.Show("Please select a bucket style");
+                return;
+            }   
+
+            m_VehicleName = VehicleName_textBox.Text;
+            m_ECU = ECU_textBox.Text;
+            m_OS = OS_textBox.Text;
+            m_MinFrequency = MinFrequency;
+            m_MaxFrequency = MaxFrequency;
+            m_FrequencyStep = FrequencyStep;
+            
+
+            if (BucketStyle_comboBox.SelectedIndex == 0) 
+            {
+                m_BucketStyle = Form1.BucketStyleEnum.Double;
+            }
+            else if (BucketStyle_comboBox.SelectedIndex == 1)
+            {
+                m_BucketStyle = Form1.BucketStyleEnum.Single;   
+            }
+
+            Close();
+        }
+
+        private void BucketStyle_comboBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
+    }
+}
