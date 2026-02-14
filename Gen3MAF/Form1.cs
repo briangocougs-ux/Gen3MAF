@@ -100,6 +100,25 @@ namespace Gen3MAF
                         (m_IsDirty ? " *" : "");
         }
 
+        void ResetStateOfForm()
+        {
+            m_CurrentTuneCycle = null;
+            m_mafDataPoints = new MafDataPoint[1];
+            m_FirstUpdatedBucketIndex = -1;
+            m_LastUpdatedBucketIndex = -1;
+            m_BucketCount = 0;
+            m_mafFrequencyCount = 0;
+            Buckets_richTextBox.Clear();
+            AirFlow_richTextBox.Clear();
+            AdjustmentBuckets_richTextBox.Clear();
+            MAF_dataGridView.ColumnCount = 0;
+            MAF_dataGridView.RowCount = 0;
+            AdjustedAirflow_dataGridView.ColumnCount = 0;
+            AdjustedAirflow_dataGridView.RowCount = 0;
+            Process_button.Enabled = false;
+            button1.Enabled = false;
+        }   
+
         private void Process_button_Click(object sender, EventArgs e)
         {
             string[] mafAirflowStrings;
@@ -561,9 +580,39 @@ namespace Gen3MAF
                 }
             }
 
-            m_CurrentTuneCycle = new TuneCycle(m_mafFrequencyCount, (int)m_BucketCount);
+            m_CurrentTuneCycle = m_SessionClass.CreateNewTuneCycle(m_mafFrequencyCount, (int)m_BucketCount);
 
             Process_button.Enabled = true;
+
+            //
+            //  it there is a previos tune cycle, populate the maf data in the test box
+            //
+
+            TuneCycle PreviousTuneCycle=null;
+            try
+            {
+                PreviousTuneCycle = m_SessionClass.GetLastTuneCycle();
+            }
+            catch (Exception)
+            {
+                //  No previous tune cycle, ignore
+                return;
+            }
+
+            if (PreviousTuneCycle != null)
+            {
+                if (PreviousTuneCycle.IsCompleted())
+                {
+                    double[] PreviousAirflow = new double[m_mafFrequencyCount];
+
+                    for (int i = 0; i < m_mafFrequencyCount; i++)
+                    {
+                        PreviousAirflow[i] = PreviousTuneCycle.GetAdjustedAirflowAtIndex(i);
+                    }
+
+                    AirFlow_richTextBox.Text = string.Join("\t", PreviousAirflow.Select(v => v.ToString()));
+                }
+            }
 
 
 
@@ -587,11 +636,14 @@ namespace Gen3MAF
 
         private void CompleteCycle_button_Click(object sender, EventArgs e)
         {
+            m_CurrentTuneCycle.MarkAsCompleted();
+
             m_SessionClass.AddTuneCycle(m_CurrentTuneCycle);
             m_CurrentTuneCycle = null;
             Process_button.Enabled = false;
             button1.Enabled = false;
 
+            ResetStateOfForm(); 
         }
 
         private void saveAsToolStripMenuItem_Click(object sender, EventArgs e)
@@ -628,13 +680,39 @@ namespace Gen3MAF
 
                 if (dlg.ShowDialog() == DialogResult.OK)
                 {
-                    m_CurrentSession = SessionFileStore.Load(dlg.FileName);
+                    m_SessionClass = SessionFileStore.Load(dlg.FileName);
                     m_CurrentFilePath = dlg.FileName;
                     m_IsDirty = false;
 
                     UpdateTitle();
+
+                    m_MinMAFFrequency = m_SessionClass.MinFrequency;
+                    m_MaxMAFFrequency = m_SessionClass.MaxFrequency;
+                    m_MAFFrequencyStep = m_SessionClass.FrequencyStep;
+                    m_BucketStyle = m_SessionClass.BucketStyle;
+
+                    tuneToolStripMenuItem.Enabled = true;
                 }
             }
+        }
+        private bool ConfirmDiscardIfDirty()
+        {
+            if (!m_IsDirty)
+                return true;
+
+            var result = MessageBox.Show(
+                "You have unsaved changes. Save now?",
+                "Unsaved Changes",
+                MessageBoxButtons.YesNoCancel,
+                MessageBoxIcon.Warning);
+
+            if (result == DialogResult.Cancel)
+                return false;
+
+            if (result == DialogResult.Yes)
+                saveToolStripMenuItem_Click(this, EventArgs.Empty);
+
+            return true;
         }
     }
 

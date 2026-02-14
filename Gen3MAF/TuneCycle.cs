@@ -31,8 +31,18 @@ namespace Gen3MAF
         public double[] m_AdjustmentAirflowData = Array.Empty<double>();
         public Double[] m_AdjustedAirflow = Array.Empty<double>();
 
-        public TuneCycle(int AirflowCount, int AdjustmentAirflowCount)
+        public TuneCycle()
         {
+            m_SequenceNumber = 0;
+            m_Timestamp = DateTime.Now;
+            m_State = TuneCycleStateEnum.Created;
+            m_AdjustmentPercent = 0;
+            m_AverageWithOriginal = false;
+        }   
+
+        public void InitTuneCycle(uint SequenceNumber, int AirflowCount, int AdjustmentAirflowCount)
+        {
+            m_SequenceNumber = SequenceNumber;  
             m_Timestamp = DateTime.Now;
             m_State = TuneCycleStateEnum.Created;
             m_AdjustmentPercent = 0;
@@ -75,6 +85,17 @@ namespace Gen3MAF
             return m_InitialAirflow[Index];
         }
 
+        public double GetAdjustedAirflowAtIndex(int Index)
+        {
+            if ((m_State != TuneCycleStateEnum.AdjustedAirflowBuilt) && (m_State != TuneCycleStateEnum.Completed))
+                throw new InvalidOperationException("Adjusted Airflow is not built yet.");
+
+            if (Index < 0 || Index >= m_AdjustedAirflow.Length)
+                throw new ArgumentOutOfRangeException("Index is out of range.");
+
+            return m_AdjustedAirflow[Index];
+        }   
+
         public double GetAdjustmentDataAtIndex(int Index)
         {
             if ( (m_State != TuneCycleStateEnum.AdjustmentAirflowPopulated))
@@ -95,5 +116,19 @@ namespace Gen3MAF
 
             m_State = TuneCycleStateEnum.AdjustedAirflowBuilt;
         }
+
+        public void MarkAsCompleted()
+        {
+            if (m_State != TuneCycleStateEnum.AdjustedAirflowBuilt)
+                throw new InvalidOperationException("Adjusted Airflow must be built before marking complete.");
+
+            m_Timestamp = DateTime.UtcNow;
+            m_State = TuneCycleStateEnum.Completed;
+        }
+
+        public bool IsCompleted()
+        {
+            return m_State == TuneCycleStateEnum.Completed;
+        }   
     }
 }
