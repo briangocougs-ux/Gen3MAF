@@ -16,7 +16,7 @@ namespace Gen3MAF
         public const int DATA_GRID_ROW_AIRFLOW_ADJUSTMENT = 2;
         public const int DATA_GRID_ROW_AIRFLOW_ADJUSTED = 3;
 
-       
+
 
         public struct MafDataPoint
         {
@@ -41,6 +41,9 @@ namespace Gen3MAF
 
         TuneCycle m_CurrentTuneCycle;
 
+        string m_CurrentFilePath = "";
+
+        bool m_IsDirty;
         MafDataPoint[] m_mafDataPoints;
 
         int m_FirstUpdatedBucketIndex = -1;
@@ -87,12 +90,22 @@ namespace Gen3MAF
             AdjustmentPercent_label.Text = $"{AdjustmentPercent_trackBar.Value}%";
         }
 
+        private void UpdateTitle()
+        {
+            string fileName = m_CurrentFilePath != null
+                ? Path.GetFileName(m_CurrentFilePath)
+                : "Untitled";
+
+            this.Text = $"MAF Tuning Tool - {fileName}" +
+                        (m_IsDirty ? " *" : "");
+        }
+
         private void Process_button_Click(object sender, EventArgs e)
         {
             string[] mafAirflowStrings;
             double[] mafAirflowValues = new double[m_mafFrequencyCount];
 
-           
+
 
             mafAirflowStrings = AirFlow_richTextBox.Text.Split(
                                                     new[] { ' ', '\t', ',', '\r', '\n' },
@@ -432,7 +445,7 @@ namespace Gen3MAF
                 AdjustedAirflowArray[i] = m_mafDataPoints[i].AirFlowAdjusted;
             }
 
-            m_CurrentTuneCycle.PopulateAirflowAdjustment(AdjustedAirflowArray); 
+            m_CurrentTuneCycle.PopulatedAdjustedAirflow(AdjustedAirflowArray);
 
             AdjustedAirflow_dataGridView.ColumnCount = (int)m_mafFrequencyCount;
             AdjustedAirflow_dataGridView.RowCount = 4;
@@ -485,7 +498,7 @@ namespace Gen3MAF
                     //  We can access the properties of the form to get the user input values and use them to populate the main form's controls or data structures as needed.
                     //
 
-                    m_SessionClass=frm.GetSessionInfo();
+                    m_SessionClass = frm.GetSessionInfo();
 
                     m_MinMAFFrequency = m_SessionClass.MinFrequency;
                     m_MaxMAFFrequency = m_SessionClass.MaxFrequency;
@@ -493,7 +506,7 @@ namespace Gen3MAF
                     m_BucketStyle = m_SessionClass.BucketStyle;
 
 
-                   
+
 
                     tuneToolStripMenuItem.Enabled = true;
 
@@ -554,6 +567,74 @@ namespace Gen3MAF
 
 
 
+        }
+
+        private void saveToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (m_SessionClass == null)
+                return;
+
+            if (string.IsNullOrEmpty(m_CurrentFilePath))
+            {
+                saveAsToolStripMenuItem_Click(sender, e);
+                return;
+            }
+
+            SessionFileStore.Save(m_CurrentFilePath, m_SessionClass);
+            m_IsDirty = false;
+            UpdateTitle();
+        }
+
+        private void CompleteCycle_button_Click(object sender, EventArgs e)
+        {
+            m_SessionClass.AddTuneCycle(m_CurrentTuneCycle);
+            m_CurrentTuneCycle = null;
+            Process_button.Enabled = false;
+            button1.Enabled = false;
+
+        }
+
+        private void saveAsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (m_SessionClass == null)
+                return;
+
+            using (SaveFileDialog dlg = new SaveFileDialog())
+            {
+                dlg.Filter = "MAF Session (*.json)|*.json|All Files (*.*)|*.*";
+                dlg.Title = "Save Session As";
+                dlg.DefaultExt = "json";
+
+                if (dlg.ShowDialog() == DialogResult.OK)
+                {
+                    m_CurrentFilePath = dlg.FileName;
+                    SessionFileStore.Save(m_CurrentFilePath, m_SessionClass);
+                    m_IsDirty = false;
+
+                    UpdateTitle();
+                }
+            }
+        }
+
+        private void open_ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (!ConfirmDiscardIfDirty())
+                return;
+
+            using (OpenFileDialog dlg = new OpenFileDialog())
+            {
+                dlg.Filter = "MAF Session (*.json)|*.json|All Files (*.*)|*.*";
+                dlg.Title = "Open Session";
+
+                if (dlg.ShowDialog() == DialogResult.OK)
+                {
+                    m_CurrentSession = SessionFileStore.Load(dlg.FileName);
+                    m_CurrentFilePath = dlg.FileName;
+                    m_IsDirty = false;
+
+                    UpdateTitle();
+                }
+            }
         }
     }
 

@@ -50,10 +50,13 @@
             session_ToolStripMenuItem = new ToolStripMenuItem();
             create_ToolStripMenuItem = new ToolStripMenuItem();
             open_ToolStripMenuItem = new ToolStripMenuItem();
+            saveToolStripMenuItem = new ToolStripMenuItem();
+            saveAsToolStripMenuItem = new ToolStripMenuItem();
             tuneToolStripMenuItem = new ToolStripMenuItem();
             newToolStripMenuItem = new ToolStripMenuItem();
             lastToolStripMenuItem = new ToolStripMenuItem();
             CurrentMafCurve_label = new Label();
+            CompleteCycle_button = new Button();
             contextMenuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)MAF_dataGridView).BeginInit();
             ((System.ComponentModel.ISupportInitialize)AdjustmentPercent_trackBar).BeginInit();
@@ -231,7 +234,7 @@
             // 
             // session_ToolStripMenuItem
             // 
-            session_ToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { create_ToolStripMenuItem, open_ToolStripMenuItem });
+            session_ToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { create_ToolStripMenuItem, open_ToolStripMenuItem, saveToolStripMenuItem, saveAsToolStripMenuItem });
             session_ToolStripMenuItem.Name = "session_ToolStripMenuItem";
             session_ToolStripMenuItem.Size = new Size(72, 24);
             session_ToolStripMenuItem.Text = "Session";
@@ -239,15 +242,30 @@
             // create_ToolStripMenuItem
             // 
             create_ToolStripMenuItem.Name = "create_ToolStripMenuItem";
-            create_ToolStripMenuItem.Size = new Size(135, 26);
+            create_ToolStripMenuItem.Size = new Size(224, 26);
             create_ToolStripMenuItem.Text = "Create";
             create_ToolStripMenuItem.Click += create_ToolStripMenuItem_Click;
             // 
             // open_ToolStripMenuItem
             // 
             open_ToolStripMenuItem.Name = "open_ToolStripMenuItem";
-            open_ToolStripMenuItem.Size = new Size(135, 26);
+            open_ToolStripMenuItem.Size = new Size(224, 26);
             open_ToolStripMenuItem.Text = "Open";
+            open_ToolStripMenuItem.Click += open_ToolStripMenuItem_Click;
+            // 
+            // saveToolStripMenuItem
+            // 
+            saveToolStripMenuItem.Name = "saveToolStripMenuItem";
+            saveToolStripMenuItem.Size = new Size(224, 26);
+            saveToolStripMenuItem.Text = "Save";
+            saveToolStripMenuItem.Click += saveToolStripMenuItem_Click;
+            // 
+            // saveAsToolStripMenuItem
+            // 
+            saveAsToolStripMenuItem.Name = "saveAsToolStripMenuItem";
+            saveAsToolStripMenuItem.Size = new Size(224, 26);
+            saveAsToolStripMenuItem.Text = "Save As";
+            saveAsToolStripMenuItem.Click += saveAsToolStripMenuItem_Click;
             // 
             // tuneToolStripMenuItem
             // 
@@ -260,14 +278,14 @@
             // newToolStripMenuItem
             // 
             newToolStripMenuItem.Name = "newToolStripMenuItem";
-            newToolStripMenuItem.Size = new Size(224, 26);
+            newToolStripMenuItem.Size = new Size(122, 26);
             newToolStripMenuItem.Text = "New";
             newToolStripMenuItem.Click += newToolStripMenuItem_Click;
             // 
             // lastToolStripMenuItem
             // 
             lastToolStripMenuItem.Name = "lastToolStripMenuItem";
-            lastToolStripMenuItem.Size = new Size(224, 26);
+            lastToolStripMenuItem.Size = new Size(122, 26);
             lastToolStripMenuItem.Text = "Last";
             // 
             // CurrentMafCurve_label
@@ -279,11 +297,22 @@
             CurrentMafCurve_label.TabIndex = 25;
             CurrentMafCurve_label.Text = "Verify MAF Curve from Tuning app.";
             // 
+            // CompleteCycle_button
+            // 
+            CompleteCycle_button.Location = new Point(76, 844);
+            CompleteCycle_button.Name = "CompleteCycle_button";
+            CompleteCycle_button.Size = new Size(94, 29);
+            CompleteCycle_button.TabIndex = 26;
+            CompleteCycle_button.Text = "Complete";
+            CompleteCycle_button.UseVisualStyleBackColor = true;
+            CompleteCycle_button.Click += CompleteCycle_button_Click;
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1191, 888);
+            Controls.Add(CompleteCycle_button);
             Controls.Add(CurrentMafCurve_label);
             Controls.Add(menuStrip1);
             Controls.Add(AverageWithOriginal_checkBox);
@@ -338,5 +367,8 @@
         private ToolStripMenuItem tuneToolStripMenuItem;
         private ToolStripMenuItem newToolStripMenuItem;
         private ToolStripMenuItem lastToolStripMenuItem;
+        private ToolStripMenuItem saveToolStripMenuItem;
+        private ToolStripMenuItem saveAsToolStripMenuItem;
+        private Button CompleteCycle_button;
     }
 }

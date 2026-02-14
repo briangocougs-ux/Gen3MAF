@@ -47,6 +47,7 @@ namespace Gen3MAF
         {
             if (Airflow.Length != m_InitialAirflow.Length)
                 throw new ArgumentException("Airflow length does not match InitialAirflow length.");
+            
             Array.Copy(Airflow, m_InitialAirflow, Airflow.Length);
             m_State = TuneCycleStateEnum.InitialAirflowPopulated;
         }
@@ -78,8 +79,10 @@ namespace Gen3MAF
         {
             if ( (m_State != TuneCycleStateEnum.AdjustmentAirflowPopulated))
                 throw new InvalidOperationException("Adjustment Airflow is not populated yet.");
+
             if (Index < 0 || Index >= m_AdjustmentAirflowData.Length)
                 throw new ArgumentOutOfRangeException("Index is out of range.");
+
             return m_AdjustmentAirflowData[Index];
         }
 

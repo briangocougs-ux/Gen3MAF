@@ -17,7 +17,8 @@ namespace Gen3MAF
             new JsonSerializerOptions
             {
                 WriteIndented = true,
-                IncludeFields = true
+                IncludeFields = true,
+                NumberHandling = JsonNumberHandling.AllowNamedFloatingPointLiterals
             };
 
         static SessionFileStore()

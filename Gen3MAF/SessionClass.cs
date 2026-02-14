@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using static Gen3MAF.Form1;
 
@@ -39,16 +40,20 @@ namespace Gen3MAF
             m_TuneCycleSequenceNumber = tuneCycleSequenceNumber;
         }
 
-        public string VehicleName { get { return m_VehicleName; } }
-        public string ECU { get { return m_ECU; } }
-        public string OS { get { return m_OS; } }
-        public int MinFrequency { get { return m_MinFrequency; } }
-        public int MaxFrequency { get { return m_MaxFrequency; } }  
-        public int FrequencyStep { get { return m_FrequencyStep; } }
-        public BucketStyleEnum BucketStyle { get { return m_BucketStyle; } }    
-        public uint TuneCycleSequenceNumber { get { return m_TuneCycleSequenceNumber; } }
+        [JsonIgnore] public string VehicleName { get { return m_VehicleName; } }
+        [JsonIgnore] public string ECU { get { return m_ECU; } }
+        [JsonIgnore] public string OS { get { return m_OS; } }
+        [JsonIgnore] public int MinFrequency { get { return m_MinFrequency; } }
+        [JsonIgnore] public int MaxFrequency { get { return m_MaxFrequency; } }
+        [JsonIgnore] public int FrequencyStep { get { return m_FrequencyStep; } }
+        [JsonIgnore] public BucketStyleEnum BucketStyle { get { return m_BucketStyle; } }
+        [JsonIgnore] public uint TuneCycleSequenceNumber { get { return m_TuneCycleSequenceNumber; } }
+
         public void IncrementSequenceNumber() {m_TuneCycleSequenceNumber++;}
 
-
+        public void AddTuneCycle(TuneCycle tuneCycle)
+        {
+            m_TuneCycles.Add(tuneCycle);
+        }
     }
 }
