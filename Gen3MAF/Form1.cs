@@ -15,6 +15,7 @@ namespace Gen3MAF
         public const int DATA_GRID_ROW_AIRFLOW = 1;
         public const int DATA_GRID_ROW_AIRFLOW_ADJUSTMENT = 2;
         public const int DATA_GRID_ROW_AIRFLOW_ADJUSTED = 3;
+        public const int DATA_GRID_ROW_ENABLE = 4;
 
 
 
@@ -117,7 +118,7 @@ namespace Gen3MAF
             AdjustedAirflow_dataGridView.RowCount = 0;
             Process_button.Enabled = false;
             button1.Enabled = false;
-        }   
+        }
 
         private void Process_button_Click(object sender, EventArgs e)
         {
@@ -202,6 +203,8 @@ namespace Gen3MAF
 
             }
 
+            button1.Enabled = true;
+
         }
 
         private void pasteToolStripMenuItem_Click(object sender, EventArgs e)
@@ -267,6 +270,7 @@ namespace Gen3MAF
         private void AdjustmentPercent_trackBar_Scroll(object sender, EventArgs e)
         {
             AdjustmentPercent_label.Text = $"{AdjustmentPercent_trackBar.Value}%";
+            ProcessAdjustmentData();
         }
 
 
@@ -467,7 +471,7 @@ namespace Gen3MAF
             m_CurrentTuneCycle.PopulatedAdjustedAirflow(AdjustedAirflowArray);
 
             AdjustedAirflow_dataGridView.ColumnCount = (int)m_mafFrequencyCount;
-            AdjustedAirflow_dataGridView.RowCount = 4;
+            AdjustedAirflow_dataGridView.RowCount = 5;
 
             for (int i = 0; i < m_mafDataPoints.Length; i++)
             {
@@ -478,6 +482,16 @@ namespace Gen3MAF
                 AdjustedAirflow_dataGridView.Rows[DATA_GRID_ROW_AIRFLOW].Cells[i].Value = Current.AirFlow.ToString("f3");
                 AdjustedAirflow_dataGridView.Rows[DATA_GRID_ROW_AIRFLOW_ADJUSTMENT].Cells[i].Value = ChangeAmountPercent.ToString("f2");
                 AdjustedAirflow_dataGridView.Rows[DATA_GRID_ROW_AIRFLOW_ADJUSTED].Cells[i].Value = Current.AirFlowAdjusted.ToString("f3");
+
+                var cell = new DataGridViewCheckBoxCell
+                {
+                    ThreeState = false,
+                    Value = true,          // default: apply adjustments everywhere
+                    Style = { Alignment = DataGridViewContentAlignment.MiddleCenter }
+                };
+
+                AdjustedAirflow_dataGridView.Rows[DATA_GRID_ROW_ENABLE].Cells[i] = cell;
+
 
                 //
                 // 
@@ -588,7 +602,7 @@ namespace Gen3MAF
             //  it there is a previos tune cycle, populate the maf data in the test box
             //
 
-            TuneCycle PreviousTuneCycle=null;
+            TuneCycle PreviousTuneCycle = null;
             try
             {
                 PreviousTuneCycle = m_SessionClass.GetLastTuneCycle();
@@ -636,14 +650,14 @@ namespace Gen3MAF
 
         private void CompleteCycle_button_Click(object sender, EventArgs e)
         {
-            m_CurrentTuneCycle.MarkAsCompleted();
+            m_CurrentTuneCycle.MarkAsCompleted(AdjustmentPercent_trackBar.Value, AverageWithOriginal_checkBox.Checked);
 
             m_SessionClass.AddTuneCycle(m_CurrentTuneCycle);
             m_CurrentTuneCycle = null;
             Process_button.Enabled = false;
             button1.Enabled = false;
-
-            ResetStateOfForm(); 
+            m_IsDirty = true;
+            ResetStateOfForm();
         }
 
         private void saveAsToolStripMenuItem_Click(object sender, EventArgs e)
@@ -713,6 +727,16 @@ namespace Gen3MAF
                 saveToolStripMenuItem_Click(this, EventArgs.Empty);
 
             return true;
+        }
+
+        private void AverageWithOriginal_checkBox_CheckedChanged(object sender, EventArgs e)
+        {
+            ProcessAdjustmentData();
+        }
+
+        private void AdjustedAirflow_dataGridView_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+
         }
     }
 

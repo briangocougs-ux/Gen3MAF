@@ -117,10 +117,13 @@ namespace Gen3MAF
             m_State = TuneCycleStateEnum.AdjustedAirflowBuilt;
         }
 
-        public void MarkAsCompleted()
+        public void MarkAsCompleted(int AdjustmentPecentage, bool AverageWithOriginal  )
         {
             if (m_State != TuneCycleStateEnum.AdjustedAirflowBuilt)
                 throw new InvalidOperationException("Adjusted Airflow must be built before marking complete.");
+
+            m_AdjustmentPercent = AdjustmentPecentage;
+            m_AverageWithOriginal = AverageWithOriginal;
 
             m_Timestamp = DateTime.UtcNow;
             m_State = TuneCycleStateEnum.Completed;

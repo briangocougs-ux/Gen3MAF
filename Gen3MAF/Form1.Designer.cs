@@ -144,7 +144,7 @@
             // 
             AdjustmentBuckets_richTextBox.ContextMenuStrip = contextMenuStrip1;
             AdjustmentBuckets_richTextBox.Font = new Font("Courier New", 9F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            AdjustmentBuckets_richTextBox.Location = new Point(71, 552);
+            AdjustmentBuckets_richTextBox.Location = new Point(71, 472);
             AdjustmentBuckets_richTextBox.Name = "AdjustmentBuckets_richTextBox";
             AdjustmentBuckets_richTextBox.ScrollBars = RichTextBoxScrollBars.Horizontal;
             AdjustmentBuckets_richTextBox.Size = new Size(1062, 54);
@@ -155,7 +155,7 @@
             // label2
             // 
             label2.AutoSize = true;
-            label2.Location = new Point(73, 529);
+            label2.Location = new Point(71, 449);
             label2.Name = "label2";
             label2.Size = new Size(319, 20);
             label2.TabIndex = 10;
@@ -163,7 +163,7 @@
             // 
             // button1
             // 
-            button1.Location = new Point(73, 616);
+            button1.Location = new Point(71, 571);
             button1.Name = "button1";
             button1.Size = new Size(158, 29);
             button1.TabIndex = 11;
@@ -174,8 +174,9 @@
             // AdjustmentPercent_trackBar
             // 
             AdjustmentPercent_trackBar.LargeChange = 10;
-            AdjustmentPercent_trackBar.Location = new Point(273, 616);
+            AdjustmentPercent_trackBar.Location = new Point(276, 571);
             AdjustmentPercent_trackBar.Maximum = 100;
+            AdjustmentPercent_trackBar.Minimum = 1;
             AdjustmentPercent_trackBar.Name = "AdjustmentPercent_trackBar";
             AdjustmentPercent_trackBar.Size = new Size(156, 56);
             AdjustmentPercent_trackBar.TabIndex = 12;
@@ -195,12 +196,13 @@
             // 
             AdjustedAirflow_dataGridView.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             AdjustedAirflow_dataGridView.ContextMenuStrip = contextMenuStrip1;
-            AdjustedAirflow_dataGridView.Location = new Point(76, 672);
+            AdjustedAirflow_dataGridView.Location = new Point(71, 618);
             AdjustedAirflow_dataGridView.Name = "AdjustedAirflow_dataGridView";
             AdjustedAirflow_dataGridView.RowHeadersWidth = 51;
             AdjustedAirflow_dataGridView.ScrollBars = ScrollBars.Horizontal;
-            AdjustedAirflow_dataGridView.Size = new Size(1057, 146);
+            AdjustedAirflow_dataGridView.Size = new Size(1057, 169);
             AdjustedAirflow_dataGridView.TabIndex = 14;
+            AdjustedAirflow_dataGridView.CellContentClick += AdjustedAirflow_dataGridView_CellContentClick;
             AdjustedAirflow_dataGridView.KeyDown += AdjustedAirflow_dataGridView_KeyDown;
             // 
             // Airflow_label
@@ -215,12 +217,13 @@
             // AverageWithOriginal_checkBox
             // 
             AverageWithOriginal_checkBox.AutoSize = true;
-            AverageWithOriginal_checkBox.Location = new Point(510, 621);
+            AverageWithOriginal_checkBox.Location = new Point(496, 576);
             AverageWithOriginal_checkBox.Name = "AverageWithOriginal_checkBox";
             AverageWithOriginal_checkBox.Size = new Size(286, 24);
             AverageWithOriginal_checkBox.TabIndex = 23;
             AverageWithOriginal_checkBox.Text = "Avergage Adjusted value with Original";
             AverageWithOriginal_checkBox.UseVisualStyleBackColor = true;
+            AverageWithOriginal_checkBox.CheckedChanged += AverageWithOriginal_checkBox_CheckedChanged;
             // 
             // menuStrip1
             // 
@@ -242,28 +245,28 @@
             // create_ToolStripMenuItem
             // 
             create_ToolStripMenuItem.Name = "create_ToolStripMenuItem";
-            create_ToolStripMenuItem.Size = new Size(224, 26);
+            create_ToolStripMenuItem.Size = new Size(143, 26);
             create_ToolStripMenuItem.Text = "Create";
             create_ToolStripMenuItem.Click += create_ToolStripMenuItem_Click;
             // 
             // open_ToolStripMenuItem
             // 
             open_ToolStripMenuItem.Name = "open_ToolStripMenuItem";
-            open_ToolStripMenuItem.Size = new Size(224, 26);
+            open_ToolStripMenuItem.Size = new Size(143, 26);
             open_ToolStripMenuItem.Text = "Open";
             open_ToolStripMenuItem.Click += open_ToolStripMenuItem_Click;
             // 
             // saveToolStripMenuItem
             // 
             saveToolStripMenuItem.Name = "saveToolStripMenuItem";
-            saveToolStripMenuItem.Size = new Size(224, 26);
+            saveToolStripMenuItem.Size = new Size(143, 26);
             saveToolStripMenuItem.Text = "Save";
             saveToolStripMenuItem.Click += saveToolStripMenuItem_Click;
             // 
             // saveAsToolStripMenuItem
             // 
             saveAsToolStripMenuItem.Name = "saveAsToolStripMenuItem";
-            saveAsToolStripMenuItem.Size = new Size(224, 26);
+            saveAsToolStripMenuItem.Size = new Size(143, 26);
             saveAsToolStripMenuItem.Text = "Save As";
             saveAsToolStripMenuItem.Click += saveAsToolStripMenuItem_Click;
             // 
