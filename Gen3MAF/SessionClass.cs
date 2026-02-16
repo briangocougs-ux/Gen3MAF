@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
-using static Gen3MAF.Form1;
+using static Gen3MAF.Main;
 
 namespace Gen3MAF
 {

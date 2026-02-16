@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using static Gen3MAF.Form1;
+using static Gen3MAF.Main;
 
 namespace Gen3MAF
 {
@@ -30,9 +30,9 @@ namespace Gen3MAF
 
             InitializeComponent();
 
-            FrequncyMin_UpDown.Value = Form1.MIN_MAF_FREQUENCY;
-            MaxFrequency_numericUpDown.Value = Form1.MAX_MAF_FREQUENCY;
-            FrequencyStep_numericUpDown.Value = Form1.MAF_FREQUENCY_STEP;
+            FrequncyMin_UpDown.Value = Main.MIN_MAF_FREQUENCY;
+            MaxFrequency_numericUpDown.Value = Main.MAX_MAF_FREQUENCY;
+            FrequencyStep_numericUpDown.Value = Main.MAF_FREQUENCY_STEP;
             BucketStyle_comboBox.SelectedIndex = 0;
         }
 

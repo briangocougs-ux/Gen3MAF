@@ -1,6 +1,6 @@
 ﻿namespace Gen3MAF
 {
-    partial class Form1
+    partial class Main
     {
         /// <summary>
         ///  Required designer variable.
@@ -29,7 +29,7 @@
         private void InitializeComponent()
         {
             components = new System.ComponentModel.Container();
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Main));
             contextMenuStrip1 = new ContextMenuStrip(components);
             pasteToolStripMenuItem = new ToolStripMenuItem();
             copyToolStripMenuItem = new ToolStripMenuItem();

@@ -1,11 +1,11 @@
 using System.Diagnostics;
 using System.Windows.Forms;
-using static Gen3MAF.Form1;
+using static Gen3MAF.Main;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace Gen3MAF
 {
-    public partial class Form1 : Form
+    public partial class Main : Form
     {
         public const uint MIN_MAF_FREQUENCY = 1500;
         public const uint MAX_MAF_FREQUENCY = 12000;
@@ -59,7 +59,7 @@ namespace Gen3MAF
 
         int m_mafFrequencyCount = 0;
 
-        public Form1()
+        public Main()
         {
 
             InitializeComponent();
