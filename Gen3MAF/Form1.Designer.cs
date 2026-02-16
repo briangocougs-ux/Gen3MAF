@@ -173,6 +173,7 @@
             // 
             // AdjustmentPercent_trackBar
             // 
+            AdjustmentPercent_trackBar.Enabled = false;
             AdjustmentPercent_trackBar.LargeChange = 10;
             AdjustmentPercent_trackBar.Location = new Point(276, 571);
             AdjustmentPercent_trackBar.Maximum = 100;
@@ -217,6 +218,7 @@
             // AverageWithOriginal_checkBox
             // 
             AverageWithOriginal_checkBox.AutoSize = true;
+            AverageWithOriginal_checkBox.Enabled = false;
             AverageWithOriginal_checkBox.Location = new Point(496, 576);
             AverageWithOriginal_checkBox.Name = "AverageWithOriginal_checkBox";
             AverageWithOriginal_checkBox.Size = new Size(286, 24);
