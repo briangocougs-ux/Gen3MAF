@@ -47,8 +47,8 @@ namespace Gen3MAF
         bool m_IsDirty;
         MafDataPoint[] m_mafDataPoints;
 
- //       int m_FirstUpdatedBucketIndex = -1;
- //       int m_LastUpdatedBucketIndex = -1;
+        //       int m_FirstUpdatedBucketIndex = -1;
+        //       int m_LastUpdatedBucketIndex = -1;
 
         int m_MinMAFFrequency = 0;
         int m_MaxMAFFrequency = 0;
@@ -105,8 +105,8 @@ namespace Gen3MAF
         {
             m_CurrentTuneCycle = null;
             m_mafDataPoints = new MafDataPoint[1];
-//            m_FirstUpdatedBucketIndex = -1;
-//            m_LastUpdatedBucketIndex = -1;
+            //            m_FirstUpdatedBucketIndex = -1;
+            //            m_LastUpdatedBucketIndex = -1;
             m_BucketCount = 0;
             m_mafFrequencyCount = 0;
             Buckets_richTextBox.Clear();
@@ -119,7 +119,7 @@ namespace Gen3MAF
             Process_button.Enabled = false;
             button1.Enabled = false;
             AdjustmentPercent_trackBar.Enabled = false;
-            AverageWithOriginal_checkBox.Enabled = false;
+            
             CompleteCycle_button.Enabled = false;
         }
 
@@ -240,6 +240,27 @@ namespace Gen3MAF
                 return;
             }
 
+            var values = AdjustmentData; // IEnumerable<double> from your paste parser
+            var analysis = AnalyzePastedNumbers(values);
+
+            if (LooksLikeCounts(analysis))
+            {
+                DialogResult result=MessageBox.Show(
+                    $"This paste is {analysis.WholeRatio:P0} whole numbers " +
+                    $"({analysis.WholeLikeCount}/{analysis.ValidCount}).\n\n" +
+                    "That looks like *Histogram Counts*, not averaged values.\n" +
+                    "In VCM Scanner, copy the 'Average' or 'Mean' values (not 'Count').",
+                    "Possible wrong histogram data",
+                    MessageBoxButtons.OKCancel,
+                    MessageBoxIcon.Warning
+                    );
+
+                if (result == DialogResult.Cancel)
+                {
+                    return;   // stop processing
+                }
+            }
+
             //  the tune cycle object is the owner of the adjustment data, so we need to populate the adjustment data in the tune cycle object before we can read it out and apply it to the MafDataPoint array.
             //
             m_CurrentTuneCycle.PopulateAirflowAdjustment(AdjustmentData);
@@ -263,8 +284,12 @@ namespace Gen3MAF
 
                 }
             }
+
+            //
+            //  enable the adjustment percent track bar and the complete cycle button, as we now have the necessary data to apply adjustments and complete the tuning cycle.
+            //
             AdjustmentPercent_trackBar.Enabled = true;
-            AverageWithOriginal_checkBox.Enabled = true;
+            CompleteCycle_button.Enabled = true;    
 
             ProcessAdjustmentData();
 
@@ -370,7 +395,7 @@ namespace Gen3MAF
                 ref MafDataPoint Current = ref m_mafDataPoints[i];
 
                 Current.AirFlowAdjusted = 0.0;
-                Current.AirFlowLeftAdjusted = 0.0;  
+                Current.AirFlowLeftAdjusted = 0.0;
                 Current.AirFlowRightAdjusted = 0.0;
                 Current.HasUpdatedAirFlow = false;
 
@@ -472,7 +497,7 @@ namespace Gen3MAF
             //  now we will go through the region with some updated data points
             //  if there are gaps, interpolate between updated data points
             //
-            for (int i = (FirstUpdatedBucketIndex+1); i <= LastUpdatedBucketIndex; i++)
+            for (int i = (FirstUpdatedBucketIndex + 1); i <= LastUpdatedBucketIndex; i++)
             {
 
                 if (!m_mafDataPoints[i].HasUpdatedAirFlow)
@@ -496,13 +521,13 @@ namespace Gen3MAF
                     //  i is the data point with missing updated airflow value, i-1 is the last data point with an updated airflow value, and j is the next data point with an updated airflow value. We can use these three points to interpolate the adjusted airflow value for the current bucket at index i.    
                     //  We will use linear interpolation to calculate the adjusted airflow value for the current bucket at index i, based on the adjusted airflow values of the buckets at index i-1 and j, and the frequencies of those buckets.   
 
-                    double slope = (m_mafDataPoints[j].AirFlowAdjusted - m_mafDataPoints[i - 1].AirFlowAdjusted) 
+                    double slope = (m_mafDataPoints[j].AirFlowAdjusted - m_mafDataPoints[i - 1].AirFlowAdjusted)
                                    / (m_mafDataPoints[j].Frequency - m_mafDataPoints[i - 1].Frequency);
 
 
                     for (int k = i; k < j; k++)
                     {
-                        m_mafDataPoints[k].AirFlowAdjusted = m_mafDataPoints[i - 1].AirFlowAdjusted 
+                        m_mafDataPoints[k].AirFlowAdjusted = m_mafDataPoints[i - 1].AirFlowAdjusted
                                                              + (slope * (m_mafDataPoints[k].Frequency - m_mafDataPoints[i - 1].Frequency));
 
                     }
@@ -515,19 +540,7 @@ namespace Gen3MAF
                 }
             }
 
-            if (AverageWithOriginal_checkBox.Checked)
-            {
-                // 
-                //  If the user has selected to average with the original airflow values, we need to average the adjusted airflow values with the original airflow values for all buckets
-                //
-                for (int i = 0; i < m_mafDataPoints.Length; i++)
-                {
-                    ref MafDataPoint Current = ref m_mafDataPoints[i];
-
-                    Current.AirFlowAdjusted = (Current.AirFlow + Current.AirFlowAdjusted) / 2.0f;
-                }
-            }
-
+            
             // build array to send to tune cycle object
             //
             for (int i = 0; i < m_mafDataPoints.Length; i++)
@@ -623,6 +636,12 @@ namespace Gen3MAF
 
         private void newToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            //  
+            //  disable the buttons. They will be enable as the user goes through the process of creating a new tune cycle. This is to prevent the user from trying to process data before we have the necessary information to do so, such as the maf frequency points and the bucket style.
+            //
+
+            button1.Enabled = false;
+            CompleteCycle_button.Enabled = false;
 
             m_mafFrequencyCount = (m_MaxMAFFrequency - m_MinMAFFrequency) / m_MAFFrequencyStep + 1;
 
@@ -642,6 +661,7 @@ namespace Gen3MAF
             //  all we need to know is the frequency values
             //
             Buckets_richTextBox.Clear();
+           
 
             for (int i = 0; i < m_mafFrequencyCount; i++)
             {
@@ -728,7 +748,7 @@ namespace Gen3MAF
 
         private void CompleteCycle_button_Click(object sender, EventArgs e)
         {
-            m_CurrentTuneCycle.MarkAsCompleted(AdjustmentPercent_trackBar.Value, AverageWithOriginal_checkBox.Checked);
+            m_CurrentTuneCycle.MarkAsCompleted(AdjustmentPercent_trackBar.Value, false);
 
             m_SessionClass.AddTuneCycle(m_CurrentTuneCycle);
             m_CurrentTuneCycle = null;
@@ -815,6 +835,53 @@ namespace Gen3MAF
         private void AdjustedAirflow_dataGridView_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
 
+        }
+
+
+        private static bool IsNearlyWhole(double x, double tol = 1e-6)
+        {
+            // handles negative too; tol is absolute error from nearest integer
+            return Math.Abs(x - Math.Round(x)) <= tol;
+        }
+
+        public sealed record WholeNumberHeuristicResult(
+            int ValidCount,
+            int WholeLikeCount,
+            int ZeroLikeCount,
+            double WholeRatio
+        );
+
+        public static WholeNumberHeuristicResult AnalyzePastedNumbers(IEnumerable<double> values)
+        {
+            int valid = 0, whole = 0, zero = 0;
+
+            foreach (var v in values)
+            {
+                if (double.IsNaN(v) || double.IsInfinity(v))
+                    continue;
+
+                valid++;
+
+                if (IsNearlyWhole(v))
+                    whole++;
+
+                if (Math.Abs(v) <= 1e-9) // treat "0" or "0.0" as zero
+                    zero++;
+            }
+
+            double ratio = valid > 0 ? (double)whole / valid : 0.0;
+            return new WholeNumberHeuristicResult(valid, whole, zero, ratio);
+        }
+
+        public static bool LooksLikeCounts(WholeNumberHeuristicResult r)
+        {
+            // Tune thresholds to your data:
+            // - counts paste: almost all integers and often many zeros
+            // - averages paste: lots of fractional values
+            if (r.ValidCount < 8) return false;               // too little data to judge
+            if (r.WholeRatio < 0.90) return false;            // not "mostly integer"
+            if (r.ZeroLikeCount < 2) return true;             // integer-heavy but not many zeros -> still warn
+            return true;
         }
     }
 

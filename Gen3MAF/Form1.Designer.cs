@@ -45,7 +45,6 @@
             AdjustmentPercent_label = new Label();
             AdjustedAirflow_dataGridView = new DataGridView();
             Airflow_label = new Label();
-            AverageWithOriginal_checkBox = new CheckBox();
             menuStrip1 = new MenuStrip();
             session_ToolStripMenuItem = new ToolStripMenuItem();
             create_ToolStripMenuItem = new ToolStripMenuItem();
@@ -188,16 +187,17 @@
             // AdjustmentPercent_label
             // 
             AdjustmentPercent_label.AutoSize = true;
-            AdjustmentPercent_label.Location = new Point(438, 618);
+            AdjustmentPercent_label.Location = new Point(448, 575);
             AdjustmentPercent_label.Name = "AdjustmentPercent_label";
-            AdjustmentPercent_label.Size = new Size(0, 20);
+            AdjustmentPercent_label.Size = new Size(25, 20);
             AdjustmentPercent_label.TabIndex = 13;
+            AdjustmentPercent_label.Text = "99";
             // 
             // AdjustedAirflow_dataGridView
             // 
             AdjustedAirflow_dataGridView.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             AdjustedAirflow_dataGridView.ContextMenuStrip = contextMenuStrip1;
-            AdjustedAirflow_dataGridView.Location = new Point(71, 618);
+            AdjustedAirflow_dataGridView.Location = new Point(71, 619);
             AdjustedAirflow_dataGridView.Name = "AdjustedAirflow_dataGridView";
             AdjustedAirflow_dataGridView.RowHeadersWidth = 51;
             AdjustedAirflow_dataGridView.ScrollBars = ScrollBars.Horizontal;
@@ -214,18 +214,6 @@
             Airflow_label.Size = new Size(257, 20);
             Airflow_label.TabIndex = 22;
             Airflow_label.Text = "Paste Airflow values from Tuning App";
-            // 
-            // AverageWithOriginal_checkBox
-            // 
-            AverageWithOriginal_checkBox.AutoSize = true;
-            AverageWithOriginal_checkBox.Enabled = false;
-            AverageWithOriginal_checkBox.Location = new Point(496, 576);
-            AverageWithOriginal_checkBox.Name = "AverageWithOriginal_checkBox";
-            AverageWithOriginal_checkBox.Size = new Size(286, 24);
-            AverageWithOriginal_checkBox.TabIndex = 23;
-            AverageWithOriginal_checkBox.Text = "Avergage Adjusted value with Original";
-            AverageWithOriginal_checkBox.UseVisualStyleBackColor = true;
-            AverageWithOriginal_checkBox.CheckedChanged += AverageWithOriginal_checkBox_CheckedChanged;
             // 
             // menuStrip1
             // 
@@ -320,7 +308,6 @@
             Controls.Add(CompleteCycle_button);
             Controls.Add(CurrentMafCurve_label);
             Controls.Add(menuStrip1);
-            Controls.Add(AverageWithOriginal_checkBox);
             Controls.Add(Airflow_label);
             Controls.Add(AdjustedAirflow_dataGridView);
             Controls.Add(AdjustmentPercent_label);
@@ -363,7 +350,6 @@
         private DataGridView AdjustedAirflow_dataGridView;
         private Label Airflow_label;
         private ToolStripMenuItem copyToolStripMenuItem;
-        private CheckBox AverageWithOriginal_checkBox;
         private MenuStrip menuStrip1;
         private ToolStripMenuItem session_ToolStripMenuItem;
         private ToolStripMenuItem create_ToolStripMenuItem;
