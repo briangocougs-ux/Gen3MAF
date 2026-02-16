@@ -1,6 +1,6 @@
 ﻿namespace Gen3MAF
 {
-    partial class Form2
+    partial class Vehicle
     {
         /// <summary>
         /// Required designer variable.
@@ -196,7 +196,7 @@
             BucketStyle_label.TabIndex = 15;
             BucketStyle_label.Text = "Bucket Style";
             // 
-            // Form2
+            // Vehicle
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
@@ -217,8 +217,8 @@
             Controls.Add(OS_textBox);
             Controls.Add(ECU_textBox);
             Controls.Add(VehicleName_textBox);
-            Name = "Form2";
-            Text = "Form2";
+            Name = "Vehicle";
+            Text = "New Vehicle";
             ((System.ComponentModel.ISupportInitialize)FrequncyMin_UpDown).EndInit();
             ((System.ComponentModel.ISupportInitialize)MaxFrequency_numericUpDown).EndInit();
             ((System.ComponentModel.ISupportInitialize)FrequencyStep_numericUpDown).EndInit();

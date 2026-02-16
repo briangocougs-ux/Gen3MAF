@@ -40,7 +40,7 @@
             label1 = new Label();
             AdjustmentBuckets_richTextBox = new RichTextBox();
             label2 = new Label();
-            button1 = new Button();
+            ApplyAdjustments = new Button();
             AdjustmentPercent_trackBar = new TrackBar();
             AdjustmentPercent_label = new Label();
             AdjustedAirflow_dataGridView = new DataGridView();
@@ -160,15 +160,15 @@
             label2.TabIndex = 10;
             label2.Text = "Paste bucket data from scanner app histogram.";
             // 
-            // button1
+            // ApplyAdjustments
             // 
-            button1.Location = new Point(71, 571);
-            button1.Name = "button1";
-            button1.Size = new Size(158, 29);
-            button1.TabIndex = 11;
-            button1.Text = "Apply Adjustments";
-            button1.UseVisualStyleBackColor = true;
-            button1.Click += button1_Click;
+            ApplyAdjustments.Location = new Point(71, 571);
+            ApplyAdjustments.Name = "ApplyAdjustments";
+            ApplyAdjustments.Size = new Size(158, 29);
+            ApplyAdjustments.TabIndex = 11;
+            ApplyAdjustments.Text = "Apply Adjustments";
+            ApplyAdjustments.UseVisualStyleBackColor = true;
+            ApplyAdjustments.Click += button1_Click;
             // 
             // AdjustmentPercent_trackBar
             // 
@@ -312,7 +312,7 @@
             Controls.Add(AdjustedAirflow_dataGridView);
             Controls.Add(AdjustmentPercent_label);
             Controls.Add(AdjustmentPercent_trackBar);
-            Controls.Add(button1);
+            Controls.Add(ApplyAdjustments);
             Controls.Add(label2);
             Controls.Add(AdjustmentBuckets_richTextBox);
             Controls.Add(label1);
@@ -344,7 +344,7 @@
         private Label label1;
         private RichTextBox AdjustmentBuckets_richTextBox;
         private Label label2;
-        private Button button1;
+        private Button ApplyAdjustments;
         private TrackBar AdjustmentPercent_trackBar;
         private Label AdjustmentPercent_label;
         private DataGridView AdjustedAirflow_dataGridView;

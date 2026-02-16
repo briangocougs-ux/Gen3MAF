@@ -11,7 +11,7 @@ using static Gen3MAF.Form1;
 
 namespace Gen3MAF
 {
-    public partial class Form2 : Form
+    public partial class Vehicle : Form
     {
 
         private string m_VehicleName;
@@ -24,7 +24,7 @@ namespace Gen3MAF
         private uint m_TuneCycleSequenceNumber;
 
 
-        public Form2()
+        public Vehicle()
         {
 
 

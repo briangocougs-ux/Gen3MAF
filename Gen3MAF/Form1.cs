@@ -117,7 +117,7 @@ namespace Gen3MAF
             AdjustedAirflow_dataGridView.ColumnCount = 0;
             AdjustedAirflow_dataGridView.RowCount = 0;
             Process_button.Enabled = false;
-            button1.Enabled = false;
+            ApplyAdjustments.Enabled = false;
             AdjustmentPercent_trackBar.Enabled = false;
             
             CompleteCycle_button.Enabled = false;
@@ -206,7 +206,7 @@ namespace Gen3MAF
 
             }
 
-            button1.Enabled = true;
+            ApplyAdjustments.Enabled = true;
 
         }
 
@@ -292,9 +292,6 @@ namespace Gen3MAF
             CompleteCycle_button.Enabled = true;    
 
             ProcessAdjustmentData();
-
-
-
 
         }
 
@@ -612,7 +609,7 @@ namespace Gen3MAF
 
         private void create_ToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            using (Form2 frm = new Form2())
+            using (Vehicle frm = new Vehicle())
             {
                 frm.ShowDialog(this);
 
@@ -640,7 +637,7 @@ namespace Gen3MAF
             //  disable the buttons. They will be enable as the user goes through the process of creating a new tune cycle. This is to prevent the user from trying to process data before we have the necessary information to do so, such as the maf frequency points and the bucket style.
             //
 
-            button1.Enabled = false;
+            ApplyAdjustments.Enabled = false;
             CompleteCycle_button.Enabled = false;
 
             m_mafFrequencyCount = (m_MaxMAFFrequency - m_MinMAFFrequency) / m_MAFFrequencyStep + 1;
@@ -753,7 +750,7 @@ namespace Gen3MAF
             m_SessionClass.AddTuneCycle(m_CurrentTuneCycle);
             m_CurrentTuneCycle = null;
             Process_button.Enabled = false;
-            button1.Enabled = false;
+            ApplyAdjustments.Enabled = false;
             m_IsDirty = true;
             ResetStateOfForm();
         }
