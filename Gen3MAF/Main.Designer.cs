@@ -124,7 +124,7 @@
             // 
             Buckets_richTextBox.ContextMenuStrip = contextMenuStrip1;
             Buckets_richTextBox.Font = new Font("Courier New", 9F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            Buckets_richTextBox.Location = new Point(68, 52);
+            Buckets_richTextBox.Location = new Point(71, 51);
             Buckets_richTextBox.Name = "Buckets_richTextBox";
             Buckets_richTextBox.ReadOnly = true;
             Buckets_richTextBox.Size = new Size(1065, 49);
@@ -273,14 +273,14 @@
             // NewTuneCycle_toolStripMenuItem
             // 
             NewTuneCycle_toolStripMenuItem.Name = "NewTuneCycle_toolStripMenuItem";
-            NewTuneCycle_toolStripMenuItem.Size = new Size(224, 26);
+            NewTuneCycle_toolStripMenuItem.Size = new Size(151, 26);
             NewTuneCycle_toolStripMenuItem.Text = "New";
             NewTuneCycle_toolStripMenuItem.Click += newToolStripMenuItem_Click;
             // 
             // Continue_ToolStripMenuItem
             // 
             Continue_ToolStripMenuItem.Name = "Continue_ToolStripMenuItem";
-            Continue_ToolStripMenuItem.Size = new Size(224, 26);
+            Continue_ToolStripMenuItem.Size = new Size(151, 26);
             Continue_ToolStripMenuItem.Text = "Continue";
             Continue_ToolStripMenuItem.Click += Continue_ToolStripMenuItem_Click;
             // 
