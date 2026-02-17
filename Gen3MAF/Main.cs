@@ -48,9 +48,7 @@ namespace Gen3MAF
         bool m_IsDirty;
         MafDataPoint[] m_mafDataPoints;
 
-        //       int m_FirstUpdatedBucketIndex = -1;
-        //       int m_LastUpdatedBucketIndex = -1;
-
+        
         int m_MinMAFFrequency = 0;
         int m_MaxMAFFrequency = 0;
         int m_MAFFrequencyStep = 0;
@@ -106,8 +104,7 @@ namespace Gen3MAF
         {
             m_CurrentTuneCycle = null;
             m_mafDataPoints = new MafDataPoint[1];
-            //            m_FirstUpdatedBucketIndex = -1;
-            //            m_LastUpdatedBucketIndex = -1;
+           
             m_BucketCount = 0;
             m_mafFrequencyCount = 0;
             Buckets_richTextBox.Clear();
@@ -117,7 +114,7 @@ namespace Gen3MAF
             MAF_dataGridView.RowCount = 0;
             AdjustedAirflow_dataGridView.ColumnCount = 0;
             AdjustedAirflow_dataGridView.RowCount = 0;
-            Process_button.Enabled = false;
+            ProcessOriginalAirflow_button.Enabled = false;
             ApplyAdjustments.Enabled = false;
             AdjustmentPercent_trackBar.Enabled = false;
             Pause_button.Enabled = false;
@@ -663,16 +660,9 @@ namespace Gen3MAF
             //
 
             TuneCycle PreviousTuneCycle = null;
-            try
-            {
-                PreviousTuneCycle = m_SessionClass.GetLastTuneCycle();
-            }
-            catch (Exception)
-            {
-                //  No previous tune cycle, ignore
-                
-            }
-
+            
+            PreviousTuneCycle = m_SessionClass.GetLastTuneCycle();
+            
             if (PreviousTuneCycle != null)
             {
                 if (PreviousTuneCycle.IsCompleted())
@@ -688,7 +678,7 @@ namespace Gen3MAF
                 }
             }
 
-            Process_button.Enabled = true;
+            ProcessOriginalAirflow_button.Enabled = true;
 
             return;
         }
@@ -799,7 +789,7 @@ namespace Gen3MAF
 
             m_SessionClass.AddTuneCycle(m_CurrentTuneCycle);
             m_CurrentTuneCycle = null;
-            Process_button.Enabled = false;
+            ProcessOriginalAirflow_button.Enabled = false;
             ApplyAdjustments.Enabled = false;
             m_IsDirty = true;
             ResetStateOfForm();
@@ -808,7 +798,7 @@ namespace Gen3MAF
         private void Discard_button_Click(object sender, EventArgs e)
         {
             m_CurrentTuneCycle = null;
-            Process_button.Enabled = false;
+            ProcessOriginalAirflow_button.Enabled = false;
             ApplyAdjustments.Enabled = false;
             m_IsDirty = true;
             ResetStateOfForm();
@@ -821,7 +811,7 @@ namespace Gen3MAF
             m_SessionClass.AddTuneCycle(m_CurrentTuneCycle);
 
             m_CurrentTuneCycle = null;
-            Process_button.Enabled = false;
+            ProcessOriginalAirflow_button.Enabled = false;
             ApplyAdjustments.Enabled = false;
             m_IsDirty = true;
             ResetStateOfForm();

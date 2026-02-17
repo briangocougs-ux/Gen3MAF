@@ -34,7 +34,7 @@
             pasteToolStripMenuItem = new ToolStripMenuItem();
             copyToolStripMenuItem = new ToolStripMenuItem();
             AirFlow_richTextBox = new RichTextBox();
-            Process_button = new Button();
+            ProcessOriginalAirflow_button = new Button();
             MAF_dataGridView = new DataGridView();
             Buckets_richTextBox = new RichTextBox();
             label1 = new Label();
@@ -99,16 +99,16 @@
             AirFlow_richTextBox.Text = "";
             AirFlow_richTextBox.WordWrap = false;
             // 
-            // Process_button
+            // ProcessOriginalAirflow_button
             // 
-            Process_button.Enabled = false;
-            Process_button.Location = new Point(71, 204);
-            Process_button.Name = "Process_button";
-            Process_button.Size = new Size(188, 29);
-            Process_button.TabIndex = 2;
-            Process_button.Text = "Process Airflow Data";
-            Process_button.UseVisualStyleBackColor = true;
-            Process_button.Click += Process_button_Click;
+            ProcessOriginalAirflow_button.Enabled = false;
+            ProcessOriginalAirflow_button.Location = new Point(71, 204);
+            ProcessOriginalAirflow_button.Name = "ProcessOriginalAirflow_button";
+            ProcessOriginalAirflow_button.Size = new Size(188, 29);
+            ProcessOriginalAirflow_button.TabIndex = 2;
+            ProcessOriginalAirflow_button.Text = "Process Airflow Data";
+            ProcessOriginalAirflow_button.UseVisualStyleBackColor = true;
+            ProcessOriginalAirflow_button.Click += Process_button_Click;
             // 
             // MAF_dataGridView
             // 
@@ -237,28 +237,28 @@
             // NewSession_ToolStripMenuItem
             // 
             NewSession_ToolStripMenuItem.Name = "NewSession_ToolStripMenuItem";
-            NewSession_ToolStripMenuItem.Size = new Size(224, 26);
+            NewSession_ToolStripMenuItem.Size = new Size(143, 26);
             NewSession_ToolStripMenuItem.Text = "New";
             NewSession_ToolStripMenuItem.Click += create_ToolStripMenuItem_Click;
             // 
             // open_ToolStripMenuItem
             // 
             open_ToolStripMenuItem.Name = "open_ToolStripMenuItem";
-            open_ToolStripMenuItem.Size = new Size(224, 26);
+            open_ToolStripMenuItem.Size = new Size(143, 26);
             open_ToolStripMenuItem.Text = "Open";
             open_ToolStripMenuItem.Click += open_ToolStripMenuItem_Click;
             // 
             // saveToolStripMenuItem
             // 
             saveToolStripMenuItem.Name = "saveToolStripMenuItem";
-            saveToolStripMenuItem.Size = new Size(224, 26);
+            saveToolStripMenuItem.Size = new Size(143, 26);
             saveToolStripMenuItem.Text = "Save";
             saveToolStripMenuItem.Click += saveToolStripMenuItem_Click;
             // 
             // saveAsToolStripMenuItem
             // 
             saveAsToolStripMenuItem.Name = "saveAsToolStripMenuItem";
-            saveAsToolStripMenuItem.Size = new Size(224, 26);
+            saveAsToolStripMenuItem.Size = new Size(143, 26);
             saveAsToolStripMenuItem.Text = "Save As";
             saveAsToolStripMenuItem.Click += saveAsToolStripMenuItem_Click;
             // 
@@ -273,14 +273,14 @@
             // NewTuneCycle_toolStripMenuItem
             // 
             NewTuneCycle_toolStripMenuItem.Name = "NewTuneCycle_toolStripMenuItem";
-            NewTuneCycle_toolStripMenuItem.Size = new Size(151, 26);
+            NewTuneCycle_toolStripMenuItem.Size = new Size(224, 26);
             NewTuneCycle_toolStripMenuItem.Text = "New";
             NewTuneCycle_toolStripMenuItem.Click += newToolStripMenuItem_Click;
             // 
             // Continue_ToolStripMenuItem
             // 
             Continue_ToolStripMenuItem.Name = "Continue_ToolStripMenuItem";
-            Continue_ToolStripMenuItem.Size = new Size(151, 26);
+            Continue_ToolStripMenuItem.Size = new Size(224, 26);
             Continue_ToolStripMenuItem.Text = "Continue";
             Continue_ToolStripMenuItem.Click += Continue_ToolStripMenuItem_Click;
             // 
@@ -344,7 +344,7 @@
             Controls.Add(label1);
             Controls.Add(Buckets_richTextBox);
             Controls.Add(MAF_dataGridView);
-            Controls.Add(Process_button);
+            Controls.Add(ProcessOriginalAirflow_button);
             Controls.Add(AirFlow_richTextBox);
             Icon = (Icon)resources.GetObject("$this.Icon");
             Name = "Main";
@@ -362,7 +362,7 @@
 
         #endregion
         private RichTextBox AirFlow_richTextBox;
-        private Button Process_button;
+        private Button ProcessOriginalAirflow_button;
         private ContextMenuStrip contextMenuStrip1;
         private ToolStripMenuItem pasteToolStripMenuItem;
         private DataGridView MAF_dataGridView;
