@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.Windows.Forms;
+using System.Windows.Forms.Design;
 using static Gen3MAF.Main;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
@@ -119,7 +120,8 @@ namespace Gen3MAF
             Process_button.Enabled = false;
             ApplyAdjustments.Enabled = false;
             AdjustmentPercent_trackBar.Enabled = false;
-            
+            Pasue_button.Enabled = false;
+
             CompleteCycle_button.Enabled = false;
         }
 
@@ -170,6 +172,12 @@ namespace Gen3MAF
             //
             m_CurrentTuneCycle.PopulateInitialAirflow(mafAirflowValues);
 
+            ProcessOriginalAirflowData();
+
+        }
+
+        void ProcessOriginalAirflowData()
+        {
             //  Populate the MafDataPoint array with the frequency and airflow values from the TuneCycle object, and calculate the left and right airflow values for each data point based on the defined frequency step.
             //  This allows us to have a structured representation of the airflow data for each frequency point, which can be used for adjustments and displaying in the data grid views.
             //
@@ -207,6 +215,7 @@ namespace Gen3MAF
             }
 
             ApplyAdjustments.Enabled = true;
+            Pasue_button.Enabled = true;
 
         }
 
@@ -245,7 +254,7 @@ namespace Gen3MAF
 
             if (LooksLikeCounts(analysis))
             {
-                DialogResult result=MessageBox.Show(
+                DialogResult result = MessageBox.Show(
                     $"This paste is {analysis.WholeRatio:P0} whole numbers " +
                     $"({analysis.WholeLikeCount}/{analysis.ValidCount}).\n\n" +
                     "That looks like *Histogram Counts*, not averaged values.\n" +
@@ -289,7 +298,7 @@ namespace Gen3MAF
             //  enable the adjustment percent track bar and the complete cycle button, as we now have the necessary data to apply adjustments and complete the tuning cycle.
             //
             AdjustmentPercent_trackBar.Enabled = true;
-            CompleteCycle_button.Enabled = true;    
+            CompleteCycle_button.Enabled = true;
 
             ProcessAdjustmentData();
 
@@ -537,7 +546,7 @@ namespace Gen3MAF
                 }
             }
 
-            
+
             // build array to send to tune cycle object
             //
             for (int i = 0; i < m_mafDataPoints.Length; i++)
@@ -640,6 +649,81 @@ namespace Gen3MAF
             ApplyAdjustments.Enabled = false;
             CompleteCycle_button.Enabled = false;
 
+            InitializeForNewTuneCycle();
+
+            //
+            //  create a new tunecycle object'
+            //
+            m_CurrentTuneCycle = m_SessionClass.CreateNewTuneCycle(m_mafFrequencyCount, (int)m_BucketCount);
+
+            
+
+            //
+            //  it there is a previos tune cycle, populate the maf data in the text box
+            //
+
+            TuneCycle PreviousTuneCycle = null;
+            try
+            {
+                PreviousTuneCycle = m_SessionClass.GetLastTuneCycle();
+            }
+            catch (Exception)
+            {
+                //  No previous tune cycle, ignore
+                
+            }
+
+            if (PreviousTuneCycle != null)
+            {
+                if (PreviousTuneCycle.IsCompleted())
+                {
+                    double[] PreviousAirflow = new double[m_mafFrequencyCount];
+
+                    for (int i = 0; i < m_mafFrequencyCount; i++)
+                    {
+                        PreviousAirflow[i] = PreviousTuneCycle.GetAdjustedAirflowAtIndex(i);
+                    }
+
+                    AirFlow_richTextBox.Text = string.Join("\t", PreviousAirflow.Select(v => v.ToString()));
+                }
+            }
+
+            Process_button.Enabled = true;
+
+            return;
+        }
+
+        private void Continue_ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+            //  
+            //  disable the buttons. They will be enable as the user goes through the process of creating a new tune cycle. This is to prevent the user from trying to process data before we have the necessary information to do so, such as the maf frequency points and the bucket style.
+            //
+
+            ApplyAdjustments.Enabled = false;
+            CompleteCycle_button.Enabled = false;
+
+            InitializeForNewTuneCycle();
+
+            m_CurrentTuneCycle = m_SessionClass.RemoveLastTuneCycle();
+            m_CurrentTuneCycle.ChangePausedToAirflowPopulated();
+
+            double[] OriginalAirflow = new double[m_mafFrequencyCount];
+
+            for (int i = 0; i < m_mafFrequencyCount; i++)
+            {
+                OriginalAirflow[i] = m_CurrentTuneCycle.GetAirflowAtIndex(i);
+            }
+
+            AirFlow_richTextBox.Text = string.Join("\t", OriginalAirflow.Select(v => v.ToString()));
+
+            ProcessOriginalAirflowData();
+        }
+
+        void InitializeForNewTuneCycle()
+        {
+            //  This method can be used to initialize the form for a new tune cycle, such as clearing previous data, resetting controls, and preparing the form for user input.
+            //  For now, the initialization is done directly in the newToolStripMenuItem_Click event handler, but this method can be called from there if we want to separate concerns and keep the event handler cleaner.
             m_mafFrequencyCount = (m_MaxMAFFrequency - m_MinMAFFrequency) / m_MAFFrequencyStep + 1;
 
             m_mafDataPoints = new MafDataPoint[m_mafFrequencyCount];
@@ -658,7 +742,7 @@ namespace Gen3MAF
             //  all we need to know is the frequency values
             //
             Buckets_richTextBox.Clear();
-           
+
 
             for (int i = 0; i < m_mafFrequencyCount; i++)
             {
@@ -690,42 +774,8 @@ namespace Gen3MAF
 
                 }
             }
-
-            m_CurrentTuneCycle = m_SessionClass.CreateNewTuneCycle(m_mafFrequencyCount, (int)m_BucketCount);
-
-            Process_button.Enabled = true;
-
-            //
-            //  it there is a previos tune cycle, populate the maf data in the text box
-            //
-
-            TuneCycle PreviousTuneCycle = null;
-            try
-            {
-                PreviousTuneCycle = m_SessionClass.GetLastTuneCycle();
-            }
-            catch (Exception)
-            {
-                //  No previous tune cycle, ignore
-                return;
-            }
-
-            if (PreviousTuneCycle != null)
-            {
-                if (PreviousTuneCycle.IsCompleted())
-                {
-                    double[] PreviousAirflow = new double[m_mafFrequencyCount];
-
-                    for (int i = 0; i < m_mafFrequencyCount; i++)
-                    {
-                        PreviousAirflow[i] = PreviousTuneCycle.GetAdjustedAirflowAtIndex(i);
-                    }
-
-                    AirFlow_richTextBox.Text = string.Join("\t", PreviousAirflow.Select(v => v.ToString()));
-                }
-            }
-            return;
         }
+
 
         private void saveToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -748,6 +798,28 @@ namespace Gen3MAF
             m_CurrentTuneCycle.MarkAsCompleted(AdjustmentPercent_trackBar.Value, false);
 
             m_SessionClass.AddTuneCycle(m_CurrentTuneCycle);
+            m_CurrentTuneCycle = null;
+            Process_button.Enabled = false;
+            ApplyAdjustments.Enabled = false;
+            m_IsDirty = true;
+            ResetStateOfForm();
+        }
+
+        private void Discard_button_Click(object sender, EventArgs e)
+        {
+            m_CurrentTuneCycle = null;
+            Process_button.Enabled = false;
+            ApplyAdjustments.Enabled = false;
+            m_IsDirty = true;
+            ResetStateOfForm();
+        }
+
+        private void Pasue_button_Click(object sender, EventArgs e)
+        {
+
+            m_CurrentTuneCycle.MarkAsPaused();
+            m_SessionClass.AddTuneCycle(m_CurrentTuneCycle);
+
             m_CurrentTuneCycle = null;
             Process_button.Enabled = false;
             ApplyAdjustments.Enabled = false;
@@ -800,7 +872,36 @@ namespace Gen3MAF
                     m_MAFFrequencyStep = m_SessionClass.FrequencyStep;
                     m_BucketStyle = m_SessionClass.BucketStyle;
 
+                    //
+                    // assume it is a new session and enable menu here, if there is a previous tune cycle, we will adjust the menu state in the code below  
+                    //
+                    newToolStripMenuItem.Enabled = true;
+                    Continue_ToolStripMenuItem.Enabled = false; 
+
+                    TuneCycle PreviousTuneCycle = null;
+                    
+                    PreviousTuneCycle = m_SessionClass.GetLastTuneCycle();
+                    
+
+                    if (PreviousTuneCycle != null)
+                    {
+                        if (PreviousTuneCycle.IsPaused())
+                        { 
+                            //
+                            //  the last tune cycle was paused, enable the continue menu and disable new menu
+                            //
+                           
+                            Continue_ToolStripMenuItem.Enabled = true;
+                            newToolStripMenuItem.Enabled = false;
+
+                        }
+                    }
+
+                    // 
+                    //  enable the top level menu in any case
+                    //
                     tuneToolStripMenuItem.Enabled = true;
+
                 }
             }
         }
@@ -880,6 +981,8 @@ namespace Gen3MAF
             if (r.ZeroLikeCount < 2) return true;             // integer-heavy but not many zeros -> still warn
             return true;
         }
+
+       
     }
 
 }

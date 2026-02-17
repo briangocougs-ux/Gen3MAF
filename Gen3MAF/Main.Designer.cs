@@ -53,9 +53,11 @@
             saveAsToolStripMenuItem = new ToolStripMenuItem();
             tuneToolStripMenuItem = new ToolStripMenuItem();
             newToolStripMenuItem = new ToolStripMenuItem();
-            lastToolStripMenuItem = new ToolStripMenuItem();
+            Continue_ToolStripMenuItem = new ToolStripMenuItem();
             CurrentMafCurve_label = new Label();
             CompleteCycle_button = new Button();
+            Discard_button = new Button();
+            Pasue_button = new Button();
             contextMenuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)MAF_dataGridView).BeginInit();
             ((System.ComponentModel.ISupportInitialize)AdjustmentPercent_trackBar).BeginInit();
@@ -262,7 +264,7 @@
             // 
             // tuneToolStripMenuItem
             // 
-            tuneToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { newToolStripMenuItem, lastToolStripMenuItem });
+            tuneToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { newToolStripMenuItem, Continue_ToolStripMenuItem });
             tuneToolStripMenuItem.Enabled = false;
             tuneToolStripMenuItem.Name = "tuneToolStripMenuItem";
             tuneToolStripMenuItem.Size = new Size(94, 24);
@@ -271,15 +273,16 @@
             // newToolStripMenuItem
             // 
             newToolStripMenuItem.Name = "newToolStripMenuItem";
-            newToolStripMenuItem.Size = new Size(122, 26);
+            newToolStripMenuItem.Size = new Size(224, 26);
             newToolStripMenuItem.Text = "New";
             newToolStripMenuItem.Click += newToolStripMenuItem_Click;
             // 
-            // lastToolStripMenuItem
+            // Continue_ToolStripMenuItem
             // 
-            lastToolStripMenuItem.Name = "lastToolStripMenuItem";
-            lastToolStripMenuItem.Size = new Size(122, 26);
-            lastToolStripMenuItem.Text = "Last";
+            Continue_ToolStripMenuItem.Name = "Continue_ToolStripMenuItem";
+            Continue_ToolStripMenuItem.Size = new Size(224, 26);
+            Continue_ToolStripMenuItem.Text = "Continue";
+            Continue_ToolStripMenuItem.Click += Continue_ToolStripMenuItem_Click;
             // 
             // CurrentMafCurve_label
             // 
@@ -300,11 +303,33 @@
             CompleteCycle_button.UseVisualStyleBackColor = true;
             CompleteCycle_button.Click += CompleteCycle_button_Click;
             // 
-            // Form1
+            // Discard_button
+            // 
+            Discard_button.Location = new Point(234, 846);
+            Discard_button.Name = "Discard_button";
+            Discard_button.Size = new Size(156, 29);
+            Discard_button.TabIndex = 27;
+            Discard_button.Text = "Discard Changes";
+            Discard_button.UseVisualStyleBackColor = true;
+            Discard_button.Click += Discard_button_Click;
+            // 
+            // Pasue_button
+            // 
+            Pasue_button.Location = new Point(73, 396);
+            Pasue_button.Name = "Pasue_button";
+            Pasue_button.Size = new Size(94, 29);
+            Pasue_button.TabIndex = 28;
+            Pasue_button.Text = "Pause Tune";
+            Pasue_button.UseVisualStyleBackColor = true;
+            Pasue_button.Click += Pasue_button_Click;
+            // 
+            // Main
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1191, 888);
+            Controls.Add(Pasue_button);
+            Controls.Add(Discard_button);
             Controls.Add(CompleteCycle_button);
             Controls.Add(CurrentMafCurve_label);
             Controls.Add(menuStrip1);
@@ -321,7 +346,7 @@
             Controls.Add(Process_button);
             Controls.Add(AirFlow_richTextBox);
             Icon = (Icon)resources.GetObject("$this.Icon");
-            Name = "Form1";
+            Name = "Main";
             Text = "Generation 3 LS MAF tuning";
             Load += Form1_Load;
             contextMenuStrip1.ResumeLayout(false);
@@ -357,9 +382,11 @@
         private Label CurrentMafCurve_label;
         private ToolStripMenuItem tuneToolStripMenuItem;
         private ToolStripMenuItem newToolStripMenuItem;
-        private ToolStripMenuItem lastToolStripMenuItem;
+        private ToolStripMenuItem Continue_ToolStripMenuItem;
         private ToolStripMenuItem saveToolStripMenuItem;
         private ToolStripMenuItem saveAsToolStripMenuItem;
         private Button CompleteCycle_button;
+        private Button Discard_button;
+        private Button Pasue_button;
     }
 }

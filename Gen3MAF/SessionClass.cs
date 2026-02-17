@@ -59,8 +59,25 @@ namespace Gen3MAF
         public TuneCycle GetLastTuneCycle()
         {
             if (m_TuneCycles.Count == 0)
-                throw new InvalidOperationException("No tune cycles available.");
+            { 
+                
+                return null;
+            }
             return m_TuneCycles.Last();
+        }
+
+        public TuneCycle RemoveLastTuneCycle()
+        {
+            TuneCycle LastTuneCycle = null;
+
+            if (m_TuneCycles.Count != 0)
+            {
+
+                LastTuneCycle = m_TuneCycles.Last();
+
+                m_TuneCycles.RemoveAt(m_TuneCycles.Count - 1);
+            }
+            return LastTuneCycle;
         }
 
         public TuneCycle CreateNewTuneCycle(int AirflowCount, int AdjustmentAirflowCount)
