@@ -120,7 +120,7 @@ namespace Gen3MAF
             Process_button.Enabled = false;
             ApplyAdjustments.Enabled = false;
             AdjustmentPercent_trackBar.Enabled = false;
-            Pasue_button.Enabled = false;
+            Pause_button.Enabled = false;
 
             CompleteCycle_button.Enabled = false;
         }
@@ -215,7 +215,7 @@ namespace Gen3MAF
             }
 
             ApplyAdjustments.Enabled = true;
-            Pasue_button.Enabled = true;
+            Pause_button.Enabled = true;
 
         }
 
@@ -875,7 +875,7 @@ namespace Gen3MAF
                     //
                     // assume it is a new session and enable menu here, if there is a previous tune cycle, we will adjust the menu state in the code below  
                     //
-                    newToolStripMenuItem.Enabled = true;
+                    NewTuneCycle_toolStripMenuItem.Enabled = true;
                     Continue_ToolStripMenuItem.Enabled = false; 
 
                     TuneCycle PreviousTuneCycle = null;
@@ -892,7 +892,7 @@ namespace Gen3MAF
                             //
                            
                             Continue_ToolStripMenuItem.Enabled = true;
-                            newToolStripMenuItem.Enabled = false;
+                            NewTuneCycle_toolStripMenuItem.Enabled = false;
 
                         }
                     }

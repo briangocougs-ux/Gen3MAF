@@ -47,17 +47,17 @@
             Airflow_label = new Label();
             menuStrip1 = new MenuStrip();
             session_ToolStripMenuItem = new ToolStripMenuItem();
-            create_ToolStripMenuItem = new ToolStripMenuItem();
+            NewSession_ToolStripMenuItem = new ToolStripMenuItem();
             open_ToolStripMenuItem = new ToolStripMenuItem();
             saveToolStripMenuItem = new ToolStripMenuItem();
             saveAsToolStripMenuItem = new ToolStripMenuItem();
             tuneToolStripMenuItem = new ToolStripMenuItem();
-            newToolStripMenuItem = new ToolStripMenuItem();
+            NewTuneCycle_toolStripMenuItem = new ToolStripMenuItem();
             Continue_ToolStripMenuItem = new ToolStripMenuItem();
             CurrentMafCurve_label = new Label();
             CompleteCycle_button = new Button();
             Discard_button = new Button();
-            Pasue_button = new Button();
+            Pause_button = new Button();
             contextMenuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)MAF_dataGridView).BeginInit();
             ((System.ComponentModel.ISupportInitialize)AdjustmentPercent_trackBar).BeginInit();
@@ -229,58 +229,58 @@
             // 
             // session_ToolStripMenuItem
             // 
-            session_ToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { create_ToolStripMenuItem, open_ToolStripMenuItem, saveToolStripMenuItem, saveAsToolStripMenuItem });
+            session_ToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { NewSession_ToolStripMenuItem, open_ToolStripMenuItem, saveToolStripMenuItem, saveAsToolStripMenuItem });
             session_ToolStripMenuItem.Name = "session_ToolStripMenuItem";
             session_ToolStripMenuItem.Size = new Size(72, 24);
             session_ToolStripMenuItem.Text = "Session";
             // 
-            // create_ToolStripMenuItem
+            // NewSession_ToolStripMenuItem
             // 
-            create_ToolStripMenuItem.Name = "create_ToolStripMenuItem";
-            create_ToolStripMenuItem.Size = new Size(143, 26);
-            create_ToolStripMenuItem.Text = "Create";
-            create_ToolStripMenuItem.Click += create_ToolStripMenuItem_Click;
+            NewSession_ToolStripMenuItem.Name = "NewSession_ToolStripMenuItem";
+            NewSession_ToolStripMenuItem.Size = new Size(224, 26);
+            NewSession_ToolStripMenuItem.Text = "New";
+            NewSession_ToolStripMenuItem.Click += create_ToolStripMenuItem_Click;
             // 
             // open_ToolStripMenuItem
             // 
             open_ToolStripMenuItem.Name = "open_ToolStripMenuItem";
-            open_ToolStripMenuItem.Size = new Size(143, 26);
+            open_ToolStripMenuItem.Size = new Size(224, 26);
             open_ToolStripMenuItem.Text = "Open";
             open_ToolStripMenuItem.Click += open_ToolStripMenuItem_Click;
             // 
             // saveToolStripMenuItem
             // 
             saveToolStripMenuItem.Name = "saveToolStripMenuItem";
-            saveToolStripMenuItem.Size = new Size(143, 26);
+            saveToolStripMenuItem.Size = new Size(224, 26);
             saveToolStripMenuItem.Text = "Save";
             saveToolStripMenuItem.Click += saveToolStripMenuItem_Click;
             // 
             // saveAsToolStripMenuItem
             // 
             saveAsToolStripMenuItem.Name = "saveAsToolStripMenuItem";
-            saveAsToolStripMenuItem.Size = new Size(143, 26);
+            saveAsToolStripMenuItem.Size = new Size(224, 26);
             saveAsToolStripMenuItem.Text = "Save As";
             saveAsToolStripMenuItem.Click += saveAsToolStripMenuItem_Click;
             // 
             // tuneToolStripMenuItem
             // 
-            tuneToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { newToolStripMenuItem, Continue_ToolStripMenuItem });
+            tuneToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { NewTuneCycle_toolStripMenuItem, Continue_ToolStripMenuItem });
             tuneToolStripMenuItem.Enabled = false;
             tuneToolStripMenuItem.Name = "tuneToolStripMenuItem";
             tuneToolStripMenuItem.Size = new Size(94, 24);
             tuneToolStripMenuItem.Text = "Tune Cycle";
             // 
-            // newToolStripMenuItem
+            // NewTuneCycle_toolStripMenuItem
             // 
-            newToolStripMenuItem.Name = "newToolStripMenuItem";
-            newToolStripMenuItem.Size = new Size(224, 26);
-            newToolStripMenuItem.Text = "New";
-            newToolStripMenuItem.Click += newToolStripMenuItem_Click;
+            NewTuneCycle_toolStripMenuItem.Name = "NewTuneCycle_toolStripMenuItem";
+            NewTuneCycle_toolStripMenuItem.Size = new Size(151, 26);
+            NewTuneCycle_toolStripMenuItem.Text = "New";
+            NewTuneCycle_toolStripMenuItem.Click += newToolStripMenuItem_Click;
             // 
             // Continue_ToolStripMenuItem
             // 
             Continue_ToolStripMenuItem.Name = "Continue_ToolStripMenuItem";
-            Continue_ToolStripMenuItem.Size = new Size(224, 26);
+            Continue_ToolStripMenuItem.Size = new Size(151, 26);
             Continue_ToolStripMenuItem.Text = "Continue";
             Continue_ToolStripMenuItem.Click += Continue_ToolStripMenuItem_Click;
             // 
@@ -313,22 +313,23 @@
             Discard_button.UseVisualStyleBackColor = true;
             Discard_button.Click += Discard_button_Click;
             // 
-            // Pasue_button
+            // Pause_button
             // 
-            Pasue_button.Location = new Point(73, 396);
-            Pasue_button.Name = "Pasue_button";
-            Pasue_button.Size = new Size(94, 29);
-            Pasue_button.TabIndex = 28;
-            Pasue_button.Text = "Pause Tune";
-            Pasue_button.UseVisualStyleBackColor = true;
-            Pasue_button.Click += Pasue_button_Click;
+            Pause_button.Enabled = false;
+            Pause_button.Location = new Point(73, 396);
+            Pause_button.Name = "Pause_button";
+            Pause_button.Size = new Size(94, 29);
+            Pause_button.TabIndex = 28;
+            Pause_button.Text = "Pause Tune";
+            Pause_button.UseVisualStyleBackColor = true;
+            Pause_button.Click += Pasue_button_Click;
             // 
             // Main
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1191, 888);
-            Controls.Add(Pasue_button);
+            Controls.Add(Pause_button);
             Controls.Add(Discard_button);
             Controls.Add(CompleteCycle_button);
             Controls.Add(CurrentMafCurve_label);
@@ -377,16 +378,16 @@
         private ToolStripMenuItem copyToolStripMenuItem;
         private MenuStrip menuStrip1;
         private ToolStripMenuItem session_ToolStripMenuItem;
-        private ToolStripMenuItem create_ToolStripMenuItem;
+        private ToolStripMenuItem NewSession_ToolStripMenuItem;
         private ToolStripMenuItem open_ToolStripMenuItem;
         private Label CurrentMafCurve_label;
         private ToolStripMenuItem tuneToolStripMenuItem;
-        private ToolStripMenuItem newToolStripMenuItem;
+        private ToolStripMenuItem NewTuneCycle_toolStripMenuItem;
         private ToolStripMenuItem Continue_ToolStripMenuItem;
         private ToolStripMenuItem saveToolStripMenuItem;
         private ToolStripMenuItem saveAsToolStripMenuItem;
         private Button CompleteCycle_button;
         private Button Discard_button;
-        private Button Pasue_button;
+        private Button Pause_button;
     }
 }
