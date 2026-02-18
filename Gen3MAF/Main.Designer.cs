@@ -51,6 +51,7 @@
             open_ToolStripMenuItem = new ToolStripMenuItem();
             saveToolStripMenuItem = new ToolStripMenuItem();
             saveAsToolStripMenuItem = new ToolStripMenuItem();
+            closeToolStripMenuItem = new ToolStripMenuItem();
             tuneToolStripMenuItem = new ToolStripMenuItem();
             NewTuneCycle_toolStripMenuItem = new ToolStripMenuItem();
             Continue_ToolStripMenuItem = new ToolStripMenuItem();
@@ -58,7 +59,7 @@
             CompleteCycle_button = new Button();
             Discard_button = new Button();
             Pause_button = new Button();
-            closeToolStripMenuItem = new ToolStripMenuItem();
+            Plot_button = new Button();
             contextMenuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)MAF_dataGridView).BeginInit();
             ((System.ComponentModel.ISupportInitialize)AdjustmentPercent_trackBar).BeginInit();
@@ -238,30 +239,37 @@
             // NewSession_ToolStripMenuItem
             // 
             NewSession_ToolStripMenuItem.Name = "NewSession_ToolStripMenuItem";
-            NewSession_ToolStripMenuItem.Size = new Size(224, 26);
+            NewSession_ToolStripMenuItem.Size = new Size(143, 26);
             NewSession_ToolStripMenuItem.Text = "New";
             NewSession_ToolStripMenuItem.Click += create_ToolStripMenuItem_Click;
             // 
             // open_ToolStripMenuItem
             // 
             open_ToolStripMenuItem.Name = "open_ToolStripMenuItem";
-            open_ToolStripMenuItem.Size = new Size(224, 26);
+            open_ToolStripMenuItem.Size = new Size(143, 26);
             open_ToolStripMenuItem.Text = "Open";
             open_ToolStripMenuItem.Click += open_ToolStripMenuItem_Click;
             // 
             // saveToolStripMenuItem
             // 
             saveToolStripMenuItem.Name = "saveToolStripMenuItem";
-            saveToolStripMenuItem.Size = new Size(224, 26);
+            saveToolStripMenuItem.Size = new Size(143, 26);
             saveToolStripMenuItem.Text = "Save";
             saveToolStripMenuItem.Click += saveToolStripMenuItem_Click;
             // 
             // saveAsToolStripMenuItem
             // 
             saveAsToolStripMenuItem.Name = "saveAsToolStripMenuItem";
-            saveAsToolStripMenuItem.Size = new Size(224, 26);
+            saveAsToolStripMenuItem.Size = new Size(143, 26);
             saveAsToolStripMenuItem.Text = "Save As";
             saveAsToolStripMenuItem.Click += saveAsToolStripMenuItem_Click;
+            // 
+            // closeToolStripMenuItem
+            // 
+            closeToolStripMenuItem.Name = "closeToolStripMenuItem";
+            closeToolStripMenuItem.Size = new Size(143, 26);
+            closeToolStripMenuItem.Text = "Close";
+            closeToolStripMenuItem.Click += closeToolStripMenuItem_Click;
             // 
             // tuneToolStripMenuItem
             // 
@@ -325,18 +333,23 @@
             Pause_button.UseVisualStyleBackColor = true;
             Pause_button.Click += Pasue_button_Click;
             // 
-            // closeToolStripMenuItem
+            // Plot_button
             // 
-            closeToolStripMenuItem.Name = "closeToolStripMenuItem";
-            closeToolStripMenuItem.Size = new Size(224, 26);
-            closeToolStripMenuItem.Text = "Close";
-            closeToolStripMenuItem.Click += closeToolStripMenuItem_Click;
+            Plot_button.Enabled = false;
+            Plot_button.Location = new Point(977, 575);
+            Plot_button.Name = "Plot_button";
+            Plot_button.Size = new Size(94, 29);
+            Plot_button.TabIndex = 29;
+            Plot_button.Text = "Plot";
+            Plot_button.UseVisualStyleBackColor = true;
+            Plot_button.Click += Plot_button_Click;
             // 
             // Main
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1191, 888);
+            Controls.Add(Plot_button);
             Controls.Add(Pause_button);
             Controls.Add(Discard_button);
             Controls.Add(CompleteCycle_button);
@@ -399,5 +412,6 @@
         private Button Discard_button;
         private Button Pause_button;
         private ToolStripMenuItem closeToolStripMenuItem;
+        private Button Plot_button;
     }
 }

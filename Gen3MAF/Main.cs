@@ -118,6 +118,7 @@ namespace Gen3MAF
             ApplyAdjustments.Enabled = false;
             AdjustmentPercent_trackBar.Enabled = false;
             Pause_button.Enabled = false;
+            Plot_button.Enabled = false;
 
             CompleteCycle_button.Enabled = false;
         }
@@ -296,6 +297,7 @@ namespace Gen3MAF
             //
             AdjustmentPercent_trackBar.Enabled = true;
             CompleteCycle_button.Enabled = true;
+            Plot_button.Enabled = true;
 
             ProcessAdjustmentData();
 
@@ -1017,6 +1019,24 @@ namespace Gen3MAF
         private void closeToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Close();
+        }
+
+        private void Plot_button_Click(object sender, EventArgs e)
+        {
+            
+
+            double[] x = new double[m_mafDataPoints.Length];
+            double[] y = new double[m_mafDataPoints.Length];    
+
+            for (int i = 0; i < m_mafDataPoints.Length; i++)
+            {
+                x[i] = m_mafDataPoints[i].Frequency;
+                y[i] = m_mafDataPoints[i].AirFlowAdjusted - m_mafDataPoints[i].AirFlow;
+            }
+
+            var plot = new PlotForm1(x, y);
+            
+            plot.ShowDialog();
         }
     }
 
