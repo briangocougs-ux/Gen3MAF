@@ -45,10 +45,10 @@ namespace Gen3MAF
 
         string m_CurrentFilePath = "";
 
-        bool m_IsDirty;
+        //       bool m_IsDirty;
         MafDataPoint[] m_mafDataPoints;
 
-        
+
         int m_MinMAFFrequency = 0;
         int m_MaxMAFFrequency = 0;
         int m_MAFFrequencyStep = 0;
@@ -97,14 +97,14 @@ namespace Gen3MAF
                 : "Untitled";
 
             this.Text = $"MAF Tuning Tool - {fileName}" +
-                        (m_IsDirty ? " *" : "");
+                        (m_SessionClass.IsDirty() ? " *" : "");
         }
 
         void ResetStateOfForm()
         {
             m_CurrentTuneCycle = null;
             m_mafDataPoints = new MafDataPoint[1];
-           
+
             m_BucketCount = 0;
             m_mafFrequencyCount = 0;
             Buckets_richTextBox.Clear();
@@ -407,10 +407,10 @@ namespace Gen3MAF
                     //
                     //   single bucket, just apply the adjustment to the orignal airflow
                     //
-                    double ModifiedAdjustmentPercent = Current.AirFlowLeftAdjustment * AdjustmentPercent;
+                    double ModifiedAdjustmentPercent = Current.AirFlowAdjustment * AdjustmentPercent;
 
-                    Current.AirFlowAdjusted = Current.AirFlow
-                                                        * (Current.AirFlow * (ModifiedAdjustmentPercent / 100));
+                    Current.AirFlowAdjusted = Current.AirFlow * (1.0 + (ModifiedAdjustmentPercent / 100.0));
+
 
                 }
                 else
@@ -422,8 +422,8 @@ namespace Gen3MAF
                     double ModifiedAdjustmentPercentLeft = Current.AirFlowLeftAdjustment * AdjustmentPercent;
                     double ModifiedAdjustmentPercentRight = Current.AirFlowRightAdjustment * AdjustmentPercent;
 
-                    Current.AirFlowLeftAdjusted = Current.AirFlowLeft + (Current.AirFlowLeft * (ModifiedAdjustmentPercentLeft / 100));
-                    Current.AirFlowRightAdjusted = Current.AirFlowRight + (Current.AirFlowRight * (ModifiedAdjustmentPercentRight / 100));
+                    Current.AirFlowLeftAdjusted = Current.AirFlowLeft + (Current.AirFlowLeft * (ModifiedAdjustmentPercentLeft / 100.0));
+                    Current.AirFlowRightAdjusted = Current.AirFlowRight + (Current.AirFlowRight * (ModifiedAdjustmentPercentRight / 100.0));
 
                     //
                     // since the left and right values are an equal distance from the target frequency, just average them together
@@ -653,16 +653,16 @@ namespace Gen3MAF
             //
             m_CurrentTuneCycle = m_SessionClass.CreateNewTuneCycle(m_mafFrequencyCount, (int)m_BucketCount);
 
-            
+
 
             //
             //  it there is a previos tune cycle, populate the maf data in the text box
             //
 
             TuneCycle PreviousTuneCycle = null;
-            
+
             PreviousTuneCycle = m_SessionClass.GetLastTuneCycle();
-            
+
             if (PreviousTuneCycle != null)
             {
                 if (PreviousTuneCycle.IsCompleted())
@@ -779,7 +779,7 @@ namespace Gen3MAF
             }
 
             SessionFileStore.Save(m_CurrentFilePath, m_SessionClass);
-            m_IsDirty = false;
+
             UpdateTitle();
         }
 
@@ -791,7 +791,7 @@ namespace Gen3MAF
             m_CurrentTuneCycle = null;
             ProcessOriginalAirflow_button.Enabled = false;
             ApplyAdjustments.Enabled = false;
-            m_IsDirty = true;
+
             ResetStateOfForm();
         }
 
@@ -800,7 +800,7 @@ namespace Gen3MAF
             m_CurrentTuneCycle = null;
             ProcessOriginalAirflow_button.Enabled = false;
             ApplyAdjustments.Enabled = false;
-            m_IsDirty = true;
+
             ResetStateOfForm();
         }
 
@@ -813,7 +813,13 @@ namespace Gen3MAF
             m_CurrentTuneCycle = null;
             ProcessOriginalAirflow_button.Enabled = false;
             ApplyAdjustments.Enabled = false;
-            m_IsDirty = true;
+
+            // 
+            //  if the user pauses the tune cycle, we want to enable the continue menu and disable the new menu, as they can either continue where they left off or start a new tune cycle, but they can't do both. 
+            //
+            Continue_ToolStripMenuItem.Enabled = true;
+            NewTuneCycle_toolStripMenuItem.Enabled = false;
+
             ResetStateOfForm();
         }
 
@@ -832,7 +838,7 @@ namespace Gen3MAF
                 {
                     m_CurrentFilePath = dlg.FileName;
                     SessionFileStore.Save(m_CurrentFilePath, m_SessionClass);
-                    m_IsDirty = false;
+
 
                     UpdateTitle();
                 }
@@ -841,9 +847,13 @@ namespace Gen3MAF
 
         private void open_ToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (!ConfirmDiscardIfDirty())
-                return;
-
+            if (m_SessionClass != null)
+            {
+                if (!ConfirmDiscardIfDirty())
+                {
+                    return;
+                }
+            }
             using (OpenFileDialog dlg = new OpenFileDialog())
             {
                 dlg.Filter = "MAF Session (*.json)|*.json|All Files (*.*)|*.*";
@@ -853,7 +863,7 @@ namespace Gen3MAF
                 {
                     m_SessionClass = SessionFileStore.Load(dlg.FileName);
                     m_CurrentFilePath = dlg.FileName;
-                    m_IsDirty = false;
+
 
                     UpdateTitle();
 
@@ -866,21 +876,21 @@ namespace Gen3MAF
                     // assume it is a new session and enable menu here, if there is a previous tune cycle, we will adjust the menu state in the code below  
                     //
                     NewTuneCycle_toolStripMenuItem.Enabled = true;
-                    Continue_ToolStripMenuItem.Enabled = false; 
+                    Continue_ToolStripMenuItem.Enabled = false;
 
                     TuneCycle PreviousTuneCycle = null;
-                    
+
                     PreviousTuneCycle = m_SessionClass.GetLastTuneCycle();
-                    
+
 
                     if (PreviousTuneCycle != null)
                     {
                         if (PreviousTuneCycle.IsPaused())
-                        { 
+                        {
                             //
                             //  the last tune cycle was paused, enable the continue menu and disable new menu
                             //
-                           
+
                             Continue_ToolStripMenuItem.Enabled = true;
                             NewTuneCycle_toolStripMenuItem.Enabled = false;
 
@@ -897,7 +907,7 @@ namespace Gen3MAF
         }
         private bool ConfirmDiscardIfDirty()
         {
-            if (!m_IsDirty)
+            if (!m_SessionClass.IsDirty())
                 return true;
 
             var result = MessageBox.Show(
@@ -966,13 +976,48 @@ namespace Gen3MAF
             // Tune thresholds to your data:
             // - counts paste: almost all integers and often many zeros
             // - averages paste: lots of fractional values
+            //
             if (r.ValidCount < 8) return false;               // too little data to judge
             if (r.WholeRatio < 0.90) return false;            // not "mostly integer"
             if (r.ZeroLikeCount < 2) return true;             // integer-heavy but not many zeros -> still warn
             return true;
         }
 
-       
+        private void Main_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (m_CurrentTuneCycle != null)
+            {
+                DialogResult result;
+
+                result = MessageBox.Show("There is a tuning session active, Do you really want to exit?",
+                                         "Closing Confirm",
+                                         MessageBoxButtons.YesNo,
+                                         MessageBoxIcon.Hand
+                                         );
+
+                if (result == DialogResult.No)
+                {
+                    e.Cancel = true;   // Stops the form from closing
+                    return;
+                }
+
+            }
+
+            if (m_SessionClass != null)
+            {
+
+                ConfirmDiscardIfDirty();
+
+
+            }
+
+
+        }
+
+        private void closeToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Close();
+        }
     }
 
 }

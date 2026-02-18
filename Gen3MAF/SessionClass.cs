@@ -27,6 +27,8 @@ namespace Gen3MAF
 
         public List<TuneCycle> m_TuneCycles = new();
 
+        private bool m_IsDirty = false;
+
         public SessionClass() { }
         public SessionClass(string vehicleName, string eCU, string oS, int minFrequency, int maxFrequency, int frequencyStep, BucketStyleEnum bucketStyle, uint tuneCycleSequenceNumber)
         {
@@ -54,6 +56,7 @@ namespace Gen3MAF
         public void AddTuneCycle(TuneCycle tuneCycle)
         {
             m_TuneCycles.Add(tuneCycle);
+            m_IsDirty=true;
         }
 
         public TuneCycle GetLastTuneCycle()
@@ -76,7 +79,10 @@ namespace Gen3MAF
                 LastTuneCycle = m_TuneCycles.Last();
 
                 m_TuneCycles.RemoveAt(m_TuneCycles.Count - 1);
+                m_IsDirty = true;
             }
+
+            
             return LastTuneCycle;
         }
 
@@ -90,5 +96,18 @@ namespace Gen3MAF
             IncrementSequenceNumber();
             return newTuneCycle;
         }   
+
+        public bool IsDirty()
+        {
+            return m_IsDirty;
+        }
+
+        public void SetClean()
+        {
+            if (m_IsDirty)
+            {
+                m_IsDirty = false;
+            }
+        }
     }
 }

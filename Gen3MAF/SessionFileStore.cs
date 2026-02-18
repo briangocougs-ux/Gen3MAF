@@ -30,6 +30,7 @@ namespace Gen3MAF
         {
             string json = JsonSerializer.Serialize(session, s_Options);
             File.WriteAllText(filePath, json);
+            session.SetClean();
         }
 
         public static SessionClass Load(string filePath)

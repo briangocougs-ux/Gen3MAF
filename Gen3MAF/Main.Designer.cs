@@ -58,6 +58,7 @@
             CompleteCycle_button = new Button();
             Discard_button = new Button();
             Pause_button = new Button();
+            closeToolStripMenuItem = new ToolStripMenuItem();
             contextMenuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)MAF_dataGridView).BeginInit();
             ((System.ComponentModel.ISupportInitialize)AdjustmentPercent_trackBar).BeginInit();
@@ -229,7 +230,7 @@
             // 
             // session_ToolStripMenuItem
             // 
-            session_ToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { NewSession_ToolStripMenuItem, open_ToolStripMenuItem, saveToolStripMenuItem, saveAsToolStripMenuItem });
+            session_ToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { NewSession_ToolStripMenuItem, open_ToolStripMenuItem, saveToolStripMenuItem, saveAsToolStripMenuItem, closeToolStripMenuItem });
             session_ToolStripMenuItem.Name = "session_ToolStripMenuItem";
             session_ToolStripMenuItem.Size = new Size(72, 24);
             session_ToolStripMenuItem.Text = "Session";
@@ -237,28 +238,28 @@
             // NewSession_ToolStripMenuItem
             // 
             NewSession_ToolStripMenuItem.Name = "NewSession_ToolStripMenuItem";
-            NewSession_ToolStripMenuItem.Size = new Size(143, 26);
+            NewSession_ToolStripMenuItem.Size = new Size(224, 26);
             NewSession_ToolStripMenuItem.Text = "New";
             NewSession_ToolStripMenuItem.Click += create_ToolStripMenuItem_Click;
             // 
             // open_ToolStripMenuItem
             // 
             open_ToolStripMenuItem.Name = "open_ToolStripMenuItem";
-            open_ToolStripMenuItem.Size = new Size(143, 26);
+            open_ToolStripMenuItem.Size = new Size(224, 26);
             open_ToolStripMenuItem.Text = "Open";
             open_ToolStripMenuItem.Click += open_ToolStripMenuItem_Click;
             // 
             // saveToolStripMenuItem
             // 
             saveToolStripMenuItem.Name = "saveToolStripMenuItem";
-            saveToolStripMenuItem.Size = new Size(143, 26);
+            saveToolStripMenuItem.Size = new Size(224, 26);
             saveToolStripMenuItem.Text = "Save";
             saveToolStripMenuItem.Click += saveToolStripMenuItem_Click;
             // 
             // saveAsToolStripMenuItem
             // 
             saveAsToolStripMenuItem.Name = "saveAsToolStripMenuItem";
-            saveAsToolStripMenuItem.Size = new Size(143, 26);
+            saveAsToolStripMenuItem.Size = new Size(224, 26);
             saveAsToolStripMenuItem.Text = "Save As";
             saveAsToolStripMenuItem.Click += saveAsToolStripMenuItem_Click;
             // 
@@ -324,6 +325,13 @@
             Pause_button.UseVisualStyleBackColor = true;
             Pause_button.Click += Pasue_button_Click;
             // 
+            // closeToolStripMenuItem
+            // 
+            closeToolStripMenuItem.Name = "closeToolStripMenuItem";
+            closeToolStripMenuItem.Size = new Size(224, 26);
+            closeToolStripMenuItem.Text = "Close";
+            closeToolStripMenuItem.Click += closeToolStripMenuItem_Click;
+            // 
             // Main
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
@@ -349,6 +357,7 @@
             Icon = (Icon)resources.GetObject("$this.Icon");
             Name = "Main";
             Text = "Generation 3 LS MAF tuning";
+            FormClosing += Main_FormClosing;
             Load += Form1_Load;
             contextMenuStrip1.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)MAF_dataGridView).EndInit();
@@ -389,5 +398,6 @@
         private Button CompleteCycle_button;
         private Button Discard_button;
         private Button Pause_button;
+        private ToolStripMenuItem closeToolStripMenuItem;
     }
 }
