@@ -168,6 +168,10 @@ namespace Gen3MAF
                 BorderDashStyle = dash
             };
 
+            s.MarkerStyle = MarkerStyle.Circle;
+            s.MarkerSize = 6;
+            s.MarkerBorderWidth = 1;
+
             int n = Math.Min(x.Length, Math.Min(denom.Length, num.Length));
             for (int i = 0; i < n; i++)
             {

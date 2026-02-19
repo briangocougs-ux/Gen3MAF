@@ -274,7 +274,9 @@ namespace Gen3MAF
         {
             double[] AdjustmentData;
 
-
+            // 
+            //  parse out the adjustment data from the text box
+            //
             AdjustmentData =
                 AdjustmentBuckets_richTextBox.Text.Split(new[] { ' ', '\t', ',', '\r', '\n' })
                 .Select(s => double.TryParse(s, out var v) ? v : double.NaN)
@@ -451,8 +453,6 @@ namespace Gen3MAF
                     double ModifiedAdjustmentPercent = Current.AirFlowAdjustment * AdjustmentPercent;
 
                     Current.AirFlowAdjusted = Current.AirFlow * (1.0 + (ModifiedAdjustmentPercent / 100.0));
-
-
                 }
                 else
                 {
@@ -1074,7 +1074,7 @@ namespace Gen3MAF
         {
             if (_tuneCyclesMenu != null) return;
 
-            _tuneCyclesMenu = new ToolStripMenuItem("TuneCycles");
+            _tuneCyclesMenu = new ToolStripMenuItem("Graphs");
             menuStrip1.Items.Add(_tuneCyclesMenu);
         }
 
