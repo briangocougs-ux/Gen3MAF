@@ -58,6 +58,8 @@ namespace Gen3MAF
 
         int m_mafFrequencyCount = 0;
 
+        ToolStripMenuItem _tuneCyclesMenu;
+
         public Main()
         {
 
@@ -102,11 +104,7 @@ namespace Gen3MAF
 
         void ResetStateOfForm()
         {
-            m_CurrentTuneCycle = null;
-            m_mafDataPoints = new MafDataPoint[1];
-
-            m_BucketCount = 0;
-            m_mafFrequencyCount = 0;
+            
             Buckets_richTextBox.Clear();
             AirFlow_richTextBox.Clear();
             AdjustmentBuckets_richTextBox.Clear();
@@ -121,6 +119,47 @@ namespace Gen3MAF
             Plot_button.Enabled = false;
 
             CompleteCycle_button.Enabled = false;
+        }
+
+        void InitializeFormForNewSession(SessionClass NewSession)
+        {
+
+            m_SessionClass = NewSession;
+
+            m_MinMAFFrequency  = m_SessionClass.MinFrequency;
+            m_MaxMAFFrequency  = m_SessionClass.MaxFrequency;
+            m_MAFFrequencyStep = m_SessionClass.FrequencyStep;
+            m_BucketStyle      = m_SessionClass.BucketStyle;
+
+            m_mafFrequencyCount = (m_MaxMAFFrequency - m_MinMAFFrequency) / m_MAFFrequencyStep + 1;
+
+
+            if (m_BucketStyle == BucketStyleEnum.Single)
+            {
+
+                m_BucketCount = (uint)m_mafFrequencyCount;
+            }
+            else if (m_BucketStyle == BucketStyleEnum.Double)
+            {
+
+                m_BucketCount = (uint)m_mafFrequencyCount * 2;
+            }
+            else
+            {
+                Debug.Assert(true, "unknown bucket type");
+
+                return;
+
+            }
+
+            m_mafDataPoints = new MafDataPoint[m_mafFrequencyCount];
+
+            for (uint i = 0; i < m_mafFrequencyCount; i++)
+            {
+                m_mafDataPoints[i].Frequency = (uint)(m_MinMAFFrequency + (i * m_MAFFrequencyStep));
+                m_mafDataPoints[i].AirFlow = 0.0f; // Placeholder for actual airflow values
+
+            }
         }
 
         private void Process_button_Click(object sender, EventArgs e)
@@ -625,13 +664,13 @@ namespace Gen3MAF
                 {
                     //  We can access the properties of the form to get the user input values and use them to populate the main form's controls or data structures as needed.
                     //
+                    SessionClass Session = null;
 
-                    m_SessionClass = frm.GetSessionInfo();
+                    Session = frm.GetSessionInfo();
 
-                    m_MinMAFFrequency = m_SessionClass.MinFrequency;
-                    m_MaxMAFFrequency = m_SessionClass.MaxFrequency;
-                    m_MAFFrequencyStep = m_SessionClass.FrequencyStep;
-                    m_BucketStyle = m_SessionClass.BucketStyle;
+                    InitializeFormForNewSession(Session);
+
+                    
 
                     tuneToolStripMenuItem.Enabled = true;
 
@@ -716,18 +755,7 @@ namespace Gen3MAF
         {
             //  This method can be used to initialize the form for a new tune cycle, such as clearing previous data, resetting controls, and preparing the form for user input.
             //  For now, the initialization is done directly in the newToolStripMenuItem_Click event handler, but this method can be called from there if we want to separate concerns and keep the event handler cleaner.
-            m_mafFrequencyCount = (m_MaxMAFFrequency - m_MinMAFFrequency) / m_MAFFrequencyStep + 1;
-
-            m_mafDataPoints = new MafDataPoint[m_mafFrequencyCount];
-
-
-
-            for (uint i = 0; i < m_mafFrequencyCount; i++)
-            {
-                m_mafDataPoints[i].Frequency = (uint)(m_MinMAFFrequency + (i * m_MAFFrequencyStep));
-                m_mafDataPoints[i].AirFlow = 0.0f; // Placeholder for actual airflow values
-
-            }
+            
 
             //
             // fill the text box for buckets so the user can paste them into the tuning app.
@@ -743,7 +771,7 @@ namespace Gen3MAF
                 {
                     Buckets_richTextBox.AppendText((m_mafDataPoints[i].Frequency - (m_MAFFrequencyStep / 2)).ToString());
                     Buckets_richTextBox.AppendText(" ");
-                    m_BucketCount++;
+                    
                 }
                 else if (m_BucketStyle == BucketStyleEnum.Double)
                 {
@@ -756,7 +784,7 @@ namespace Gen3MAF
 
                     Buckets_richTextBox.AppendText((m_mafDataPoints[i].Frequency).ToString());
                     Buckets_richTextBox.AppendText("  ");
-                    m_BucketCount += 2;
+                    
                 }
                 else
                 {
@@ -863,16 +891,18 @@ namespace Gen3MAF
 
                 if (dlg.ShowDialog() == DialogResult.OK)
                 {
-                    m_SessionClass = SessionFileStore.Load(dlg.FileName);
+                    SessionClass Session = null;
+
+                    Session = SessionFileStore.Load(dlg.FileName);
                     m_CurrentFilePath = dlg.FileName;
 
 
+                    
+
+                    InitializeFormForNewSession(Session);
+
                     UpdateTitle();
 
-                    m_MinMAFFrequency = m_SessionClass.MinFrequency;
-                    m_MaxMAFFrequency = m_SessionClass.MaxFrequency;
-                    m_MAFFrequencyStep = m_SessionClass.FrequencyStep;
-                    m_BucketStyle = m_SessionClass.BucketStyle;
 
                     //
                     // assume it is a new session and enable menu here, if there is a previous tune cycle, we will adjust the menu state in the code below  
@@ -903,6 +933,7 @@ namespace Gen3MAF
                     //  enable the top level menu in any case
                     //
                     tuneToolStripMenuItem.Enabled = true;
+                    RebuildTuneCyclesMenu();
 
                 }
             }
@@ -1037,6 +1068,75 @@ namespace Gen3MAF
             var plot = new PlotForm1(x, y);
             
             plot.ShowDialog();
+        }
+
+        private void EnsureTuneCyclesMenu()
+        {
+            if (_tuneCyclesMenu != null) return;
+
+            _tuneCyclesMenu = new ToolStripMenuItem("TuneCycles");
+            menuStrip1.Items.Add(_tuneCyclesMenu);
+        }
+
+        private void RebuildTuneCyclesMenu()
+        {
+            EnsureTuneCyclesMenu();
+
+            _tuneCyclesMenu.DropDownItems.Clear();
+
+            if (m_SessionClass == null || m_SessionClass.GetTuneCycleCount()  == 0)
+            {
+                _tuneCyclesMenu.DropDownItems.Add(new ToolStripMenuItem("(none)") { Enabled = false });
+                return;
+            }
+
+            for (int i = 0; i < m_SessionClass.GetTuneCycleCount(); i++)
+            {
+                var tc = m_SessionClass.GetTuneCycleAtIndex(i);
+
+                // Pick whatever label makes sense in your app
+                DateTime Utc = tc.GetTimeStamp();
+                DateTime Local = Utc.ToLocalTime(); 
+
+                string label = Local.ToString() ;
+
+                var mi = new ToolStripMenuItem(label)
+                {
+                    Tag = tc // stash the object
+                };
+
+                mi.Click += TuneCycleMenuItem_Click;
+                _tuneCyclesMenu.DropDownItems.Add(mi);
+            }
+        }
+
+        private void TuneCycleMenuItem_Click(object? sender, EventArgs e)
+        {
+            if (sender is not ToolStripMenuItem mi) return;
+
+            if (mi.Tag is not TuneCycle tc) return;
+
+            // Pull arrays out of your TuneCycle (names here are placeholders)
+
+            var BaseTuneCycle = m_SessionClass.GetTuneCycleAtIndex(0);
+
+
+            double[] freq = new double[m_mafFrequencyCount];
+            double[] baseAir = new double[m_mafFrequencyCount];
+            double[] oldAir = new double[m_mafFrequencyCount]; 
+            double[] newAir = new double[m_mafFrequencyCount]; 
+
+            for (int i = 0; i < m_mafFrequencyCount; i++)
+            {
+                freq[i]   = (double)(m_MinMAFFrequency + (i * m_MAFFrequencyStep));
+
+                baseAir[i] = BaseTuneCycle.GetAirflowAtIndex(i);
+                oldAir[i]  = tc.GetAirflowAtIndex(i);
+                newAir[i]  = tc.GetAdjustedAirflowAtIndex(i);
+            }
+
+            var f = new PlotForm1(freq, baseAir, oldAir, newAir, "TuneCycle");
+            f.Show(this);
         }
     }
 

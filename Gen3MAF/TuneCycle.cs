@@ -76,7 +76,9 @@ namespace Gen3MAF
 
         public double GetAirflowAtIndex(int Index)
         {
-            if ((m_State != TuneCycleStateEnum.InitialAirflowPopulated) && (m_State != TuneCycleStateEnum.AdjustmentAirflowPopulated))
+            if ((m_State != TuneCycleStateEnum.InitialAirflowPopulated) 
+                && (m_State != TuneCycleStateEnum.AdjustmentAirflowPopulated) 
+                && (m_State != TuneCycleStateEnum.Completed))
             {
                 throw new InvalidOperationException("TuneCycle is not populated yet.");
             }
@@ -89,9 +91,12 @@ namespace Gen3MAF
 
         public double GetAdjustedAirflowAtIndex(int Index)
         {
-            if ((m_State != TuneCycleStateEnum.AdjustedAirflowBuilt) && (m_State != TuneCycleStateEnum.Completed))
+            if ((m_State != TuneCycleStateEnum.AdjustedAirflowBuilt)
+                && (m_State != TuneCycleStateEnum.Completed)
+                && (m_State != TuneCycleStateEnum.Completed))
+            {
                 throw new InvalidOperationException("Adjusted Airflow is not built yet.");
-
+            }
             if (Index < 0 || Index >= m_AdjustedAirflow.Length)
                 throw new ArgumentOutOfRangeException("Index is out of range.");
 
@@ -157,6 +162,16 @@ namespace Gen3MAF
 
             m_State = TuneCycleStateEnum.InitialAirflowPopulated;
             return;
+        }
+
+        public DateTime GetTimeStamp()
+        {
+            return m_Timestamp;
+        }
+
+        public uint GetSequenceNumber()
+        {
+            return m_SequenceNumber;
         }
     }
 }

@@ -109,5 +109,18 @@ namespace Gen3MAF
                 m_IsDirty = false;
             }
         }
+
+        public int GetTuneCycleCount()
+        {
+            return m_TuneCycles.Count;
+        }
+
+        public TuneCycle GetTuneCycleAtIndex(int index)
+        {
+            if (index < 0 || index >= m_TuneCycles.Count)
+                throw new IndexOutOfRangeException("Tune cycle index is out of range.");
+
+            return m_TuneCycles[index];
+        }
     }
 }

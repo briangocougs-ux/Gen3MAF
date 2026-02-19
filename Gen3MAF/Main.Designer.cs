@@ -60,6 +60,7 @@
             Discard_button = new Button();
             Pause_button = new Button();
             Plot_button = new Button();
+            viewToolStripMenuItem = new ToolStripMenuItem();
             contextMenuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)MAF_dataGridView).BeginInit();
             ((System.ComponentModel.ISupportInitialize)AdjustmentPercent_trackBar).BeginInit();
@@ -222,7 +223,7 @@
             // menuStrip1
             // 
             menuStrip1.ImageScalingSize = new Size(20, 20);
-            menuStrip1.Items.AddRange(new ToolStripItem[] { session_ToolStripMenuItem, tuneToolStripMenuItem });
+            menuStrip1.Items.AddRange(new ToolStripItem[] { session_ToolStripMenuItem, tuneToolStripMenuItem, viewToolStripMenuItem });
             menuStrip1.Location = new Point(0, 0);
             menuStrip1.Name = "menuStrip1";
             menuStrip1.Size = new Size(1191, 28);
@@ -282,14 +283,14 @@
             // NewTuneCycle_toolStripMenuItem
             // 
             NewTuneCycle_toolStripMenuItem.Name = "NewTuneCycle_toolStripMenuItem";
-            NewTuneCycle_toolStripMenuItem.Size = new Size(151, 26);
+            NewTuneCycle_toolStripMenuItem.Size = new Size(224, 26);
             NewTuneCycle_toolStripMenuItem.Text = "New";
             NewTuneCycle_toolStripMenuItem.Click += newToolStripMenuItem_Click;
             // 
             // Continue_ToolStripMenuItem
             // 
             Continue_ToolStripMenuItem.Name = "Continue_ToolStripMenuItem";
-            Continue_ToolStripMenuItem.Size = new Size(151, 26);
+            Continue_ToolStripMenuItem.Size = new Size(224, 26);
             Continue_ToolStripMenuItem.Text = "Continue";
             Continue_ToolStripMenuItem.Click += Continue_ToolStripMenuItem_Click;
             // 
@@ -343,6 +344,13 @@
             Plot_button.Text = "Plot";
             Plot_button.UseVisualStyleBackColor = true;
             Plot_button.Click += Plot_button_Click;
+            // 
+            // viewToolStripMenuItem
+            // 
+            viewToolStripMenuItem.Enabled = false;
+            viewToolStripMenuItem.Name = "viewToolStripMenuItem";
+            viewToolStripMenuItem.Size = new Size(55, 24);
+            viewToolStripMenuItem.Text = "View";
             // 
             // Main
             // 
@@ -413,5 +421,6 @@
         private Button Pause_button;
         private ToolStripMenuItem closeToolStripMenuItem;
         private Button Plot_button;
+        private ToolStripMenuItem viewToolStripMenuItem;
     }
 }
