@@ -17,27 +17,10 @@ namespace Gen3MAF
         public const int DATA_GRID_ROW_AIRFLOW_ADJUSTMENT = 2;
         public const int DATA_GRID_ROW_AIRFLOW_ADJUSTED = 3;
         public const int DATA_GRID_ROW_ENABLE = 4;
+        public const int DEFAULT_ADJUSTMENT_PERCENT = 100;
 
 
 
-        public struct MafDataPoint
-        {
-            public uint Frequency;
-            public bool HasUpdatedAirFlow;
-
-            public double AirFlow;
-            public double AirFlowAdjustment;
-            public double AirFlowAdjusted;
-
-            public double AirFlowLeft;
-            public double AirFlowLeftAdjustment;
-            public double AirFlowLeftAdjusted;
-
-
-            public double AirFlowRight;
-            public double AirFlowRightAdjustment;
-            public double AirFlowRightAdjusted;
-        }
 
         SessionClass m_SessionClass;
 
@@ -45,8 +28,8 @@ namespace Gen3MAF
 
         string m_CurrentFilePath = "";
 
-        //       bool m_IsDirty;
-        MafDataPoint[] m_mafDataPoints;
+       
+        adjust m_AdjustObject;
 
 
         int m_MinMAFFrequency = 0;
@@ -65,7 +48,7 @@ namespace Gen3MAF
 
             InitializeComponent();
 
-            m_mafDataPoints = new MafDataPoint[1];
+            m_AdjustObject = null;
 
             MAF_dataGridView.RowHeadersVisible = false;
             MAF_dataGridView.ColumnHeadersVisible = false;
@@ -118,6 +101,7 @@ namespace Gen3MAF
             Pause_button.Enabled = false;
             Plot_button.Enabled = false;
 
+            AdjustmentPercent_trackBar.Value = DEFAULT_ADJUSTMENT_PERCENT;
             CompleteCycle_button.Enabled = false;
         }
 
@@ -152,14 +136,9 @@ namespace Gen3MAF
 
             }
 
-            m_mafDataPoints = new MafDataPoint[m_mafFrequencyCount];
+            m_AdjustObject = new adjust(m_MinMAFFrequency, m_MaxMAFFrequency, m_MAFFrequencyStep, m_BucketStyle);
 
-            for (uint i = 0; i < m_mafFrequencyCount; i++)
-            {
-                m_mafDataPoints[i].Frequency = (uint)(m_MinMAFFrequency + (i * m_MAFFrequencyStep));
-                m_mafDataPoints[i].AirFlow = 0.0f; // Placeholder for actual airflow values
 
-            }
         }
 
         private void Process_button_Click(object sender, EventArgs e)
@@ -167,6 +146,9 @@ namespace Gen3MAF
             string[] mafAirflowStrings;
             double[] mafAirflowValues = new double[m_mafFrequencyCount];
 
+            //
+            //  user enter airflow value in the text box, parse them and put them in an array of doubles
+            //
 
 
             mafAirflowStrings = AirFlow_richTextBox.Text.Split(
@@ -218,25 +200,8 @@ namespace Gen3MAF
             //  Populate the MafDataPoint array with the frequency and airflow values from the TuneCycle object, and calculate the left and right airflow values for each data point based on the defined frequency step.
             //  This allows us to have a structured representation of the airflow data for each frequency point, which can be used for adjustments and displaying in the data grid views.
             //
-            for (uint i = 0; i < m_mafFrequencyCount; i++)
-            {
-                m_mafDataPoints[i].AirFlow = m_CurrentTuneCycle.GetAirflowAtIndex((int)i);
-            }
-
-            for (int i = 0; i < (m_mafDataPoints.Length - 1); i++)
-            {
-                int j = i + 1;
-                double slope = (m_mafDataPoints[j].AirFlow - m_mafDataPoints[i].AirFlow) / (m_mafDataPoints[j].Frequency - m_mafDataPoints[i].Frequency);
-
-                m_mafDataPoints[i].AirFlowRight = m_mafDataPoints[i].AirFlow + (slope * (m_MAFFrequencyStep * 0.25f));
-                m_mafDataPoints[j].AirFlowLeft = m_mafDataPoints[i].AirFlow + (slope * (m_MAFFrequencyStep * 0.75f));
-            }
-
-            // set the left airflow of the first point and the right airflow of the last point to 0, as they are outside the defined frequency range
-            // This is a design choice, as we don't have data points outside the defined frequency range to calculate these values.
-            //
-            m_mafDataPoints[0].AirFlowLeft = 0.0f;
-            m_mafDataPoints[m_mafFrequencyCount - 1].AirFlowRight = 0.0f;
+            m_AdjustObject.InitializeAirFlowFromTuneObject(m_CurrentTuneCycle);
+           
 
 
             MAF_dataGridView.ColumnCount = (int)m_mafFrequencyCount;
@@ -245,8 +210,12 @@ namespace Gen3MAF
 
             for (int i = 0; i < m_mafFrequencyCount; i++)
             {
-                MAF_dataGridView.Rows[0].Cells[i].Value = m_mafDataPoints[i].Frequency.ToString();
-                MAF_dataGridView.Rows[1].Cells[i].Value = m_mafDataPoints[i].AirFlow.ToString("f3");
+                ReturnDataPoint DataPoint;
+
+                DataPoint = m_AdjustObject.GetDataPointAtIndex(i);
+
+                MAF_dataGridView.Rows[0].Cells[i].Value = DataPoint.Frequency.ToString();
+                MAF_dataGridView.Rows[1].Cells[i].Value = DataPoint.Airflow.ToString("f3");
 
 
             }
@@ -313,25 +282,8 @@ namespace Gen3MAF
             //
             m_CurrentTuneCycle.PopulateAirflowAdjustment(AdjustmentData);
 
-            for (int i = 0; i < m_mafDataPoints.Length; i++)
-            {
-                ref MafDataPoint Current = ref m_mafDataPoints[i];
+            m_AdjustObject.ReadAdjustmentDataFromTuneObject(m_CurrentTuneCycle);
 
-                Current.AirFlowAdjusted = 0.0f;
-
-                // read the adjustment data out of the tune cycle object and populate the MafDataPoint array with the adjustment values for each data point, based on the defined bucket style (single or double).
-                //
-                if (m_BucketStyle == BucketStyleEnum.Single)
-                {
-                    Current.AirFlowAdjustment = m_CurrentTuneCycle.GetAdjustmentDataAtIndex(i);
-                }
-                else
-                {
-                    Current.AirFlowLeftAdjustment = m_CurrentTuneCycle.GetAdjustmentDataAtIndex(i * 2);
-                    Current.AirFlowRightAdjustment = m_CurrentTuneCycle.GetAdjustmentDataAtIndex((i * 2) + 1);
-
-                }
-            }
 
             //
             //  enable the adjustment percent track bar and the complete cycle button, as we now have the necessary data to apply adjustments and complete the tuning cycle.
@@ -426,172 +378,22 @@ namespace Gen3MAF
 
         private void ProcessAdjustmentData()
         {
-            int FirstUpdatedBucketIndex = -1;
-            int LastUpdatedBucketIndex = -1;
-
             double AdjustmentPercent = AdjustmentPercent_trackBar.Value / 100.0f;
+            double[] AdjustedAirflowArray = new double[m_mafFrequencyCount ];
 
-            // This method can be used to process the adjustment data if needed, such as applying additional transformations or validations before updating the adjusted airflow values.
-            // For now, the processing is done directly in the button1_Click event handler, but this method can be called from there if we want to separate concerns and keep the event handler cleaner.
-
-            double[] AdjustedAirflowArray = new double[m_mafDataPoints.Length];
-
-            for (int i = 0; i < m_mafDataPoints.Length; i++)
-            {
-                ref MafDataPoint Current = ref m_mafDataPoints[i];
-
-                Current.AirFlowAdjusted = 0.0;
-                Current.AirFlowLeftAdjusted = 0.0;
-                Current.AirFlowRightAdjusted = 0.0;
-                Current.HasUpdatedAirFlow = false;
-
-                if (m_BucketStyle == BucketStyleEnum.Single)
-                {
-                    //
-                    //   single bucket, just apply the adjustment to the orignal airflow
-                    //
-                    double ModifiedAdjustmentPercent = Current.AirFlowAdjustment * AdjustmentPercent;
-
-                    Current.AirFlowAdjusted = Current.AirFlow * (1.0 + (ModifiedAdjustmentPercent / 100.0));
-                }
-                else
-                {
-                    //  For double bucket, we need to calculate the adjusted airflow for the left and right sides separately, and then average them to get the final adjusted airflow value for the bucket
-                    //  This allows for more granular adjustments to the airflow values, as the user can specify different adjustments for the left and right sides of the bucket
-                    //
-
-                    double ModifiedAdjustmentPercentLeft = Current.AirFlowLeftAdjustment * AdjustmentPercent;
-                    double ModifiedAdjustmentPercentRight = Current.AirFlowRightAdjustment * AdjustmentPercent;
-
-                    Current.AirFlowLeftAdjusted = Current.AirFlowLeft + (Current.AirFlowLeft * (ModifiedAdjustmentPercentLeft / 100.0));
-                    Current.AirFlowRightAdjusted = Current.AirFlowRight + (Current.AirFlowRight * (ModifiedAdjustmentPercentRight / 100.0));
-
-                    //
-                    // since the left and right values are an equal distance from the target frequency, just average them together
-                    //
-                    Current.AirFlowAdjusted = (Current.AirFlowLeftAdjusted + Current.AirFlowRightAdjusted) / 2.0f;
-
-                }
-
-                //  
-                //  if the adjusted airflow is NaN, it means we got not updated data from the scanner app. THis means no datapoints were collected
-                //  for this frequency. '
-                //  
-                //  we will scan through the array to find the first and last frequncies with valid data. No adjustments will be applied to the value before and after
-                //
-                Current.HasUpdatedAirFlow = !double.IsNaN(Current.AirFlowAdjusted);
-
-                if ((FirstUpdatedBucketIndex == -1) && !double.IsNaN(Current.AirFlowAdjusted))
-                {
-                    //
-                    //  Set the first updated bucket index to the first index where we have a valid adjusted airflow value
-                    //
-                    FirstUpdatedBucketIndex = i;
-                }
-
-                if (!double.IsNaN(Current.AirFlowAdjusted))
-                {
-                    //
-                    // Set the last updated bucket index to the last index where we have a valid adjusted airflow value
-                    //
-                    LastUpdatedBucketIndex = i;
-                }
-            }
-
-            //
-            //  Ajusted Airflow has been computed for the whole array;
-            //   
-            //  Now we will deal with parts that did not get updated air flow data
-            //  Basically, just use the original data upto the first update value, Same after the last update value.
-            //  If there are missing data points inbetween udated data points, interpolate
-            //
-            if (FirstUpdatedBucketIndex != -1)
-            {
-                //  We have at least one updated bucket, so we can adjust the airflow values for all buckets between the first and last updated bucket
-                //
-
-                for (int i = 0; i < FirstUpdatedBucketIndex; i++)
-                {
-                    ref MafDataPoint Current = ref m_mafDataPoints[i];
-                    //
-                    //  If the current index is less than the first updated bucket index, set the adjusted airflow to the original airflow value of the first updated bucket
-                    //
-                    Current.AirFlowAdjusted = Current.AirFlow;
-
-                }
-
-            }
-
-            if (LastUpdatedBucketIndex != -1)
-            {
-                //
-                //  We have atleast one updated data point, and we are at that index, just put the original flow back.
-                //
-                for (int i = LastUpdatedBucketIndex + 1; i < m_mafFrequencyCount; i++)
-                {
-                    ref MafDataPoint Current = ref m_mafDataPoints[i];
-
-                    //
-                    //  If the current index is greater than the last updated bucket index, set the adjusted airflow to the original airflow value of the last updated bucket
-                    //
-                    Current.AirFlowAdjusted = Current.AirFlow;
-                }
-            }
-
-            //  now we will go through the region with some updated data points
-            //  if there are gaps, interpolate between updated data points
-            //
-            for (int i = (FirstUpdatedBucketIndex + 1); i <= LastUpdatedBucketIndex; i++)
-            {
-
-                if (!m_mafDataPoints[i].HasUpdatedAirFlow)
-                {
-                    //  If we have a bucket that doesn't have an updated airflow value, but is between the first and last updated bucket, we need to interpolate the adjusted airflow value for that bucket
-                    //
-                    int j = i;
-                    //  Find the next bucket index that has an updated airflow value
-                    //
-                    while (j <= LastUpdatedBucketIndex && !m_mafDataPoints[j].HasUpdatedAirFlow)
-                    {
-                        j++;
-                    }
-                    if (j > LastUpdatedBucketIndex)
-                    {
-                        //  We didn't find any more buckets with updated airflow values, so we can break out of the loop
-                        //
-                        break;
-                    }
-
-                    //  i is the data point with missing updated airflow value, i-1 is the last data point with an updated airflow value, and j is the next data point with an updated airflow value. We can use these three points to interpolate the adjusted airflow value for the current bucket at index i.    
-                    //  We will use linear interpolation to calculate the adjusted airflow value for the current bucket at index i, based on the adjusted airflow values of the buckets at index i-1 and j, and the frequencies of those buckets.   
-
-                    double slope = (m_mafDataPoints[j].AirFlowAdjusted - m_mafDataPoints[i - 1].AirFlowAdjusted)
-                                   / (m_mafDataPoints[j].Frequency - m_mafDataPoints[i - 1].Frequency);
-
-
-                    for (int k = i; k < j; k++)
-                    {
-                        m_mafDataPoints[k].AirFlowAdjusted = m_mafDataPoints[i - 1].AirFlowAdjusted
-                                                             + (slope * (m_mafDataPoints[k].Frequency - m_mafDataPoints[i - 1].Frequency));
-
-                    }
-
-                    //  Move the index i to the next bucket index with an updated airflow value, which is j, so that we can continue processing the next buckets with missing updated airflow values
-                    //
-
-                    i = j;
-
-                }
-            }
-
+            m_AdjustObject.ProcessAdjustmentData(AdjustmentPercent);
 
             // build array to send to tune cycle object
             //
-            for (int i = 0; i < m_mafDataPoints.Length; i++)
+            for (int i = 0; i <  m_mafFrequencyCount; i++)
             {
-                ref MafDataPoint Current = ref m_mafDataPoints[i];
+                ReturnDataPoint DataPoint;
 
-                AdjustedAirflowArray[i] = Current.AirFlowAdjusted;
+                DataPoint = m_AdjustObject.GetDataPointAtIndex(i);
+
+                
+
+                AdjustedAirflowArray[i] = DataPoint.AdjustedAirflow;
             }
 
             m_CurrentTuneCycle.PopulatedAdjustedAirflow(AdjustedAirflowArray);
@@ -606,16 +408,19 @@ namespace Gen3MAF
             AdjustedAirflow_dataGridView.ColumnCount = (int)m_mafFrequencyCount;
             AdjustedAirflow_dataGridView.RowCount = 5;
 
-            for (int i = 0; i < m_mafDataPoints.Length; i++)
+            for (int i = 0; i < m_mafFrequencyCount; i++)
             {
-                ref MafDataPoint Current = ref m_mafDataPoints[i];
+                ReturnDataPoint DataPoint = m_AdjustObject.GetDataPointAtIndex(i);
+                
 
-                double ChangeAmountPercent = ((Current.AirFlowAdjusted - Current.AirFlow) / Current.AirFlow) * 100;
+               
 
-                AdjustedAirflow_dataGridView.Rows[DATA_GRID_ROW_FREQUENCY].Cells[i].Value = Current.Frequency.ToString();
-                AdjustedAirflow_dataGridView.Rows[DATA_GRID_ROW_AIRFLOW].Cells[i].Value = Current.AirFlow.ToString("f3");
+                double ChangeAmountPercent = ((DataPoint.AdjustedAirflow - DataPoint.Airflow) / DataPoint.Airflow) * 100;
+
+                AdjustedAirflow_dataGridView.Rows[DATA_GRID_ROW_FREQUENCY].Cells[i].Value = DataPoint.Frequency.ToString();
+                AdjustedAirflow_dataGridView.Rows[DATA_GRID_ROW_AIRFLOW].Cells[i].Value = DataPoint.Airflow.ToString("f3");
                 AdjustedAirflow_dataGridView.Rows[DATA_GRID_ROW_AIRFLOW_ADJUSTMENT].Cells[i].Value = ChangeAmountPercent.ToString("f2");
-                AdjustedAirflow_dataGridView.Rows[DATA_GRID_ROW_AIRFLOW_ADJUSTED].Cells[i].Value = Current.AirFlowAdjusted.ToString("f3");
+                AdjustedAirflow_dataGridView.Rows[DATA_GRID_ROW_AIRFLOW_ADJUSTED].Cells[i].Value = DataPoint.AdjustedAirflow.ToString("f3");
 
                 var cell = new DataGridViewCheckBoxCell
                 {
@@ -629,17 +434,17 @@ namespace Gen3MAF
 
                 //
                 // 
-                if (Current.HasUpdatedAirFlow)
+                if (DataPoint.HasUpdatedAirflow)
                 {
                     //
                     // If we had apdated flow data, color the cell red/or greeen depending if it is more or less than
                     //  the original airflow
                     //
-                    if (Current.AirFlow < Current.AirFlowAdjusted)
+                    if (DataPoint.Airflow < DataPoint.AdjustedAirflow)
                     {
                         AdjustedAirflow_dataGridView.Rows[3].Cells[i].Style.BackColor = Color.LightGreen;
                     }
-                    else if (Current.AirFlow > Current.AirFlowAdjusted)
+                    else if (DataPoint.Airflow > DataPoint.AdjustedAirflow)
                     {
                         AdjustedAirflow_dataGridView.Rows[3].Cells[i].Style.BackColor = Color.LightCoral;
                     }
@@ -766,10 +571,11 @@ namespace Gen3MAF
 
             for (int i = 0; i < m_mafFrequencyCount; i++)
             {
+                ReturnDataPoint DataPoint = m_AdjustObject.GetDataPointAtIndex(i);
 
                 if (m_BucketStyle == BucketStyleEnum.Single)
                 {
-                    Buckets_richTextBox.AppendText((m_mafDataPoints[i].Frequency - (m_MAFFrequencyStep / 2)).ToString());
+                    Buckets_richTextBox.AppendText((DataPoint.Frequency - (m_MAFFrequencyStep / 2)).ToString());
                     Buckets_richTextBox.AppendText(" ");
                     
                 }
@@ -779,10 +585,10 @@ namespace Gen3MAF
                     //  The second bucket starts at this frequency and goes the midpoint half way to the next frequency. The average point is half way in
                     //  the span of the bucket
                     //
-                    Buckets_richTextBox.AppendText((m_mafDataPoints[i].Frequency - (m_MAFFrequencyStep / 2)).ToString());
+                    Buckets_richTextBox.AppendText((DataPoint.Frequency - (m_MAFFrequencyStep / 2)).ToString());
                     Buckets_richTextBox.AppendText(" ");
 
-                    Buckets_richTextBox.AppendText((m_mafDataPoints[i].Frequency).ToString());
+                    Buckets_richTextBox.AppendText((DataPoint.Frequency).ToString());
                     Buckets_richTextBox.AppendText("  ");
                     
                 }
@@ -1056,13 +862,15 @@ namespace Gen3MAF
         {
             
 
-            double[] x = new double[m_mafDataPoints.Length];
-            double[] y = new double[m_mafDataPoints.Length];    
+            double[] x = new double[m_mafFrequencyCount];
+            double[] y = new double[m_mafFrequencyCount];    
 
-            for (int i = 0; i < m_mafDataPoints.Length; i++)
+            for (int i = 0; i < m_mafFrequencyCount; i++)
             {
-                x[i] = m_mafDataPoints[i].Frequency;
-                y[i] = m_mafDataPoints[i].AirFlowAdjusted - m_mafDataPoints[i].AirFlow;
+                ReturnDataPoint DataPoint = m_AdjustObject.GetDataPointAtIndex(i);
+
+                x[i] = DataPoint.Frequency;
+                y[i] = DataPoint.AdjustedAirflow - DataPoint.Airflow;
             }
 
             var plot = new PlotForm1(x, y);
