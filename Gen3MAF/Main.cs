@@ -32,14 +32,6 @@ namespace Gen3MAF
         adjust m_AdjustObject;
 
 
-        int m_MinMAFFrequency = 0;
-        int m_MaxMAFFrequency = 0;
-        int m_MAFFrequencyStep = 0;
-        BucketStyleEnum m_BucketStyle = BucketStyleEnum.Double;
-
-        uint m_BucketCount = 0;
-
-        int m_mafFrequencyCount = 0;
 
         ToolStripMenuItem _tuneCyclesMenu;
 
@@ -108,43 +100,20 @@ namespace Gen3MAF
         void InitializeFormForNewSession(SessionClass NewSession)
         {
 
+            ResetStateOfForm();
+
             m_SessionClass = NewSession;
 
-            m_MinMAFFrequency  = m_SessionClass.MinFrequency;
-            m_MaxMAFFrequency  = m_SessionClass.MaxFrequency;
-            m_MAFFrequencyStep = m_SessionClass.FrequencyStep;
-            m_BucketStyle      = m_SessionClass.BucketStyle;
+            m_AdjustObject = new adjust(m_SessionClass.MinFrequency, m_SessionClass.MaxFrequency, m_SessionClass.FrequencyStep, m_SessionClass.BucketStyle);
 
-            m_mafFrequencyCount = (m_MaxMAFFrequency - m_MinMAFFrequency) / m_MAFFrequencyStep + 1;
-
-
-            if (m_BucketStyle == BucketStyleEnum.Single)
-            {
-
-                m_BucketCount = (uint)m_mafFrequencyCount;
-            }
-            else if (m_BucketStyle == BucketStyleEnum.Double)
-            {
-
-                m_BucketCount = (uint)m_mafFrequencyCount * 2;
-            }
-            else
-            {
-                Debug.Assert(true, "unknown bucket type");
-
-                return;
-
-            }
-
-            m_AdjustObject = new adjust(m_MinMAFFrequency, m_MaxMAFFrequency, m_MAFFrequencyStep, m_BucketStyle);
-
+            return;
 
         }
 
         private void Process_button_Click(object sender, EventArgs e)
         {
             string[] mafAirflowStrings;
-            double[] mafAirflowValues = new double[m_mafFrequencyCount];
+            double[] mafAirflowValues = new double[m_AdjustObject.GetFrequencyCount()];
 
             //
             //  user enter airflow value in the text box, parse them and put them in an array of doubles
@@ -155,9 +124,9 @@ namespace Gen3MAF
                                                     new[] { ' ', '\t', ',', '\r', '\n' },
                                                     StringSplitOptions.RemoveEmptyEntries
                                                     );
-            if (mafAirflowStrings.Length != m_mafFrequencyCount)
+            if (mafAirflowStrings.Length != m_AdjustObject.GetFrequencyCount())
             {
-                MessageBox.Show($"Please enter {m_mafFrequencyCount} airflow values, separated by spaces, tabs, commas, or newlines.");
+                MessageBox.Show($"Please enter {m_AdjustObject.GetFrequencyCount()} airflow values, separated by spaces, tabs, commas, or newlines.");
                 return;
             }
 
@@ -166,7 +135,7 @@ namespace Gen3MAF
             //
             try
             {
-                for (uint i = 0; i < m_mafFrequencyCount; i++)
+                for (uint i = 0; i < m_AdjustObject.GetFrequencyCount(); i++)
                 {
                     mafAirflowValues[i] = double.Parse(mafAirflowStrings[i]);
                 }
@@ -204,11 +173,11 @@ namespace Gen3MAF
            
 
 
-            MAF_dataGridView.ColumnCount = (int)m_mafFrequencyCount;
+            MAF_dataGridView.ColumnCount = (int)m_AdjustObject.GetFrequencyCount();;
             MAF_dataGridView.RowCount = 2;
 
 
-            for (int i = 0; i < m_mafFrequencyCount; i++)
+            for (int i = 0; i < m_AdjustObject.GetFrequencyCount(); i++)
             {
                 ReturnDataPoint DataPoint;
 
@@ -251,9 +220,9 @@ namespace Gen3MAF
                 .Select(s => double.TryParse(s, out var v) ? v : double.NaN)
                 .ToArray();
 
-            if (AdjustmentData.Length != m_BucketCount)
+            if (AdjustmentData.Length != m_AdjustObject.GetBucketCount())
             {
-                MessageBox.Show($"Adjustment data count must match bucket count {AdjustmentData.Length} != {m_BucketCount}");
+                MessageBox.Show($"Adjustment data count must match bucket count {AdjustmentData.Length} != {m_AdjustObject.GetBucketCount()}");
                 return;
             }
 
@@ -379,13 +348,13 @@ namespace Gen3MAF
         private void ProcessAdjustmentData()
         {
             double AdjustmentPercent = AdjustmentPercent_trackBar.Value / 100.0f;
-            double[] AdjustedAirflowArray = new double[m_mafFrequencyCount ];
+            double[] AdjustedAirflowArray = new double[m_AdjustObject.GetFrequencyCount()];
 
             m_AdjustObject.ProcessAdjustmentData(AdjustmentPercent);
 
             // build array to send to tune cycle object
             //
-            for (int i = 0; i <  m_mafFrequencyCount; i++)
+            for (int i = 0; i <  m_AdjustObject.GetFrequencyCount(); i++)
             {
                 ReturnDataPoint DataPoint;
 
@@ -405,10 +374,10 @@ namespace Gen3MAF
 
         void UpdateAdjustedAirflowGrid()
         {
-            AdjustedAirflow_dataGridView.ColumnCount = (int)m_mafFrequencyCount;
+            AdjustedAirflow_dataGridView.ColumnCount = (int)m_AdjustObject.GetFrequencyCount();;
             AdjustedAirflow_dataGridView.RowCount = 5;
 
-            for (int i = 0; i < m_mafFrequencyCount; i++)
+            for (int i = 0; i < m_AdjustObject.GetFrequencyCount(); i++)
             {
                 ReturnDataPoint DataPoint = m_AdjustObject.GetDataPointAtIndex(i);
                 
@@ -497,7 +466,7 @@ namespace Gen3MAF
             //
             //  create a new tunecycle object'
             //
-            m_CurrentTuneCycle = m_SessionClass.CreateNewTuneCycle(m_mafFrequencyCount, (int)m_BucketCount);
+            m_CurrentTuneCycle = m_SessionClass.CreateNewTuneCycle(m_AdjustObject.GetFrequencyCount(), (int)m_AdjustObject.GetBucketCount());
 
 
 
@@ -513,9 +482,9 @@ namespace Gen3MAF
             {
                 if (PreviousTuneCycle.IsCompleted())
                 {
-                    double[] PreviousAirflow = new double[m_mafFrequencyCount];
+                    double[] PreviousAirflow = new double[m_AdjustObject.GetFrequencyCount()];
 
-                    for (int i = 0; i < m_mafFrequencyCount; i++)
+                    for (int i = 0; i < m_AdjustObject.GetFrequencyCount(); i++)
                     {
                         PreviousAirflow[i] = PreviousTuneCycle.GetAdjustedAirflowAtIndex(i);
                     }
@@ -544,9 +513,9 @@ namespace Gen3MAF
             m_CurrentTuneCycle = m_SessionClass.RemoveLastTuneCycle();
             m_CurrentTuneCycle.ChangePausedToAirflowPopulated();
 
-            double[] OriginalAirflow = new double[m_mafFrequencyCount];
+            double[] OriginalAirflow = new double[m_AdjustObject.GetFrequencyCount()];
 
-            for (int i = 0; i < m_mafFrequencyCount; i++)
+            for (int i = 0; i < m_AdjustObject.GetFrequencyCount(); i++)
             {
                 OriginalAirflow[i] = m_CurrentTuneCycle.GetAirflowAtIndex(i);
             }
@@ -569,23 +538,23 @@ namespace Gen3MAF
             Buckets_richTextBox.Clear();
 
 
-            for (int i = 0; i < m_mafFrequencyCount; i++)
+            for (int i = 0; i < m_AdjustObject.GetFrequencyCount(); i++)
             {
                 ReturnDataPoint DataPoint = m_AdjustObject.GetDataPointAtIndex(i);
 
-                if (m_BucketStyle == BucketStyleEnum.Single)
+                if (m_SessionClass.BucketStyle == BucketStyleEnum.Single)
                 {
-                    Buckets_richTextBox.AppendText((DataPoint.Frequency - (m_MAFFrequencyStep / 2)).ToString());
+                    Buckets_richTextBox.AppendText((DataPoint.Frequency - (m_SessionClass.FrequencyStep / 2)).ToString());
                     Buckets_richTextBox.AppendText(" ");
                     
                 }
-                else if (m_BucketStyle == BucketStyleEnum.Double)
+                else if (m_SessionClass.BucketStyle == BucketStyleEnum.Double)
                 {
                     //  for double buckets we create two buckets for each frequncy. The first bucket starts half the distance to the previous frequnce.
                     //  The second bucket starts at this frequency and goes the midpoint half way to the next frequency. The average point is half way in
                     //  the span of the bucket
                     //
-                    Buckets_richTextBox.AppendText((DataPoint.Frequency - (m_MAFFrequencyStep / 2)).ToString());
+                    Buckets_richTextBox.AppendText((DataPoint.Frequency - (m_SessionClass.FrequencyStep / 2)).ToString());
                     Buckets_richTextBox.AppendText(" ");
 
                     Buckets_richTextBox.AppendText((DataPoint.Frequency).ToString());
@@ -862,10 +831,10 @@ namespace Gen3MAF
         {
             
 
-            double[] x = new double[m_mafFrequencyCount];
-            double[] y = new double[m_mafFrequencyCount];    
+            double[] x = new double[m_AdjustObject.GetFrequencyCount()];
+            double[] y = new double[m_AdjustObject.GetFrequencyCount()];    
 
-            for (int i = 0; i < m_mafFrequencyCount; i++)
+            for (int i = 0; i < m_AdjustObject.GetFrequencyCount(); i++)
             {
                 ReturnDataPoint DataPoint = m_AdjustObject.GetDataPointAtIndex(i);
 
@@ -929,14 +898,14 @@ namespace Gen3MAF
             var BaseTuneCycle = m_SessionClass.GetTuneCycleAtIndex(0);
 
 
-            double[] freq = new double[m_mafFrequencyCount];
-            double[] baseAir = new double[m_mafFrequencyCount];
-            double[] oldAir = new double[m_mafFrequencyCount]; 
-            double[] newAir = new double[m_mafFrequencyCount]; 
+            double[] freq = new double[m_AdjustObject.GetFrequencyCount()];
+            double[] baseAir = new double[m_AdjustObject.GetFrequencyCount()];
+            double[] oldAir = new double[m_AdjustObject.GetFrequencyCount()]; 
+            double[] newAir = new double[m_AdjustObject.GetFrequencyCount()]; 
 
-            for (int i = 0; i < m_mafFrequencyCount; i++)
+            for (int i = 0; i < m_AdjustObject.GetFrequencyCount(); i++)
             {
-                freq[i]   = (double)(m_MinMAFFrequency + (i * m_MAFFrequencyStep));
+                freq[i]   = (double)(m_SessionClass.MinFrequency + (i * m_SessionClass.FrequencyStep));
 
                 baseAir[i] = BaseTuneCycle.GetAirflowAtIndex(i);
                 oldAir[i]  = tc.GetAirflowAtIndex(i);

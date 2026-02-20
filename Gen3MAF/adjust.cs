@@ -59,8 +59,8 @@ namespace Gen3MAF
         public adjust(int MinMAFFrequency, int MaxMAFFrequency, int MAFFrequencyStep, BucketStyleEnum BucketStyle)
         {
             m_MinMAFFrequency = MinMAFFrequency;
-            m_MaxMAFFrequency= MaxMAFFrequency;
-            m_MAFFrequencyStep= MAFFrequencyStep;
+            m_MaxMAFFrequency = MaxMAFFrequency;
+            m_MAFFrequencyStep = MAFFrequencyStep;
             m_BucketStyle = BucketStyle;
 
             m_mafFrequencyCount = (m_MaxMAFFrequency - m_MinMAFFrequency) / m_MAFFrequencyStep + 1;
@@ -105,9 +105,9 @@ namespace Gen3MAF
             if (m_BucketStyle == BucketStyleEnum.Double)
             {
                 //  for double bucket, we initialize the left and right airflow values base on the slope to the previous and next data points
-                for (int i = 0; i < (m_mafDataPoints.Length ); i++)
+                for (int i = 0; i < (m_mafDataPoints.Length); i++)
                 {
-                    
+
                     int Right = i + 1;
                     int Left = i - 1;
 
@@ -117,7 +117,7 @@ namespace Gen3MAF
                         double slopeRight = (m_mafDataPoints[Right].AirFlow - m_mafDataPoints[i].AirFlow)
                                          / (m_mafDataPoints[Right].Frequency - m_mafDataPoints[i].Frequency);
 #if DEBUG
-                        m_mafDataPoints[i].FrequencyRight= m_mafDataPoints[i].Frequency + (uint)(m_MAFFrequencyStep / 4);
+                        m_mafDataPoints[i].FrequencyRight = m_mafDataPoints[i].Frequency + (uint)(m_MAFFrequencyStep / 4);
 #endif
 
                         m_mafDataPoints[i].AirFlowRight = m_mafDataPoints[i].AirFlow + (slopeRight * (m_MAFFrequencyStep * 0.25f));
@@ -128,7 +128,7 @@ namespace Gen3MAF
                         double slopeLeft = (m_mafDataPoints[i].AirFlow - m_mafDataPoints[Left].AirFlow)
                                          / (m_mafDataPoints[i].Frequency - m_mafDataPoints[Left].Frequency);
 #if DEBUG
-                        m_mafDataPoints[i].FrequencyLeft = m_mafDataPoints[i].Frequency - (uint)(m_MAFFrequencyStep /4 );
+                        m_mafDataPoints[i].FrequencyLeft = m_mafDataPoints[i].Frequency - (uint)(m_MAFFrequencyStep / 4);
 #endif
                         m_mafDataPoints[i].AirFlowLeft = m_mafDataPoints[i].AirFlow - (slopeLeft * (m_MAFFrequencyStep * 0.25f));
                     }
@@ -177,7 +177,7 @@ namespace Gen3MAF
             int FirstUpdatedBucketIndex = -1;
             int LastUpdatedBucketIndex = -1;
 
-           
+
 
             // This method can be used to process the adjustment data if needed, such as applying additional transformations or validations before updating the adjusted airflow values.
             // For now, the processing is done directly in the button1_Click event handler, but this method can be called from there if we want to separate concerns and keep the event handler cleaner.
@@ -333,7 +333,7 @@ namespace Gen3MAF
             }
 
 
-            
+
             return;
         }
 
@@ -342,11 +342,21 @@ namespace Gen3MAF
             ReturnDataPoint ReturnValues;
 
             ReturnValues.Frequency = m_mafDataPoints[i].Frequency;
-            ReturnValues.Airflow   = m_mafDataPoints[i].AirFlow;
-            ReturnValues.AdjustedAirflow   = m_mafDataPoints[i].AirFlowAdjusted;
+            ReturnValues.Airflow = m_mafDataPoints[i].AirFlow;
+            ReturnValues.AdjustedAirflow = m_mafDataPoints[i].AirFlowAdjusted;
             ReturnValues.HasUpdatedAirflow = m_mafDataPoints[i].HasUpdatedAirFlow;
 
-            return ReturnValues;    
+            return ReturnValues;
+        }
+
+        public int GetFrequencyCount()
+        {
+            return m_mafDataPoints.Length;
+        }
+
+        public int GetBucketCount()
+        {
+            return (int)m_BucketCount;
         }
     }
 }
