@@ -360,8 +360,6 @@ namespace Gen3MAF
 
                 DataPoint = m_AdjustObject.GetDataPointAtIndex(i);
 
-                
-
                 AdjustedAirflowArray[i] = DataPoint.AdjustedAirflow;
             }
 
@@ -380,9 +378,7 @@ namespace Gen3MAF
             for (int i = 0; i < m_AdjustObject.GetFrequencyCount(); i++)
             {
                 ReturnDataPoint DataPoint = m_AdjustObject.GetDataPointAtIndex(i);
-                
-
-               
+             
 
                 double ChangeAmountPercent = ((DataPoint.AdjustedAirflow - DataPoint.Airflow) / DataPoint.Airflow) * 100;
 
@@ -444,8 +440,6 @@ namespace Gen3MAF
 
                     InitializeFormForNewSession(Session);
 
-                    
-
                     tuneToolStripMenuItem.Enabled = true;
 
                 }
@@ -467,8 +461,6 @@ namespace Gen3MAF
             //  create a new tunecycle object'
             //
             m_CurrentTuneCycle = m_SessionClass.CreateNewTuneCycle(m_AdjustObject.GetFrequencyCount(), (int)m_AdjustObject.GetBucketCount());
-
-
 
             //
             //  it there is a previos tune cycle, populate the maf data in the text box
@@ -670,9 +662,6 @@ namespace Gen3MAF
 
                     Session = SessionFileStore.Load(dlg.FileName);
                     m_CurrentFilePath = dlg.FileName;
-
-
-                    
 
                     InitializeFormForNewSession(Session);
 
