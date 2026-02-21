@@ -76,9 +76,7 @@ namespace Gen3MAF
 
         public double GetAirflowAtIndex(int Index)
         {
-            if ((m_State != TuneCycleStateEnum.InitialAirflowPopulated) 
-                && (m_State != TuneCycleStateEnum.AdjustmentAirflowPopulated) 
-                && (m_State != TuneCycleStateEnum.Completed))
+            if ((m_State < TuneCycleStateEnum.InitialAirflowPopulated))
             {
                 throw new InvalidOperationException("TuneCycle is not populated yet.");
             }
@@ -105,7 +103,7 @@ namespace Gen3MAF
 
         public double GetAdjustmentDataAtIndex(int Index)
         {
-            if ((m_State != TuneCycleStateEnum.AdjustmentAirflowPopulated))
+            if ((m_State < TuneCycleStateEnum.AdjustmentAirflowPopulated))
                 throw new InvalidOperationException("Adjustment Airflow is not populated yet.");
 
             if (Index < 0 || Index >= m_AdjustmentAirflowData.Length)
@@ -114,7 +112,7 @@ namespace Gen3MAF
             return m_AdjustmentAirflowData[Index];
         }
 
-        public void PopulatedAdjustedAirflow(double[] AdjustedAirflow)
+        public void PopulateAdjustedAirflow(double[] AdjustedAirflow)
         {
             if (AdjustedAirflow.Length != m_AdjustedAirflow.Length)
                 throw new ArgumentException("Airflow length does not match AdjustmentAirflow length.");

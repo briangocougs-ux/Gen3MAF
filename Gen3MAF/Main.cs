@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.Windows.Forms;
+using System.Windows.Forms.DataVisualization.Charting;
 using System.Windows.Forms.Design;
 using static Gen3MAF.Main;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
@@ -28,8 +29,8 @@ namespace Gen3MAF
 
         string m_CurrentFilePath = "";
 
-       
-        adjust m_AdjustObject;
+
+        AdjustClass m_AdjustObject;
 
 
 
@@ -63,8 +64,9 @@ namespace Gen3MAF
         {
 
 
-
-            AdjustmentPercent_label.Text = $"{AdjustmentPercent_trackBar.Value}%";
+            ResetStateOfForm();
+            
+            
         }
 
         private void UpdateTitle()
@@ -79,7 +81,7 @@ namespace Gen3MAF
 
         void ResetStateOfForm()
         {
-            
+
             Buckets_richTextBox.Clear();
             AirFlow_richTextBox.Clear();
             AdjustmentBuckets_richTextBox.Clear();
@@ -89,11 +91,15 @@ namespace Gen3MAF
             AdjustedAirflow_dataGridView.RowCount = 0;
             ProcessOriginalAirflow_button.Enabled = false;
             ApplyAdjustments.Enabled = false;
-            AdjustmentPercent_trackBar.Enabled = false;
+            
             Pause_button.Enabled = false;
             Plot_button.Enabled = false;
+            Discard_button.Enabled = false;
 
+            AdjustmentPercent_trackBar.Enabled = false;
             AdjustmentPercent_trackBar.Value = DEFAULT_ADJUSTMENT_PERCENT;
+            AdjustmentPercent_label.Text = $"{AdjustmentPercent_trackBar.Value}%";
+
             CompleteCycle_button.Enabled = false;
         }
 
@@ -104,7 +110,7 @@ namespace Gen3MAF
 
             m_SessionClass = NewSession;
 
-            m_AdjustObject = new adjust(m_SessionClass.MinFrequency, m_SessionClass.MaxFrequency, m_SessionClass.FrequencyStep, m_SessionClass.BucketStyle);
+            m_AdjustObject = new AdjustClass(m_SessionClass.MinFrequency, m_SessionClass.MaxFrequency, m_SessionClass.FrequencyStep, m_SessionClass.BucketStyle);
 
             return;
 
@@ -170,10 +176,10 @@ namespace Gen3MAF
             //  This allows us to have a structured representation of the airflow data for each frequency point, which can be used for adjustments and displaying in the data grid views.
             //
             m_AdjustObject.InitializeAirFlowFromTuneObject(m_CurrentTuneCycle);
-           
 
 
-            MAF_dataGridView.ColumnCount = (int)m_AdjustObject.GetFrequencyCount();;
+
+            MAF_dataGridView.ColumnCount = (int)m_AdjustObject.GetFrequencyCount(); ;
             MAF_dataGridView.RowCount = 2;
 
 
@@ -354,7 +360,7 @@ namespace Gen3MAF
 
             // build array to send to tune cycle object
             //
-            for (int i = 0; i <  m_AdjustObject.GetFrequencyCount(); i++)
+            for (int i = 0; i < m_AdjustObject.GetFrequencyCount(); i++)
             {
                 ReturnDataPoint DataPoint;
 
@@ -363,7 +369,7 @@ namespace Gen3MAF
                 AdjustedAirflowArray[i] = DataPoint.AdjustedAirflow;
             }
 
-            m_CurrentTuneCycle.PopulatedAdjustedAirflow(AdjustedAirflowArray);
+            m_CurrentTuneCycle.PopulateAdjustedAirflow(AdjustedAirflowArray);
 
             UpdateAdjustedAirflowGrid();
 
@@ -372,13 +378,13 @@ namespace Gen3MAF
 
         void UpdateAdjustedAirflowGrid()
         {
-            AdjustedAirflow_dataGridView.ColumnCount = (int)m_AdjustObject.GetFrequencyCount();;
+            AdjustedAirflow_dataGridView.ColumnCount = (int)m_AdjustObject.GetFrequencyCount(); ;
             AdjustedAirflow_dataGridView.RowCount = 5;
 
             for (int i = 0; i < m_AdjustObject.GetFrequencyCount(); i++)
             {
                 ReturnDataPoint DataPoint = m_AdjustObject.GetDataPointAtIndex(i);
-             
+
 
                 double ChangeAmountPercent = ((DataPoint.AdjustedAirflow - DataPoint.Airflow) / DataPoint.Airflow) * 100;
 
@@ -486,6 +492,7 @@ namespace Gen3MAF
             }
 
             ProcessOriginalAirflow_button.Enabled = true;
+            Discard_button.Enabled = true;  
 
             return;
         }
@@ -521,7 +528,7 @@ namespace Gen3MAF
         {
             //  This method can be used to initialize the form for a new tune cycle, such as clearing previous data, resetting controls, and preparing the form for user input.
             //  For now, the initialization is done directly in the newToolStripMenuItem_Click event handler, but this method can be called from there if we want to separate concerns and keep the event handler cleaner.
-            
+
 
             //
             // fill the text box for buckets so the user can paste them into the tuning app.
@@ -538,7 +545,7 @@ namespace Gen3MAF
                 {
                     Buckets_richTextBox.AppendText((DataPoint.Frequency - (m_SessionClass.FrequencyStep / 2)).ToString());
                     Buckets_richTextBox.AppendText(" ");
-                    
+
                 }
                 else if (m_SessionClass.BucketStyle == BucketStyleEnum.Double)
                 {
@@ -551,7 +558,7 @@ namespace Gen3MAF
 
                     Buckets_richTextBox.AppendText((DataPoint.Frequency).ToString());
                     Buckets_richTextBox.AppendText("  ");
-                    
+
                 }
                 else
                 {
@@ -585,6 +592,10 @@ namespace Gen3MAF
             m_CurrentTuneCycle.MarkAsCompleted(AdjustmentPercent_trackBar.Value, false);
 
             m_SessionClass.AddTuneCycle(m_CurrentTuneCycle);
+            plotAllToolStripMenuItem.Enabled = true;
+            RebuildTuneCyclesMenu();
+
+
             m_CurrentTuneCycle = null;
             ProcessOriginalAirflow_button.Enabled = false;
             ApplyAdjustments.Enabled = false;
@@ -606,6 +617,7 @@ namespace Gen3MAF
 
             m_CurrentTuneCycle.MarkAsPaused();
             m_SessionClass.AddTuneCycle(m_CurrentTuneCycle);
+         
 
             m_CurrentTuneCycle = null;
             ProcessOriginalAirflow_button.Enabled = false;
@@ -697,7 +709,15 @@ namespace Gen3MAF
                     //  enable the top level menu in any case
                     //
                     tuneToolStripMenuItem.Enabled = true;
-                    RebuildTuneCyclesMenu();
+                    if (m_SessionClass.HasCompletedTuneCycle())
+                    {
+                        RebuildTuneCyclesMenu();
+                        plotAllToolStripMenuItem.Enabled = true;
+                    }
+                    else
+                    {                         
+                        plotAllToolStripMenuItem.Enabled = false; 
+                    }
 
                 }
             }
@@ -818,10 +838,10 @@ namespace Gen3MAF
 
         private void Plot_button_Click(object sender, EventArgs e)
         {
-            
+
 
             double[] x = new double[m_AdjustObject.GetFrequencyCount()];
-            double[] y = new double[m_AdjustObject.GetFrequencyCount()];    
+            double[] y = new double[m_AdjustObject.GetFrequencyCount()];
 
             for (int i = 0; i < m_AdjustObject.GetFrequencyCount(); i++)
             {
@@ -832,7 +852,7 @@ namespace Gen3MAF
             }
 
             var plot = new PlotForm1(x, y);
-            
+
             plot.ShowDialog();
         }
 
@@ -850,7 +870,7 @@ namespace Gen3MAF
 
             _tuneCyclesMenu.DropDownItems.Clear();
 
-            if (m_SessionClass == null || m_SessionClass.GetTuneCycleCount()  == 0)
+            if (m_SessionClass == null || m_SessionClass.GetTuneCycleCount() == 0)
             {
                 _tuneCyclesMenu.DropDownItems.Add(new ToolStripMenuItem("(none)") { Enabled = false });
                 return;
@@ -862,9 +882,9 @@ namespace Gen3MAF
 
                 // Pick whatever label makes sense in your app
                 DateTime Utc = tc.GetTimeStamp();
-                DateTime Local = Utc.ToLocalTime(); 
+                DateTime Local = Utc.ToLocalTime();
 
-                string label = Local.ToString() ;
+                string label = Local.ToString();
 
                 var mi = new ToolStripMenuItem(label)
                 {
@@ -886,22 +906,100 @@ namespace Gen3MAF
 
             var BaseTuneCycle = m_SessionClass.GetTuneCycleAtIndex(0);
 
+            //  Create an AdjustClass instance to  to use to recompute the adjusted airflow values based on the original airflow and adjustment data stored in the selected tune cycle. This allows us to display the original, adjusted, and base airflow values for comparison in the plot.
+            //  
+            //
+            AdjustClass AdjustObject = new AdjustClass(m_SessionClass.MinFrequency, m_SessionClass.MaxFrequency, m_SessionClass.FrequencyStep, m_SessionClass.BucketStyle);
+
+            //
+            //  recompute the adjusted airflow values based on the original airflow and adjustment data stored in the selected tune cycle. This allows us to display the original, adjusted, and base airflow values for comparison in the plot.
+            //
+            AdjustObject.InitializeAirFlowFromTuneObject(tc);
+            AdjustObject.ReadAdjustmentDataFromTuneObject(tc);
+            AdjustObject.ProcessAdjustmentData(1.0);
+
 
             double[] freq = new double[m_AdjustObject.GetFrequencyCount()];
             double[] baseAir = new double[m_AdjustObject.GetFrequencyCount()];
-            double[] oldAir = new double[m_AdjustObject.GetFrequencyCount()]; 
-            double[] newAir = new double[m_AdjustObject.GetFrequencyCount()]; 
+            double[] oldAir = new double[m_AdjustObject.GetFrequencyCount()];
+            double[] newAir = new double[m_AdjustObject.GetFrequencyCount()];
 
             for (int i = 0; i < m_AdjustObject.GetFrequencyCount(); i++)
             {
-                freq[i]   = (double)(m_SessionClass.MinFrequency + (i * m_SessionClass.FrequencyStep));
+                ReturnDataPoint Point = AdjustObject.GetDataPointAtIndex(i);
+
+                freq[i] = (double)Point.Frequency;
 
                 baseAir[i] = BaseTuneCycle.GetAirflowAtIndex(i);
-                oldAir[i]  = tc.GetAirflowAtIndex(i);
-                newAir[i]  = tc.GetAdjustedAirflowAtIndex(i);
+                oldAir[i] = Point.Airflow;
+                newAir[i] = Point.AdjustedAirflow;
             }
 
             var f = new PlotForm1(freq, baseAir, oldAir, newAir, "TuneCycle");
+            f.Show(this);
+        }
+
+        private void plotAllToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            double[] freq = new double[m_AdjustObject.GetFrequencyCount()];
+            double[] baseAir = new double[m_AdjustObject.GetFrequencyCount()];
+            var adjusted = new List<double[]>();
+
+            string[] labels = new string[m_SessionClass.GetTuneCycleCount()];
+
+            //var BaseTuneCycle = m_SessionClass.GetTuneCycleAtIndex(0);
+
+            //  Create an AdjustClass instance to  to use to recompute the adjusted airflow values based on the original airflow and adjustment data stored in the selected tune cycle. This allows us to display the original, adjusted, and base airflow values for comparison in the plot.
+            //  
+            //
+
+            for (int i = 0; i < m_SessionClass.GetTuneCycleCount(); i++)
+            {
+                var tc = m_SessionClass.GetTuneCycleAtIndex(i);
+                labels[i] = tc.GetTimeStamp().ToLocalTime().ToString();
+
+                AdjustClass AdjustObject = new AdjustClass(m_SessionClass.MinFrequency, m_SessionClass.MaxFrequency, m_SessionClass.FrequencyStep, m_SessionClass.BucketStyle);
+
+                //
+                //  recompute the adjusted airflow values based on the original airflow and adjustment data stored in the selected tune cycle. This allows us to display the original, adjusted, and base airflow values for comparison in the plot.
+                // 
+                AdjustObject.InitializeAirFlowFromTuneObject(tc);
+                AdjustObject.ReadAdjustmentDataFromTuneObject(tc);
+                AdjustObject.ProcessAdjustmentData(1.0);
+
+                double[] newAir = new double[m_AdjustObject.GetFrequencyCount()];
+
+                for (int j = 0; j < m_AdjustObject.GetFrequencyCount(); j++)
+                {
+                    ReturnDataPoint Point = AdjustObject.GetDataPointAtIndex(j);
+
+                    if (i == 0)
+                    {
+                        //  capure the base airflow from index 0, we will get the frequency as well while we are here
+                        //
+                        freq[j] = (double)Point.Frequency;
+                        baseAir[j] = Point.Airflow;
+                    }
+
+                    newAir[j] = Point.AdjustedAirflow;
+                }
+
+                // add the adjusted airflow values for this tune cycle to the list of adjusted airflow arrays, which we will use to plot all the tune cycles together for comparison.
+                //
+                adjusted.Add(newAir);
+
+
+
+
+            }
+
+            var f = new PlotForm1(
+                freq,
+                baseAir,
+                adjusted,
+                labels
+                );
+
             f.Show(this);
         }
     }

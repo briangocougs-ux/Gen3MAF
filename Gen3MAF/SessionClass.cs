@@ -122,5 +122,16 @@ namespace Gen3MAF
 
             return m_TuneCycles[index];
         }
+
+        public bool HasCompletedTuneCycle()
+        {
+
+            if (m_TuneCycles.Count > 0)  
+            {
+                var lastTuneCycle = m_TuneCycles.Last();
+                return (lastTuneCycle.m_State == TuneCycleStateEnum.Completed);
+            }
+            return false;
+        }
     }
 }

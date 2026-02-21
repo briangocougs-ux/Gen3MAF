@@ -48,7 +48,7 @@
             series1.Legend = "Legend1";
             series1.Name = "Series1";
             chart1.Series.Add(series1);
-            chart1.Size = new Size(1163, 450);
+            chart1.Size = new Size(1163, 578);
             chart1.TabIndex = 0;
             chart1.Text = "chart1";
             chart1.Click += chart1_Click;
@@ -57,7 +57,7 @@
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(1163, 450);
+            ClientSize = new Size(1163, 578);
             Controls.Add(chart1);
             Name = "PlotForm1";
             Text = "PlotForm1";

@@ -55,6 +55,7 @@
             tuneToolStripMenuItem = new ToolStripMenuItem();
             NewTuneCycle_toolStripMenuItem = new ToolStripMenuItem();
             Continue_ToolStripMenuItem = new ToolStripMenuItem();
+            plotAllToolStripMenuItem = new ToolStripMenuItem();
             CurrentMafCurve_label = new Label();
             CompleteCycle_button = new Button();
             Discard_button = new Button();
@@ -222,7 +223,7 @@
             // menuStrip1
             // 
             menuStrip1.ImageScalingSize = new Size(20, 20);
-            menuStrip1.Items.AddRange(new ToolStripItem[] { session_ToolStripMenuItem, tuneToolStripMenuItem });
+            menuStrip1.Items.AddRange(new ToolStripItem[] { session_ToolStripMenuItem, tuneToolStripMenuItem, plotAllToolStripMenuItem });
             menuStrip1.Location = new Point(0, 0);
             menuStrip1.Name = "menuStrip1";
             menuStrip1.Size = new Size(1191, 28);
@@ -239,35 +240,35 @@
             // NewSession_ToolStripMenuItem
             // 
             NewSession_ToolStripMenuItem.Name = "NewSession_ToolStripMenuItem";
-            NewSession_ToolStripMenuItem.Size = new Size(224, 26);
+            NewSession_ToolStripMenuItem.Size = new Size(143, 26);
             NewSession_ToolStripMenuItem.Text = "&New";
             NewSession_ToolStripMenuItem.Click += create_ToolStripMenuItem_Click;
             // 
             // open_ToolStripMenuItem
             // 
             open_ToolStripMenuItem.Name = "open_ToolStripMenuItem";
-            open_ToolStripMenuItem.Size = new Size(224, 26);
+            open_ToolStripMenuItem.Size = new Size(143, 26);
             open_ToolStripMenuItem.Text = "&Open";
             open_ToolStripMenuItem.Click += open_ToolStripMenuItem_Click;
             // 
             // saveToolStripMenuItem
             // 
             saveToolStripMenuItem.Name = "saveToolStripMenuItem";
-            saveToolStripMenuItem.Size = new Size(224, 26);
+            saveToolStripMenuItem.Size = new Size(143, 26);
             saveToolStripMenuItem.Text = "&Save";
             saveToolStripMenuItem.Click += saveToolStripMenuItem_Click;
             // 
             // saveAsToolStripMenuItem
             // 
             saveAsToolStripMenuItem.Name = "saveAsToolStripMenuItem";
-            saveAsToolStripMenuItem.Size = new Size(224, 26);
+            saveAsToolStripMenuItem.Size = new Size(143, 26);
             saveAsToolStripMenuItem.Text = "Save &As";
             saveAsToolStripMenuItem.Click += saveAsToolStripMenuItem_Click;
             // 
             // closeToolStripMenuItem
             // 
             closeToolStripMenuItem.Name = "closeToolStripMenuItem";
-            closeToolStripMenuItem.Size = new Size(224, 26);
+            closeToolStripMenuItem.Size = new Size(143, 26);
             closeToolStripMenuItem.Text = "&Close";
             closeToolStripMenuItem.Click += closeToolStripMenuItem_Click;
             // 
@@ -282,16 +283,24 @@
             // NewTuneCycle_toolStripMenuItem
             // 
             NewTuneCycle_toolStripMenuItem.Name = "NewTuneCycle_toolStripMenuItem";
-            NewTuneCycle_toolStripMenuItem.Size = new Size(224, 26);
+            NewTuneCycle_toolStripMenuItem.Size = new Size(151, 26);
             NewTuneCycle_toolStripMenuItem.Text = "&New";
             NewTuneCycle_toolStripMenuItem.Click += newToolStripMenuItem_Click;
             // 
             // Continue_ToolStripMenuItem
             // 
             Continue_ToolStripMenuItem.Name = "Continue_ToolStripMenuItem";
-            Continue_ToolStripMenuItem.Size = new Size(224, 26);
+            Continue_ToolStripMenuItem.Size = new Size(151, 26);
             Continue_ToolStripMenuItem.Text = "Continue";
             Continue_ToolStripMenuItem.Click += Continue_ToolStripMenuItem_Click;
+            // 
+            // plotAllToolStripMenuItem
+            // 
+            plotAllToolStripMenuItem.Enabled = false;
+            plotAllToolStripMenuItem.Name = "plotAllToolStripMenuItem";
+            plotAllToolStripMenuItem.Size = new Size(71, 24);
+            plotAllToolStripMenuItem.Text = "Plot All";
+            plotAllToolStripMenuItem.Click += plotAllToolStripMenuItem_Click;
             // 
             // CurrentMafCurve_label
             // 
@@ -413,5 +422,6 @@
         private Button Pause_button;
         private ToolStripMenuItem closeToolStripMenuItem;
         private Button Plot_button;
+        private ToolStripMenuItem plotAllToolStripMenuItem;
     }
 }

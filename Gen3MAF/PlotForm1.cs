@@ -138,7 +138,7 @@ namespace Gen3MAF
 
             var (start, end) = FindNonZeroRange(baseAir, curAir);
 
-           // var area = chart1.ChartAreas[0];
+            // var area = chart1.ChartAreas[0];
 
             area.AxisX.Minimum = xFreq[start];
             area.AxisX.Maximum = xFreq[end];
@@ -147,7 +147,7 @@ namespace Gen3MAF
                 chart1.Legends.Add(new Legend());
 
             // Step: current vs previous
-            AddPercentSeries("% vs Prev", xFreq, prevAir, curAir, ChartDashStyle.Solid, borderWidth: 2);
+            AddPercentSeries("% vs Prev", xFreq, baseAir, prevAir, ChartDashStyle.Solid, borderWidth: 2);
 
             // Cumulative: current vs baseline (cycle 1)
             AddPercentSeries("% vs Base", xFreq, baseAir, curAir, ChartDashStyle.Dash, borderWidth: 2);
@@ -156,6 +156,29 @@ namespace Gen3MAF
             chart1.ResetAutoValues();
         }
 
+        public PlotForm1(
+            double[] freq,
+            double[] baseAir,
+            IReadOnlyList<double[]> adjustedAirSets,
+            IReadOnlyList<string>? seriesNames = null
+            )
+        {
+            InitializeComponent();
+            Text = $"% Change - Airflow Differnce percentage";
+
+            chart1.Series.Clear();
+
+            MafPlotter.PlotPercentDiffs(
+               chart1,
+               freq,
+               baseAir,
+               adjustedAirSets,
+               seriesNames,
+               true,
+               true
+               );
+            return;
+        }
         private void AddPercentSeries(string name, double[] x, double[] denom, double[] num,
                                   ChartDashStyle dash, int borderWidth)
         {
@@ -231,7 +254,7 @@ namespace Gen3MAF
             // find last non-zero
             for (int i = n - 1; i >= 0; i--)
             {
-                if (Math.Abs(baseAir[i] - curAir[i]) > .0001) 
+                if (Math.Abs(baseAir[i] - curAir[i]) > .0001)
                 {
                     end = i;
                     break;
@@ -239,8 +262,8 @@ namespace Gen3MAF
             }
 
             if (start > 0)
-            { 
-                start--; 
+            {
+                start--;
             }
 
             if (end + 1 < n)
@@ -252,6 +275,11 @@ namespace Gen3MAF
         }
 
         private void chart1_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void Plot_dataGridView_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
 
         }

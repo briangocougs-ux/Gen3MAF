@@ -41,7 +41,7 @@ namespace Gen3MAF
         public double AirFlowRightAdjusted;
     }
 
-    internal class adjust
+    internal class AdjustClass
     {
 
         MafDataPoint[] m_mafDataPoints = null;
@@ -56,7 +56,7 @@ namespace Gen3MAF
 
         int m_mafFrequencyCount = 0;
 
-        public adjust(int MinMAFFrequency, int MaxMAFFrequency, int MAFFrequencyStep, BucketStyleEnum BucketStyle)
+        public AdjustClass(int MinMAFFrequency, int MaxMAFFrequency, int MAFFrequencyStep, BucketStyleEnum BucketStyle)
         {
             m_MinMAFFrequency = MinMAFFrequency;
             m_MaxMAFFrequency = MaxMAFFrequency;
