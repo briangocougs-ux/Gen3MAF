@@ -51,6 +51,7 @@ namespace Gen3MAF
             MAF_dataGridView.ReadOnly = true;
             MAF_dataGridView.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells;
 
+
             AdjustedAirflow_dataGridView.RowHeadersVisible = false;
             AdjustedAirflow_dataGridView.ColumnHeadersVisible = false;
             AdjustedAirflow_dataGridView.AllowUserToAddRows = false;
@@ -65,8 +66,8 @@ namespace Gen3MAF
 
 
             ResetStateOfForm();
-            
-            
+
+
         }
 
         private void UpdateTitle()
@@ -85,13 +86,16 @@ namespace Gen3MAF
             Buckets_richTextBox.Clear();
             AirFlow_richTextBox.Clear();
             AdjustmentBuckets_richTextBox.Clear();
+
             MAF_dataGridView.ColumnCount = 0;
             MAF_dataGridView.RowCount = 0;
+
             AdjustedAirflow_dataGridView.ColumnCount = 0;
             AdjustedAirflow_dataGridView.RowCount = 0;
+
             ProcessOriginalAirflow_button.Enabled = false;
             ApplyAdjustments.Enabled = false;
-            
+
             Pause_button.Enabled = false;
             Plot_button.Enabled = false;
             Discard_button.Enabled = false;
@@ -392,7 +396,7 @@ namespace Gen3MAF
                 AdjustedAirflow_dataGridView.Rows[DATA_GRID_ROW_AIRFLOW].Cells[i].Value = DataPoint.Airflow.ToString("f3");
                 AdjustedAirflow_dataGridView.Rows[DATA_GRID_ROW_AIRFLOW_ADJUSTMENT].Cells[i].Value = ChangeAmountPercent.ToString("f2");
                 AdjustedAirflow_dataGridView.Rows[DATA_GRID_ROW_AIRFLOW_ADJUSTED].Cells[i].Value = DataPoint.AdjustedAirflow.ToString("f3");
-
+#if false
                 var cell = new DataGridViewCheckBoxCell
                 {
                     ThreeState = false,
@@ -401,7 +405,7 @@ namespace Gen3MAF
                 };
 
                 AdjustedAirflow_dataGridView.Rows[DATA_GRID_ROW_ENABLE].Cells[i] = cell;
-
+#endif
 
                 //
                 // 
@@ -492,7 +496,7 @@ namespace Gen3MAF
             }
 
             ProcessOriginalAirflow_button.Enabled = true;
-            Discard_button.Enabled = true;  
+            Discard_button.Enabled = true;
 
             return;
         }
@@ -617,7 +621,7 @@ namespace Gen3MAF
 
             m_CurrentTuneCycle.MarkAsPaused();
             m_SessionClass.AddTuneCycle(m_CurrentTuneCycle);
-         
+
 
             m_CurrentTuneCycle = null;
             ProcessOriginalAirflow_button.Enabled = false;
@@ -715,8 +719,8 @@ namespace Gen3MAF
                         plotAllToolStripMenuItem.Enabled = true;
                     }
                     else
-                    {                         
-                        plotAllToolStripMenuItem.Enabled = false; 
+                    {
+                        plotAllToolStripMenuItem.Enabled = false;
                     }
 
                 }
@@ -848,7 +852,7 @@ namespace Gen3MAF
                 ReturnDataPoint DataPoint = m_AdjustObject.GetDataPointAtIndex(i);
 
                 x[i] = DataPoint.Frequency;
-                y[i] = DataPoint.AdjustedAirflow - DataPoint.Airflow;
+                y[i] = ((DataPoint.AdjustedAirflow - DataPoint.Airflow) / DataPoint.Airflow) * 100.0;
             }
 
             var plot = new PlotForm1(x, y);
@@ -1001,6 +1005,49 @@ namespace Gen3MAF
                 );
 
             f.Show(this);
+        }
+
+        private void MAF_dataGridView_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+            MessageBox.Show("cell content click in maf datagrid");
+        }
+
+        private void MAF_dataGridView_CellClick(object sender, DataGridViewCellEventArgs e)
+        {
+            int col = e.ColumnIndex;
+            MessageBox.Show("cell click in maf datagrid");
+
+        }
+
+        private void MAF_dataGridView_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
+        {
+            int col = e.ColumnIndex;
+
+            MessageBox.Show("cell double click in maf datagrid");
+            DataPointForm form = new DataPointForm(m_AdjustObject.GetFullDataPointAtIndex(col));
+
+            form.ShowDialog(this);
+        }
+
+        private void MAF_dataGridView_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            MessageBox.Show("mouse double click in maf datagrid");
+        }
+
+        private void MAF_dataGridView_MouseClick(object sender, MouseEventArgs e)
+        {
+            var hit = MAF_dataGridView.HitTest(e.X, e.Y);
+            MessageBox.Show($"Hit: {hit.Type}, r={hit.RowIndex}, c={hit.ColumnIndex}");
+        }
+
+        private void AdjustedAirflow_dataGridView_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
+        {
+            int col = e.ColumnIndex;
+
+            
+            DataPointForm form = new DataPointForm(m_AdjustObject.GetFullDataPointAtIndex(col));
+
+            form.ShowDialog(this);
         }
     }
 

@@ -26,16 +26,18 @@ namespace Gen3MAF
         public double AirFlow;
         public double AirFlowAdjustment;
         public double AirFlowAdjusted;
-#if DEBUG
+
         public uint FrequencyLeft;
-#endif
+
+        public double SlopeLeft;
         public double AirFlowLeft;
         public double AirFlowLeftAdjustment;
         public double AirFlowLeftAdjusted;
 
-#if DEBUG
+
         public uint FrequencyRight;
-#endif
+
+        public double SlopeRight;
         public double AirFlowRight;
         public double AirFlowRightAdjustment;
         public double AirFlowRightAdjusted;
@@ -114,22 +116,26 @@ namespace Gen3MAF
                     if (Right < m_mafFrequencyCount)
                     {
 
-                        double slopeRight = (m_mafDataPoints[Right].AirFlow - m_mafDataPoints[i].AirFlow)
+                        double slopeRight = (m_mafDataPoints[Right].AirFlow  - m_mafDataPoints[i].AirFlow)
                                          / (m_mafDataPoints[Right].Frequency - m_mafDataPoints[i].Frequency);
-#if DEBUG
+
+                        m_mafDataPoints[i].SlopeRight = slopeRight;
+
                         m_mafDataPoints[i].FrequencyRight = m_mafDataPoints[i].Frequency + (uint)(m_MAFFrequencyStep / 4);
-#endif
+
 
                         m_mafDataPoints[i].AirFlowRight = m_mafDataPoints[i].AirFlow + (slopeRight * (m_MAFFrequencyStep * 0.25f));
                     }
 
                     if (Left >= 0)
                     {
-                        double slopeLeft = (m_mafDataPoints[i].AirFlow - m_mafDataPoints[Left].AirFlow)
+                        double slopeLeft = (m_mafDataPoints[i].AirFlow   - m_mafDataPoints[Left].AirFlow)
                                          / (m_mafDataPoints[i].Frequency - m_mafDataPoints[Left].Frequency);
-#if DEBUG
+
+                        m_mafDataPoints[i].SlopeLeft = slopeLeft;
+
                         m_mafDataPoints[i].FrequencyLeft = m_mafDataPoints[i].Frequency - (uint)(m_MAFFrequencyStep / 4);
-#endif
+
                         m_mafDataPoints[i].AirFlowLeft = m_mafDataPoints[i].AirFlow - (slopeLeft * (m_MAFFrequencyStep * 0.25f));
                     }
                 }
@@ -357,6 +363,11 @@ namespace Gen3MAF
         public int GetBucketCount()
         {
             return (int)m_BucketCount;
+        }
+
+        public MafDataPoint GetFullDataPointAtIndex(int i)
+        {
+            return m_mafDataPoints[i];
         }
     }
 }

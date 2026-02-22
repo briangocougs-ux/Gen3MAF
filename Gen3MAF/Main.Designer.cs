@@ -115,13 +115,21 @@
             // 
             // MAF_dataGridView
             // 
+            MAF_dataGridView.AllowUserToAddRows = false;
+            MAF_dataGridView.AllowUserToDeleteRows = false;
             MAF_dataGridView.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             MAF_dataGridView.Location = new Point(71, 280);
+            MAF_dataGridView.MultiSelect = false;
             MAF_dataGridView.Name = "MAF_dataGridView";
             MAF_dataGridView.ReadOnly = true;
             MAF_dataGridView.RowHeadersWidth = 51;
             MAF_dataGridView.Size = new Size(1065, 88);
             MAF_dataGridView.TabIndex = 3;
+            MAF_dataGridView.CellContentClick += MAF_dataGridView_CellDoubleClick;
+            MAF_dataGridView.CellContentDoubleClick += MAF_dataGridView_CellDoubleClick;
+            MAF_dataGridView.CellDoubleClick += MAF_dataGridView_CellDoubleClick;
+            MAF_dataGridView.MouseClick += MAF_dataGridView_MouseClick;
+            MAF_dataGridView.MouseDoubleClick += MAF_dataGridView_MouseDoubleClick;
             // 
             // Buckets_richTextBox
             // 
@@ -209,6 +217,7 @@
             AdjustedAirflow_dataGridView.Size = new Size(1057, 169);
             AdjustedAirflow_dataGridView.TabIndex = 14;
             AdjustedAirflow_dataGridView.CellContentClick += AdjustedAirflow_dataGridView_CellContentClick;
+            AdjustedAirflow_dataGridView.CellDoubleClick += AdjustedAirflow_dataGridView_CellDoubleClick;
             AdjustedAirflow_dataGridView.KeyDown += AdjustedAirflow_dataGridView_KeyDown;
             // 
             // Airflow_label

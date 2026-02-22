@@ -22,7 +22,16 @@ namespace Gen3MAF
         {
             InitializeComponent();
 
+            int start = 0;
+            int end = x.Length-1;
+
             chart1.Series.Clear();
+
+            var area = chart1.ChartAreas[0];
+            area.AxisX.Title = "Frequency (Hz)";
+            area.AxisY.Title = "Airflow";
+            area.AxisX.MajorGrid.Enabled = true;
+            area.AxisY.MajorGrid.Enabled = true;
 
             var series = new Series("Data")
             {
@@ -32,11 +41,46 @@ namespace Gen3MAF
                 BorderWidth = 2
             };
 
+         
+            series.MarkerStyle = MarkerStyle.Circle;
+            series.MarkerSize = 6;
+            series.MarkerBorderWidth = 1;
+            series.ToolTip = "Hz: #VALX\n%: #VAL";
+
             int n = Math.Min(x.Length, y.Length);
             for (int i = 0; i < n; i++)
             {
                 series.Points.AddXY(x[i], y[i]);
+               
+
+                if (Math.Abs(y[i]) > 0.001)
+                {
+                    if (start == 0)
+                    {
+                        start = i;
+
+                    }
+                    end = i;
+                }
             }
+
+            if (start > 1)
+            {
+                start--;
+            }   
+             
+            if (end < n-1)
+            {
+                end++;
+            }   
+
+
+
+            double xMin = x[start];
+            double xMax = x[end];
+
+            area.AxisX.Minimum = xMin;
+            area.AxisX.Maximum = xMax;
 
             chart1.Series.Add(series);
         }
