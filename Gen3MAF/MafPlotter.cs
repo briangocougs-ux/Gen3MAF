@@ -90,8 +90,11 @@ namespace Gen3MAF
                     }
                     else
                     {
+#if false
                         y = 100.0 * (adj[i] / b - 1.0);
-
+#else
+                        y = adj[i] - b;
+#endif
                         if (Math.Abs(y) > .01)
                         {
                             NonZeroIndex[i] = 1;
