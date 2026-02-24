@@ -547,6 +547,7 @@ namespace Gen3MAF
 
                 if (m_SessionClass.BucketStyle == BucketStyleEnum.Single)
                 {
+                    
                     Buckets_richTextBox.AppendText((DataPoint.Frequency - (m_SessionClass.FrequencyStep / 2)).ToString());
                     Buckets_richTextBox.AppendText(" ");
 
@@ -561,6 +562,24 @@ namespace Gen3MAF
                     Buckets_richTextBox.AppendText(" ");
 
                     Buckets_richTextBox.AppendText((DataPoint.Frequency).ToString());
+                    Buckets_richTextBox.AppendText("  ");
+
+                }
+                else if (m_SessionClass.BucketStyle == BucketStyleEnum.Triple)
+                {
+                    double Step = m_SessionClass.FrequencyStep;
+                    double StartPoint= DataPoint.Frequency - (Step / 2.0);    
+
+                    Buckets_richTextBox.AppendText(StartPoint.ToString("f0"));
+                    Buckets_richTextBox.AppendText(" ");
+                    StartPoint += Step / 3.0;
+
+
+                    Buckets_richTextBox.AppendText(StartPoint.ToString("f0"));
+                    Buckets_richTextBox.AppendText(" ");
+                    StartPoint += Step / 3.0;
+
+                    Buckets_richTextBox.AppendText(StartPoint.ToString("f0"));
                     Buckets_richTextBox.AppendText("  ");
 
                 }

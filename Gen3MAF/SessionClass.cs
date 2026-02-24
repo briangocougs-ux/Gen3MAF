@@ -10,9 +10,14 @@ namespace Gen3MAF
 {
     public enum BucketStyleEnum
     {
+        None = 0,
         Single = 1,
-        Double = 2
+        Double = 2,
+        Triple = 3,
+
     }
+
+   
     internal class SessionClass
     {
         public uint m_SchemaVersion = 1;

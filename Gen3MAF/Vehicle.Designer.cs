@@ -180,7 +180,7 @@
             // 
             BucketStyle_comboBox.DropDownStyle = ComboBoxStyle.DropDownList;
             BucketStyle_comboBox.FormattingEnabled = true;
-            BucketStyle_comboBox.Items.AddRange(new object[] { "Double", "Single" });
+            BucketStyle_comboBox.Items.AddRange(new object[] { "Triple", "Double", "Single" });
             BucketStyle_comboBox.Location = new Point(42, 301);
             BucketStyle_comboBox.Name = "BucketStyle_comboBox";
             BucketStyle_comboBox.Size = new Size(151, 28);

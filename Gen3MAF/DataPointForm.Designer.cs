@@ -43,12 +43,19 @@
             OK_button = new Button();
             SlopeLeft_label = new Label();
             SlopeRight_label = new Label();
+            LeftBucket_label = new Label();
+            CenterBucket_label = new Label();
+            RightBucket_label = new Label();
+            IntermediateAdjustedAirflow_label = new Label();
+            LeftBucketEnd_label = new Label();
+            RightBucketEnd_label = new Label();
+            CenterBucketEnd_label = new Label();
             SuspendLayout();
             // 
             // Frequency_label
             // 
             Frequency_label.AutoSize = true;
-            Frequency_label.Location = new Point(218, 33);
+            Frequency_label.Location = new Point(218, 9);
             Frequency_label.Name = "Frequency_label";
             Frequency_label.Size = new Size(49, 20);
             Frequency_label.TabIndex = 0;
@@ -57,7 +64,7 @@
             // LeftFrequncy_label
             // 
             LeftFrequncy_label.AutoSize = true;
-            LeftFrequncy_label.Location = new Point(121, 73);
+            LeftFrequncy_label.Location = new Point(121, 61);
             LeftFrequncy_label.Name = "LeftFrequncy_label";
             LeftFrequncy_label.Size = new Size(49, 20);
             LeftFrequncy_label.TabIndex = 1;
@@ -66,7 +73,7 @@
             // RightFrequency_label
             // 
             RightFrequency_label.AutoSize = true;
-            RightFrequency_label.Location = new Point(316, 73);
+            RightFrequency_label.Location = new Point(316, 61);
             RightFrequency_label.Name = "RightFrequency_label";
             RightFrequency_label.Size = new Size(49, 20);
             RightFrequency_label.TabIndex = 2;
@@ -182,11 +189,81 @@
             SlopeRight_label.TabIndex = 14;
             SlopeRight_label.Text = ".35";
             // 
+            // LeftBucket_label
+            // 
+            LeftBucket_label.AutoSize = true;
+            LeftBucket_label.Location = new Point(64, 86);
+            LeftBucket_label.Name = "LeftBucket_label";
+            LeftBucket_label.Size = new Size(23, 20);
+            LeftBucket_label.TabIndex = 15;
+            LeftBucket_label.Text = "-1";
+            // 
+            // CenterBucket_label
+            // 
+            CenterBucket_label.AutoSize = true;
+            CenterBucket_label.Location = new Point(189, 35);
+            CenterBucket_label.Name = "CenterBucket_label";
+            CenterBucket_label.Size = new Size(23, 20);
+            CenterBucket_label.TabIndex = 16;
+            CenterBucket_label.Text = "-1";
+            // 
+            // RightBucket_label
+            // 
+            RightBucket_label.AutoSize = true;
+            RightBucket_label.Location = new Point(260, 86);
+            RightBucket_label.Name = "RightBucket_label";
+            RightBucket_label.Size = new Size(23, 20);
+            RightBucket_label.TabIndex = 17;
+            RightBucket_label.Text = "-1";
+            // 
+            // IntermediateAdjustedAirflow_label
+            // 
+            IntermediateAdjustedAirflow_label.AutoSize = true;
+            IntermediateAdjustedAirflow_label.Location = new Point(218, 209);
+            IntermediateAdjustedAirflow_label.Name = "IntermediateAdjustedAirflow_label";
+            IntermediateAdjustedAirflow_label.Size = new Size(33, 20);
+            IntermediateAdjustedAirflow_label.TabIndex = 18;
+            IntermediateAdjustedAirflow_label.Text = "990";
+            // 
+            // LeftBucketEnd_label
+            // 
+            LeftBucketEnd_label.AutoSize = true;
+            LeftBucketEnd_label.Location = new Point(174, 82);
+            LeftBucketEnd_label.Name = "LeftBucketEnd_label";
+            LeftBucketEnd_label.Size = new Size(23, 20);
+            LeftBucketEnd_label.TabIndex = 19;
+            LeftBucketEnd_label.Text = "-2";
+            // 
+            // RightBucketEnd_label
+            // 
+            RightBucketEnd_label.AutoSize = true;
+            RightBucketEnd_label.Location = new Point(374, 86);
+            RightBucketEnd_label.Name = "RightBucketEnd_label";
+            RightBucketEnd_label.Size = new Size(23, 20);
+            RightBucketEnd_label.TabIndex = 20;
+            RightBucketEnd_label.Text = "-2";
+            // 
+            // CenterBucketEnd_label
+            // 
+            CenterBucketEnd_label.AutoSize = true;
+            CenterBucketEnd_label.Location = new Point(297, 35);
+            CenterBucketEnd_label.Name = "CenterBucketEnd_label";
+            CenterBucketEnd_label.Size = new Size(23, 20);
+            CenterBucketEnd_label.TabIndex = 21;
+            CenterBucketEnd_label.Text = "-2";
+            // 
             // DataPointForm
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(486, 419);
+            Controls.Add(CenterBucketEnd_label);
+            Controls.Add(RightBucketEnd_label);
+            Controls.Add(LeftBucketEnd_label);
+            Controls.Add(IntermediateAdjustedAirflow_label);
+            Controls.Add(RightBucket_label);
+            Controls.Add(CenterBucket_label);
+            Controls.Add(LeftBucket_label);
             Controls.Add(SlopeRight_label);
             Controls.Add(SlopeLeft_label);
             Controls.Add(OK_button);
@@ -226,5 +303,12 @@
         private Button OK_button;
         private Label SlopeLeft_label;
         private Label SlopeRight_label;
+        private Label LeftBucket_label;
+        private Label CenterBucket_label;
+        private Label RightBucket_label;
+        private Label IntermediateAdjustedAirflow_label;
+        private Label LeftBucketEnd_label;
+        private Label RightBucketEnd_label;
+        private Label CenterBucketEnd_label;
     }
 }
