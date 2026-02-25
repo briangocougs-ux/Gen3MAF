@@ -19,6 +19,7 @@ namespace Gen3MAF
         public const int DATA_GRID_ROW_AIRFLOW_ADJUSTED = 3;
         public const int DATA_GRID_ROW_ENABLE = 4;
         public const int DEFAULT_ADJUSTMENT_PERCENT = 100;
+        public const double DEFAULT_THRESHOLD_VALUE = 0.10;
 
 
 
@@ -32,7 +33,7 @@ namespace Gen3MAF
 
         AdjustClass m_AdjustObject;
 
-
+        double m_AdjustThreshold = DEFAULT_THRESHOLD_VALUE;
 
         ToolStripMenuItem _tuneCyclesMenu;
 
@@ -103,6 +104,13 @@ namespace Gen3MAF
             AdjustmentPercent_trackBar.Enabled = false;
             AdjustmentPercent_trackBar.Value = DEFAULT_ADJUSTMENT_PERCENT;
             AdjustmentPercent_label.Text = $"{AdjustmentPercent_trackBar.Value}%";
+
+            m_AdjustThreshold = DEFAULT_THRESHOLD_VALUE;
+            AdjustmentThreshold_trackBar.Enabled = false;
+            AdjustmentThreshold_trackBar.Value = (int)(m_AdjustThreshold * 10);
+            ThresholdValue_label.Text = $"{AdjustmentThreshold_trackBar.Value}%";
+
+
 
             CompleteCycle_button.Enabled = false;
         }
@@ -268,6 +276,7 @@ namespace Gen3MAF
             //  enable the adjustment percent track bar and the complete cycle button, as we now have the necessary data to apply adjustments and complete the tuning cycle.
             //
             AdjustmentPercent_trackBar.Enabled = true;
+            AdjustmentThreshold_trackBar.Enabled = true;
             CompleteCycle_button.Enabled = true;
             Plot_button.Enabled = true;
 
@@ -360,7 +369,7 @@ namespace Gen3MAF
             double AdjustmentPercent = AdjustmentPercent_trackBar.Value / 100.0f;
             double[] AdjustedAirflowArray = new double[m_AdjustObject.GetFrequencyCount()];
 
-            m_AdjustObject.ProcessAdjustmentData(AdjustmentPercent);
+            m_AdjustObject.ProcessAdjustmentData(AdjustmentPercent,m_AdjustThreshold);
 
             // build array to send to tune cycle object
             //
@@ -547,7 +556,7 @@ namespace Gen3MAF
 
                 if (m_SessionClass.BucketStyle == BucketStyleEnum.Single)
                 {
-                    
+
                     Buckets_richTextBox.AppendText((DataPoint.Frequency - (m_SessionClass.FrequencyStep / 2)).ToString());
                     Buckets_richTextBox.AppendText(" ");
 
@@ -568,7 +577,7 @@ namespace Gen3MAF
                 else if (m_SessionClass.BucketStyle == BucketStyleEnum.Triple)
                 {
                     double Step = m_SessionClass.FrequencyStep;
-                    double StartPoint= DataPoint.Frequency - (Step / 2.0);    
+                    double StartPoint = DataPoint.Frequency - (Step / 2.0);
 
                     Buckets_richTextBox.AppendText(StartPoint.ToString("f0"));
                     Buckets_richTextBox.AppendText(" ");
@@ -939,7 +948,7 @@ namespace Gen3MAF
             //
             AdjustObject.InitializeAirFlowFromTuneObject(tc);
             AdjustObject.ReadAdjustmentDataFromTuneObject(tc);
-            AdjustObject.ProcessAdjustmentData(1.0);
+            AdjustObject.ProcessAdjustmentData(1.0, m_AdjustThreshold);
 
 
             double[] freq = new double[m_AdjustObject.GetFrequencyCount()];
@@ -988,7 +997,7 @@ namespace Gen3MAF
                 // 
                 AdjustObject.InitializeAirFlowFromTuneObject(tc);
                 AdjustObject.ReadAdjustmentDataFromTuneObject(tc);
-                AdjustObject.ProcessAdjustmentData(1.0);
+                AdjustObject.ProcessAdjustmentData(1.0, m_AdjustThreshold   );
 
                 double[] newAir = new double[m_AdjustObject.GetFrequencyCount()];
 
@@ -1063,10 +1072,18 @@ namespace Gen3MAF
         {
             int col = e.ColumnIndex;
 
-            
+
             DataPointForm form = new DataPointForm(m_AdjustObject.GetFullDataPointAtIndex(col));
 
             form.ShowDialog(this);
+        }
+
+        private void AdjustmentThreshold_trackBar_Scroll(object sender, EventArgs e)
+        {
+            m_AdjustThreshold = ((double)AdjustmentThreshold_trackBar.Value / 10.0);
+            ThresholdValue_label.Text = m_AdjustThreshold.ToString("f1") + "%";
+
+            ProcessAdjustmentData();
         }
     }
 

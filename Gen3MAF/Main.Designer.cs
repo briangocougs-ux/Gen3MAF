@@ -61,11 +61,16 @@
             Discard_button = new Button();
             Pause_button = new Button();
             Plot_button = new Button();
+            AdjustmentThreshold_trackBar = new TrackBar();
+            ThresholdValue_label = new Label();
+            AdjustText_label = new Label();
+            ThresholdText_label = new Label();
             contextMenuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)MAF_dataGridView).BeginInit();
             ((System.ComponentModel.ISupportInitialize)AdjustmentPercent_trackBar).BeginInit();
             ((System.ComponentModel.ISupportInitialize)AdjustedAirflow_dataGridView).BeginInit();
             menuStrip1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)AdjustmentThreshold_trackBar).BeginInit();
             SuspendLayout();
             // 
             // contextMenuStrip1
@@ -200,7 +205,7 @@
             // AdjustmentPercent_label
             // 
             AdjustmentPercent_label.AutoSize = true;
-            AdjustmentPercent_label.Location = new Point(448, 575);
+            AdjustmentPercent_label.Location = new Point(438, 575);
             AdjustmentPercent_label.Name = "AdjustmentPercent_label";
             AdjustmentPercent_label.Size = new Size(25, 20);
             AdjustmentPercent_label.TabIndex = 13;
@@ -362,11 +367,53 @@
             Plot_button.UseVisualStyleBackColor = true;
             Plot_button.Click += Plot_button_Click;
             // 
+            // AdjustmentThreshold_trackBar
+            // 
+            AdjustmentThreshold_trackBar.Location = new Point(572, 571);
+            AdjustmentThreshold_trackBar.Maximum = 30;
+            AdjustmentThreshold_trackBar.Minimum = 1;
+            AdjustmentThreshold_trackBar.Name = "AdjustmentThreshold_trackBar";
+            AdjustmentThreshold_trackBar.Size = new Size(130, 56);
+            AdjustmentThreshold_trackBar.TabIndex = 30;
+            AdjustmentThreshold_trackBar.Value = 1;
+            AdjustmentThreshold_trackBar.Scroll += AdjustmentThreshold_trackBar_Scroll;
+            // 
+            // ThresholdValue_label
+            // 
+            ThresholdValue_label.AutoSize = true;
+            ThresholdValue_label.Location = new Point(708, 575);
+            ThresholdValue_label.Name = "ThresholdValue_label";
+            ThresholdValue_label.Size = new Size(69, 20);
+            ThresholdValue_label.TabIndex = 31;
+            ThresholdValue_label.Text = "label32.0";
+            // 
+            // AdjustText_label
+            // 
+            AdjustText_label.AutoSize = true;
+            AdjustText_label.Location = new Point(301, 543);
+            AdjustText_label.Name = "AdjustText_label";
+            AdjustText_label.Size = new Size(121, 20);
+            AdjustText_label.TabIndex = 32;
+            AdjustText_label.Text = "Correction factor";
+            // 
+            // ThresholdText_label
+            // 
+            ThresholdText_label.AutoSize = true;
+            ThresholdText_label.Location = new Point(605, 543);
+            ThresholdText_label.Name = "ThresholdText_label";
+            ThresholdText_label.Size = new Size(147, 20);
+            ThresholdText_label.TabIndex = 33;
+            ThresholdText_label.Text = "Correction Threshold";
+            // 
             // Main
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1191, 888);
+            Controls.Add(ThresholdText_label);
+            Controls.Add(AdjustText_label);
+            Controls.Add(ThresholdValue_label);
+            Controls.Add(AdjustmentThreshold_trackBar);
             Controls.Add(Plot_button);
             Controls.Add(Pause_button);
             Controls.Add(Discard_button);
@@ -396,6 +443,7 @@
             ((System.ComponentModel.ISupportInitialize)AdjustedAirflow_dataGridView).EndInit();
             menuStrip1.ResumeLayout(false);
             menuStrip1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)AdjustmentThreshold_trackBar).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -432,5 +480,9 @@
         private ToolStripMenuItem closeToolStripMenuItem;
         private Button Plot_button;
         private ToolStripMenuItem plotAllToolStripMenuItem;
+        private TrackBar AdjustmentThreshold_trackBar;
+        private Label ThresholdValue_label;
+        private Label AdjustText_label;
+        private Label ThresholdText_label;
     }
 }

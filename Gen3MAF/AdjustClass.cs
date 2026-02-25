@@ -33,23 +33,23 @@ namespace Gen3MAF
     {
         public uint Frequency;
         public double AirFlow;
-        public double LeftAirFlow; // this is used for calculating the slope of the airflow values, which is used to determine the left and right bucket airflow values for the double and triple bucket styles. This field is used to store the original airflow value for the previous data point, which is needed to calculate the slope of the airflow values between the current data point and the previous data point. This slope is then used to calculate the left and right bucket airflow values for the double and triple bucket styles, based on the distance from the target frequency.    
+        public double Bias;
+        public double LeftRightAverageAirflowAdjusted;
+        public bool BelowThreshold;
+
+        public uint LeftFrequency;
+        public uint RightFrequency;
+        public double LeftAirFlow;  // this is used for calculating the slope of the airflow values, which is used to determine the left and right bucket airflow values for the double and triple bucket styles. This field is used to store the original airflow value for the previous data point, which is needed to calculate the slope of the airflow values between the current data point and the previous data point. This slope is then used to calculate the left and right bucket airflow values for the double and triple bucket styles, based on the distance from the target frequency.    
         public double RightAirFlow; // this is used for calculating the slope of the airflow values, which is used to determine the left and right bucket airflow values for the double and triple bucket styles. This field is used to store the original airflow value for the next data point, which is needed to calculate the slope of the airflow values between the current data point and the next data point. This slope is then used to calculate the left and right bucket airflow values for the double and triple bucket styles, based on the distance from the target frequency.   
         public double LeftAirFlowSlope;
         public double RightAirFlowSlope;
 
         public AdjustmentDataPoint[] DataPoints;
 
-
         public bool HasUpdatedAirFlow;
 
-  
         public double AirFlowAdjusted;
 
-  
-
-
-  
     }
 
     internal class AdjustClass
@@ -90,7 +90,7 @@ namespace Gen3MAF
             }
             else
             {
-                Debug.Assert(true, "unknown bucket type");
+                Debug.Assert(false, "unknown bucket type");
 
                 return;
             }
@@ -127,19 +127,21 @@ namespace Gen3MAF
                 {
                     double AirflowDelta = 0;
                     double FrequencyDelta = 0;
-                    int LeftFrequeny = (int)m_mafDataPoints[i - 1].Frequency;
+                    int LeftFrequency = (int)m_mafDataPoints[i - 1].Frequency;
                     int CurrentFrequency = (int)m_mafDataPoints[i].Frequency;
 
+                    m_mafDataPoints[i].LeftFrequency = (uint)LeftFrequency;
                     m_mafDataPoints[i].LeftAirFlow = m_mafDataPoints[i-1].AirFlow;
 
                     AirflowDelta = (m_mafDataPoints[i - 1].AirFlow - m_mafDataPoints[i].AirFlow);
-                    FrequencyDelta = (double)(LeftFrequeny) - CurrentFrequency;
+                    FrequencyDelta = (double)(LeftFrequency) - CurrentFrequency;
 
                     m_mafDataPoints[i].LeftAirFlowSlope = AirflowDelta / FrequencyDelta;
                 }
 
                 if (i < (m_mafFrequencyCount - 1))
                 {
+                    m_mafDataPoints[i].RightFrequency = m_mafDataPoints[i + 1].Frequency;
                     m_mafDataPoints[i].RightAirFlow = m_mafDataPoints[i + 1].AirFlow;
 
                     m_mafDataPoints[i].RightAirFlowSlope = (m_mafDataPoints[i + 1].AirFlow   - m_mafDataPoints[i].AirFlow)
@@ -160,21 +162,23 @@ namespace Gen3MAF
             for (int i = 0; i < (m_mafDataPoints.Length); i++)
             {
                 ref MafDataPoint Current = ref m_mafDataPoints[i];
+                double Step       = (double)m_MAFFrequencyStep;
+                double BucketSize = Step / Current.DataPoints.Length;
+                double Frequency = (double)Current.Frequency;
 
                 for (int j = 0; j < (Current.DataPoints.Length); j++)
                 {
-                    double Step = (double)m_MAFFrequencyStep;
-                    double BucketSize = Step / Current.DataPoints.Length; 
-                    double Frequency = (double)Current.Frequency;   
+                    
                     double BucketStart = (Frequency - (Step / 2.0)) + (BucketSize * j);
-                    double TargetFrequency = BucketStart + (BucketSize / 2.0);
                     double BucketEnd = BucketStart + (BucketSize - 1);
-                    double Slope = 0.0;
+
+                    double TargetFrequency = BucketStart + (BucketSize / 2.0);
+                    
+                    double Slope = double.NaN;
                     double FrequencyDifference = TargetFrequency - Frequency;
 
-                    
-                    Current.DataPoints[j].BucketStart = (uint)Math.Round(BucketStart);
-                    Current.DataPoints[j].BucketEnd   = (uint)Math.Round(BucketEnd);    
+                    Current.DataPoints[j].BucketStart     = (uint)Math.Round(BucketStart);
+                    Current.DataPoints[j].BucketEnd       = (uint)Math.Round(BucketEnd);    
                     Current.DataPoints[j].TargetFrequency = (uint)Math.Round(TargetFrequency);
 
                     if (Current.DataPoints[j].TargetFrequency < Current.Frequency)
@@ -196,13 +200,7 @@ namespace Gen3MAF
                    
             }
 
-// Since there is no data point before or after the endpoints of the array, we can't calculate a slope, we will set them to NaN.
-//  Since we are unlikely to get any data here it won't make any difference.
-//
 
-
-//            m_mafDataPoints[0].AirFlowLeft = double.NaN;
-//            m_mafDataPoints[m_mafFrequencyCount - 1].AirFlowRight = double.NaN;
 
             return;
         }
@@ -231,7 +229,8 @@ namespace Gen3MAF
         }
 
         public void ProcessAdjustmentData(
-            double AdjustmentPercent
+            double AdjustmentPercent,
+            double AdjustmentThreshold
             )
         {
             int FirstUpdatedBucketIndex = -1;
@@ -247,7 +246,8 @@ namespace Gen3MAF
             for (int i = 0; i < m_mafDataPoints.Length; i++)
             {
                 ref MafDataPoint Current = ref m_mafDataPoints[i];
-
+                
+                Current.BelowThreshold = false;
                 Current.AirFlowAdjusted = 0.0; 
                 Current.HasUpdatedAirFlow = false;
 
@@ -267,10 +267,10 @@ namespace Gen3MAF
                     //   single bucket, just apply the adjustment to the orignal airflow
                     //
                     Current.AirFlowAdjusted = Current.DataPoints[0].AirFlowAdjusted;
-                    
+
                 }
                 else if (m_BucketStyle == BucketStyleEnum.Double)
-                { 
+                {
                     //
                     // since the left and right values are an equal distance from the target frequency, just average them together
                     //
@@ -279,11 +279,44 @@ namespace Gen3MAF
                 }
                 else if (m_BucketStyle == BucketStyleEnum.Triple)
                 {
-                    //
-                    // We will give the center bucket twice the weight of the left and right buckets, since it is the closest to the target frequency, and the left and right buckets will each get half the weight of the center bucket, since they are further away from the target frequency. This is a simple way to give more importance to the center bucket while still taking into account the adjustments for the left and right buckets.
-                    //
-                    Current.AirFlowAdjusted = (Current.DataPoints[0].AirFlowAdjusted + (Current.DataPoints[1].AirFlowAdjusted *2) + Current.DataPoints[2].AirFlowAdjusted) / 4.0f;
+                    if (!double.IsNaN(Current.DataPoints[0].AirFlowAdjusted) &&
+                        !double.IsNaN(Current.DataPoints[1].AirFlowAdjusted) && 
+                        !double.IsNaN(Current.DataPoints[2].AirFlowAdjusted) )
+                    {
+                        //
+                        // We will give the center bucket twice the weight of the left and right buckets, since it is the closest to the target frequency, and the left and right buckets will each get half the weight of the center bucket, since they are further away from the target frequency. This is a simple way to give more importance to the center bucket while still taking into account the adjustments for the left and right buckets.
+                        //
+                        double Bias = ((Current.DataPoints[0].Airflow + Current.DataPoints[2].Airflow) / 2) - Current.DataPoints[1].Airflow;
+                        Current.Bias = Bias;
+                        Current.LeftRightAverageAirflowAdjusted = (Current.DataPoints[0].AirFlowAdjusted + Current.DataPoints[2].AirFlowAdjusted) / 2;
 
+                        Current.AirFlowAdjusted = ((Current.DataPoints[1].AirFlowAdjusted * 2) + (Current.LeftRightAverageAirflowAdjusted - Bias)) / 3.0;
+                    }
+                    else if (!double.IsNaN(Current.DataPoints[1].AirFlowAdjusted))
+                    {
+                        //
+                        // if we only have the center bucket, just use the center bucket adjustment value as the adjusted airflow value for the current data point
+                        //
+                        Current.AirFlowAdjusted = Current.DataPoints[1].AirFlowAdjusted;
+                    }
+                    else if (!double.IsNaN(Current.DataPoints[0].AirFlowAdjusted) && !double.IsNaN(Current.DataPoints[2].AirFlowAdjusted))
+                    {
+                        //
+                        // if we only have the left and right buckets, just average the left and right bucket adjustment values together to get the adjusted airflow value for the current data point
+                        //
+                        double Bias = ((Current.DataPoints[0].Airflow + Current.DataPoints[2].Airflow) / 2) - Current.DataPoints[1].Airflow;
+                        Current.Bias = Bias;
+                        Current.LeftRightAverageAirflowAdjusted = (Current.DataPoints[0].AirFlowAdjusted + Current.DataPoints[2].AirFlowAdjusted) / 2;
+
+                        Current.AirFlowAdjusted = Current.LeftRightAverageAirflowAdjusted;
+                    }
+                    else
+                    {
+                        //
+                        // if we don't have any valid adjustment values for the left, center, or right buckets, then we will just leave the adjusted airflow value as 0 for now, and we will deal with this case later when we go through the array to check for any missing updated airflow values and fill them in accordingly.
+                        //
+                        Current.AirFlowAdjusted = double.NaN;
+                    }
                 }
                 //  
                 //  if the adjusted airflow is NaN, it means we got not updated data from the scanner app. THis means no datapoints were collected
@@ -397,9 +430,25 @@ namespace Gen3MAF
                 }
             }
 
+            //  
+            //  now we will go through the list checking to see if the change was above the thresh hold value, it not we but the original airflow back;
+            //
 
 
-            return;
+            for (int i = 0; i < m_mafDataPoints.Length; i++)
+            {
+                ref MafDataPoint Current = ref m_mafDataPoints[i];
+                double ChangeAmountPercent = ((Current.AirFlowAdjusted - Current.AirFlow) / Current.AirFlow) * 100;
+
+                if (Math.Abs(ChangeAmountPercent) < AdjustmentThreshold)
+                {
+                    Current.AirFlowAdjusted = Current.AirFlow;
+                    Current.BelowThreshold = true;
+                }
+            }
+
+
+                return;
         }
 
         public ReturnDataPoint GetDataPointAtIndex(int i)
