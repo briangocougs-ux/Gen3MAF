@@ -65,6 +65,7 @@
             ThresholdValue_label = new Label();
             AdjustText_label = new Label();
             ThresholdText_label = new Label();
+            GetAirFlowFromLast_button = new Button();
             contextMenuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)MAF_dataGridView).BeginInit();
             ((System.ComponentModel.ISupportInitialize)AdjustmentPercent_trackBar).BeginInit();
@@ -99,18 +100,19 @@
             // 
             AirFlow_richTextBox.ContextMenuStrip = contextMenuStrip1;
             AirFlow_richTextBox.Font = new Font("Courier New", 9F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            AirFlow_richTextBox.Location = new Point(71, 137);
+            AirFlow_richTextBox.Location = new Point(71, 149);
             AirFlow_richTextBox.Name = "AirFlow_richTextBox";
             AirFlow_richTextBox.ScrollBars = RichTextBoxScrollBars.Horizontal;
             AirFlow_richTextBox.Size = new Size(1072, 61);
             AirFlow_richTextBox.TabIndex = 1;
             AirFlow_richTextBox.Text = "";
             AirFlow_richTextBox.WordWrap = false;
+            AirFlow_richTextBox.TextChanged += AirFlow_richTextBox_TextChanged;
             // 
             // ProcessOriginalAirflow_button
             // 
             ProcessOriginalAirflow_button.Enabled = false;
-            ProcessOriginalAirflow_button.Location = new Point(71, 204);
+            ProcessOriginalAirflow_button.Location = new Point(71, 216);
             ProcessOriginalAirflow_button.Name = "ProcessOriginalAirflow_button";
             ProcessOriginalAirflow_button.Size = new Size(188, 29);
             ProcessOriginalAirflow_button.TabIndex = 2;
@@ -128,7 +130,7 @@
             MAF_dataGridView.Name = "MAF_dataGridView";
             MAF_dataGridView.ReadOnly = true;
             MAF_dataGridView.RowHeadersWidth = 51;
-            MAF_dataGridView.Size = new Size(1065, 88);
+            MAF_dataGridView.Size = new Size(1072, 88);
             MAF_dataGridView.TabIndex = 3;
             MAF_dataGridView.CellContentClick += MAF_dataGridView_CellDoubleClick;
             MAF_dataGridView.CellContentDoubleClick += MAF_dataGridView_CellDoubleClick;
@@ -140,7 +142,7 @@
             // 
             Buckets_richTextBox.ContextMenuStrip = contextMenuStrip1;
             Buckets_richTextBox.Font = new Font("Courier New", 9F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            Buckets_richTextBox.Location = new Point(71, 51);
+            Buckets_richTextBox.Location = new Point(78, 51);
             Buckets_richTextBox.Name = "Buckets_richTextBox";
             Buckets_richTextBox.ReadOnly = true;
             Buckets_richTextBox.Size = new Size(1065, 49);
@@ -369,23 +371,25 @@
             // 
             // AdjustmentThreshold_trackBar
             // 
-            AdjustmentThreshold_trackBar.Location = new Point(572, 571);
-            AdjustmentThreshold_trackBar.Maximum = 30;
+            AdjustmentThreshold_trackBar.Location = new Point(580, 571);
+            AdjustmentThreshold_trackBar.Maximum = 60;
             AdjustmentThreshold_trackBar.Minimum = 1;
             AdjustmentThreshold_trackBar.Name = "AdjustmentThreshold_trackBar";
-            AdjustmentThreshold_trackBar.Size = new Size(130, 56);
+            AdjustmentThreshold_trackBar.Size = new Size(145, 56);
             AdjustmentThreshold_trackBar.TabIndex = 30;
+            AdjustmentThreshold_trackBar.TickFrequency = 5;
             AdjustmentThreshold_trackBar.Value = 1;
             AdjustmentThreshold_trackBar.Scroll += AdjustmentThreshold_trackBar_Scroll;
             // 
             // ThresholdValue_label
             // 
             ThresholdValue_label.AutoSize = true;
-            ThresholdValue_label.Location = new Point(708, 575);
+            ThresholdValue_label.Location = new Point(731, 579);
             ThresholdValue_label.Name = "ThresholdValue_label";
             ThresholdValue_label.Size = new Size(69, 20);
             ThresholdValue_label.TabIndex = 31;
             ThresholdValue_label.Text = "label32.0";
+            ThresholdValue_label.Click += ThresholdValue_label_Click;
             // 
             // AdjustText_label
             // 
@@ -405,11 +409,22 @@
             ThresholdText_label.TabIndex = 33;
             ThresholdText_label.Text = "Correction Threshold";
             // 
+            // GetAirFlowFromLast_button
+            // 
+            GetAirFlowFromLast_button.Location = new Point(817, 110);
+            GetAirFlowFromLast_button.Name = "GetAirFlowFromLast_button";
+            GetAirFlowFromLast_button.Size = new Size(316, 29);
+            GetAirFlowFromLast_button.TabIndex = 34;
+            GetAirFlowFromLast_button.Text = "`Copy Airflow from last cycle";
+            GetAirFlowFromLast_button.UseVisualStyleBackColor = true;
+            GetAirFlowFromLast_button.Click += GetAirFlowFromLast_button_Click;
+            // 
             // Main
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1191, 888);
+            Controls.Add(GetAirFlowFromLast_button);
             Controls.Add(ThresholdText_label);
             Controls.Add(AdjustText_label);
             Controls.Add(ThresholdValue_label);
@@ -484,5 +499,6 @@
         private Label ThresholdValue_label;
         private Label AdjustText_label;
         private Label ThresholdText_label;
+        private Button GetAirFlowFromLast_button;
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.Eventing.Reader;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -246,9 +247,9 @@ namespace Gen3MAF
             for (int i = 0; i < m_mafDataPoints.Length; i++)
             {
                 ref MafDataPoint Current = ref m_mafDataPoints[i];
-                
+
                 Current.BelowThreshold = false;
-                Current.AirFlowAdjusted = 0.0; 
+                Current.AirFlowAdjusted = 0.0;
                 Current.HasUpdatedAirFlow = false;
 
 
@@ -256,7 +257,7 @@ namespace Gen3MAF
                 {
                     double ModifiedAdjustmentPercent = Current.DataPoints[j].AirFlowAdjustment * AdjustmentPercent;
 
-                    
+
 
                     Current.DataPoints[j].AirFlowAdjusted = Current.DataPoints[j].Airflow * (1.0 + (ModifiedAdjustmentPercent / 100.0));
                 }
@@ -279,18 +280,29 @@ namespace Gen3MAF
                 }
                 else if (m_BucketStyle == BucketStyleEnum.Triple)
                 {
+
+                    double Bias = ((Current.DataPoints[0].Airflow + Current.DataPoints[2].Airflow) / 2) - Current.DataPoints[1].Airflow;
+                    Current.Bias = Bias;
+                    Current.LeftRightAverageAirflowAdjusted = (Current.DataPoints[0].AirFlowAdjusted + Current.DataPoints[2].AirFlowAdjusted) / 2;
+
                     if (!double.IsNaN(Current.DataPoints[0].AirFlowAdjusted) &&
-                        !double.IsNaN(Current.DataPoints[1].AirFlowAdjusted) && 
-                        !double.IsNaN(Current.DataPoints[2].AirFlowAdjusted) )
+                        !double.IsNaN(Current.DataPoints[1].AirFlowAdjusted) &&
+                        !double.IsNaN(Current.DataPoints[2].AirFlowAdjusted))
                     {
                         //
-                        // We will give the center bucket twice the weight of the left and right buckets, since it is the closest to the target frequency, and the left and right buckets will each get half the weight of the center bucket, since they are further away from the target frequency. This is a simple way to give more importance to the center bucket while still taking into account the adjustments for the left and right buckets.
+                        //  We will take the value with the smaller change.
                         //
-                        double Bias = ((Current.DataPoints[0].Airflow + Current.DataPoints[2].Airflow) / 2) - Current.DataPoints[1].Airflow;
-                        Current.Bias = Bias;
-                        Current.LeftRightAverageAirflowAdjusted = (Current.DataPoints[0].AirFlowAdjusted + Current.DataPoints[2].AirFlowAdjusted) / 2;
+                        if (Math.Abs(Current.DataPoints[1].AirFlowAdjusted - Current.DataPoints[1].Airflow) <
+                             Math.Abs((Current.LeftRightAverageAirflowAdjusted - Bias) - Current.DataPoints[1].Airflow) ) 
+                        {
+                             Current.AirFlowAdjusted = Current.DataPoints[1].AirFlowAdjusted;
+                        }
+                        else
+                        {
+                             Current.AirFlowAdjusted = Current.LeftRightAverageAirflowAdjusted - Bias;
+                        }
+        
 
-                        Current.AirFlowAdjusted = ((Current.DataPoints[1].AirFlowAdjusted * 2) + (Current.LeftRightAverageAirflowAdjusted - Bias)) / 3.0;
                     }
                     else if (!double.IsNaN(Current.DataPoints[1].AirFlowAdjusted))
                     {
@@ -304,11 +316,8 @@ namespace Gen3MAF
                         //
                         // if we only have the left and right buckets, just average the left and right bucket adjustment values together to get the adjusted airflow value for the current data point
                         //
-                        double Bias = ((Current.DataPoints[0].Airflow + Current.DataPoints[2].Airflow) / 2) - Current.DataPoints[1].Airflow;
-                        Current.Bias = Bias;
-                        Current.LeftRightAverageAirflowAdjusted = (Current.DataPoints[0].AirFlowAdjusted + Current.DataPoints[2].AirFlowAdjusted) / 2;
-
-                        Current.AirFlowAdjusted = Current.LeftRightAverageAirflowAdjusted;
+                        
+                        Current.AirFlowAdjusted = Current.LeftRightAverageAirflowAdjusted - Bias;
                     }
                     else
                     {

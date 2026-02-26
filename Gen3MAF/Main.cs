@@ -20,6 +20,7 @@ namespace Gen3MAF
         public const int DATA_GRID_ROW_ENABLE = 4;
         public const int DEFAULT_ADJUSTMENT_PERCENT = 100;
         public const double DEFAULT_THRESHOLD_VALUE = 0.10;
+        public const double THRESHOLD_TRACKBAR_TICK_VALUE = 0.05;
 
 
 
@@ -100,6 +101,7 @@ namespace Gen3MAF
             Pause_button.Enabled = false;
             Plot_button.Enabled = false;
             Discard_button.Enabled = false;
+            GetAirFlowFromLast_button.Enabled = false;
 
             AdjustmentPercent_trackBar.Enabled = false;
             AdjustmentPercent_trackBar.Value = DEFAULT_ADJUSTMENT_PERCENT;
@@ -107,7 +109,7 @@ namespace Gen3MAF
 
             m_AdjustThreshold = DEFAULT_THRESHOLD_VALUE;
             AdjustmentThreshold_trackBar.Enabled = false;
-            AdjustmentThreshold_trackBar.Value = (int)(m_AdjustThreshold * 10);
+            AdjustmentThreshold_trackBar.Value = (int)(m_AdjustThreshold / THRESHOLD_TRACKBAR_TICK_VALUE);
             ThresholdValue_label.Text = $"{AdjustmentThreshold_trackBar.Value}%";
 
 
@@ -369,7 +371,7 @@ namespace Gen3MAF
             double AdjustmentPercent = AdjustmentPercent_trackBar.Value / 100.0f;
             double[] AdjustedAirflowArray = new double[m_AdjustObject.GetFrequencyCount()];
 
-            m_AdjustObject.ProcessAdjustmentData(AdjustmentPercent,m_AdjustThreshold);
+            m_AdjustObject.ProcessAdjustmentData(AdjustmentPercent, m_AdjustThreshold);
 
             // build array to send to tune cycle object
             //
@@ -482,27 +484,15 @@ namespace Gen3MAF
             m_CurrentTuneCycle = m_SessionClass.CreateNewTuneCycle(m_AdjustObject.GetFrequencyCount(), (int)m_AdjustObject.GetBucketCount());
 
             //
-            //  it there is a previos tune cycle, populate the maf data in the text box
+            //  it there is a previos tune cycle, Enable a button to populate the maf data in the text box
             //
 
-            TuneCycle PreviousTuneCycle = null;
-
-            PreviousTuneCycle = m_SessionClass.GetLastTuneCycle();
-
-            if (PreviousTuneCycle != null)
+            if (m_SessionClass.HasCompletedTuneCycle())
             {
-                if (PreviousTuneCycle.IsCompleted())
-                {
-                    double[] PreviousAirflow = new double[m_AdjustObject.GetFrequencyCount()];
-
-                    for (int i = 0; i < m_AdjustObject.GetFrequencyCount(); i++)
-                    {
-                        PreviousAirflow[i] = PreviousTuneCycle.GetAdjustedAirflowAtIndex(i);
-                    }
-
-                    AirFlow_richTextBox.Text = string.Join("\t", PreviousAirflow.Select(v => v.ToString()));
-                }
+                GetAirFlowFromLast_button.Enabled = true;
             }
+
+
 
             ProcessOriginalAirflow_button.Enabled = true;
             Discard_button.Enabled = true;
@@ -997,7 +987,7 @@ namespace Gen3MAF
                 // 
                 AdjustObject.InitializeAirFlowFromTuneObject(tc);
                 AdjustObject.ReadAdjustmentDataFromTuneObject(tc);
-                AdjustObject.ProcessAdjustmentData(1.0, m_AdjustThreshold   );
+                AdjustObject.ProcessAdjustmentData(1.0, m_AdjustThreshold);
 
                 double[] newAir = new double[m_AdjustObject.GetFrequencyCount()];
 
@@ -1080,10 +1070,42 @@ namespace Gen3MAF
 
         private void AdjustmentThreshold_trackBar_Scroll(object sender, EventArgs e)
         {
-            m_AdjustThreshold = ((double)AdjustmentThreshold_trackBar.Value / 10.0);
-            ThresholdValue_label.Text = m_AdjustThreshold.ToString("f1") + "%";
+            m_AdjustThreshold = ((double)AdjustmentThreshold_trackBar.Value * THRESHOLD_TRACKBAR_TICK_VALUE);
+            ThresholdValue_label.Text = m_AdjustThreshold.ToString("f2") + "%";
 
             ProcessAdjustmentData();
+        }
+
+        private void GetAirFlowFromLast_button_Click(object sender, EventArgs e)
+        {
+            TuneCycle PreviousTuneCycle = null;
+
+            PreviousTuneCycle = m_SessionClass.GetLastTuneCycle();
+
+            if (PreviousTuneCycle != null)
+            {
+                if (PreviousTuneCycle.IsCompleted())
+                {
+                    double[] PreviousAirflow = new double[m_AdjustObject.GetFrequencyCount()];
+
+                    for (int i = 0; i < m_AdjustObject.GetFrequencyCount(); i++)
+                    {
+                        PreviousAirflow[i] = PreviousTuneCycle.GetAdjustedAirflowAtIndex(i);
+                    }
+
+                    AirFlow_richTextBox.Text = string.Join("\t", PreviousAirflow.Select(v => v.ToString()));
+                }
+            }
+        }
+
+        private void AirFlow_richTextBox_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void ThresholdValue_label_Click(object sender, EventArgs e)
+        {
+
         }
     }
 
