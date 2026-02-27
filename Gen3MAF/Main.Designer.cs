@@ -66,6 +66,7 @@
             AdjustText_label = new Label();
             ThresholdText_label = new Label();
             GetAirFlowFromLast_button = new Button();
+            InterpolateMissingData_checkBox = new CheckBox();
             contextMenuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)MAF_dataGridView).BeginInit();
             ((System.ComponentModel.ISupportInitialize)AdjustmentPercent_trackBar).BeginInit();
@@ -217,7 +218,7 @@
             // 
             AdjustedAirflow_dataGridView.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             AdjustedAirflow_dataGridView.ContextMenuStrip = contextMenuStrip1;
-            AdjustedAirflow_dataGridView.Location = new Point(71, 619);
+            AdjustedAirflow_dataGridView.Location = new Point(71, 633);
             AdjustedAirflow_dataGridView.Name = "AdjustedAirflow_dataGridView";
             AdjustedAirflow_dataGridView.RowHeadersWidth = 51;
             AdjustedAirflow_dataGridView.ScrollBars = ScrollBars.Horizontal;
@@ -419,11 +420,25 @@
             GetAirFlowFromLast_button.UseVisualStyleBackColor = true;
             GetAirFlowFromLast_button.Click += GetAirFlowFromLast_button_Click;
             // 
+            // InterpolateMissingData_checkBox
+            // 
+            InterpolateMissingData_checkBox.AutoSize = true;
+            InterpolateMissingData_checkBox.Checked = true;
+            InterpolateMissingData_checkBox.CheckState = CheckState.Checked;
+            InterpolateMissingData_checkBox.Location = new Point(837, 542);
+            InterpolateMissingData_checkBox.Name = "InterpolateMissingData_checkBox";
+            InterpolateMissingData_checkBox.Size = new Size(183, 24);
+            InterpolateMissingData_checkBox.TabIndex = 35;
+            InterpolateMissingData_checkBox.Text = "Fill Missing Data Points";
+            InterpolateMissingData_checkBox.UseVisualStyleBackColor = true;
+            InterpolateMissingData_checkBox.CheckedChanged += InterpolateMissingData_checkBox_CheckedChanged;
+            // 
             // Main
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1191, 888);
+            Controls.Add(InterpolateMissingData_checkBox);
             Controls.Add(GetAirFlowFromLast_button);
             Controls.Add(ThresholdText_label);
             Controls.Add(AdjustText_label);
@@ -500,5 +515,6 @@
         private Label AdjustText_label;
         private Label ThresholdText_label;
         private Button GetAirFlowFromLast_button;
+        private CheckBox InterpolateMissingData_checkBox;
     }
 }

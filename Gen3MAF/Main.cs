@@ -110,8 +110,10 @@ namespace Gen3MAF
             m_AdjustThreshold = DEFAULT_THRESHOLD_VALUE;
             AdjustmentThreshold_trackBar.Enabled = false;
             AdjustmentThreshold_trackBar.Value = (int)(m_AdjustThreshold / THRESHOLD_TRACKBAR_TICK_VALUE);
-            ThresholdValue_label.Text = $"{AdjustmentThreshold_trackBar.Value}%";
+            ThresholdValue_label.Text = m_AdjustThreshold.ToString("f2") + "%";
 
+            InterpolateMissingData_checkBox.Enabled = false;
+            InterpolateMissingData_checkBox.Checked = true;
 
 
             CompleteCycle_button.Enabled = false;
@@ -281,6 +283,7 @@ namespace Gen3MAF
             AdjustmentThreshold_trackBar.Enabled = true;
             CompleteCycle_button.Enabled = true;
             Plot_button.Enabled = true;
+            InterpolateMissingData_checkBox.Enabled = true;
 
             ProcessAdjustmentData();
 
@@ -369,22 +372,11 @@ namespace Gen3MAF
         private void ProcessAdjustmentData()
         {
             double AdjustmentPercent = AdjustmentPercent_trackBar.Value / 100.0f;
-            double[] AdjustedAirflowArray = new double[m_AdjustObject.GetFrequencyCount()];
+           
+            bool InterpolateMissingData = InterpolateMissingData_checkBox.Checked;
 
-            m_AdjustObject.ProcessAdjustmentData(AdjustmentPercent, m_AdjustThreshold);
+            m_AdjustObject.ProcessAdjustmentData(AdjustmentPercent, m_AdjustThreshold, InterpolateMissingData);
 
-            // build array to send to tune cycle object
-            //
-            for (int i = 0; i < m_AdjustObject.GetFrequencyCount(); i++)
-            {
-                ReturnDataPoint DataPoint;
-
-                DataPoint = m_AdjustObject.GetDataPointAtIndex(i);
-
-                AdjustedAirflowArray[i] = DataPoint.AdjustedAirflow;
-            }
-
-            m_CurrentTuneCycle.PopulateAdjustedAirflow(AdjustedAirflowArray);
 
             UpdateAdjustedAirflowGrid();
 
@@ -611,6 +603,22 @@ namespace Gen3MAF
 
         private void CompleteCycle_button_Click(object sender, EventArgs e)
         {
+            double[] AdjustedAirflowArray = new double[m_AdjustObject.GetFrequencyCount()];
+
+            //
+            // build array to send to tune cycle object
+            //
+            for (int i = 0; i < m_AdjustObject.GetFrequencyCount(); i++)
+            {
+                ReturnDataPoint DataPoint;
+
+                DataPoint = m_AdjustObject.GetDataPointAtIndex(i);
+
+                AdjustedAirflowArray[i] = DataPoint.AdjustedAirflow;
+            }
+
+            m_CurrentTuneCycle.PopulateAdjustedAirflow(AdjustedAirflowArray);
+
             m_CurrentTuneCycle.MarkAsCompleted(AdjustmentPercent_trackBar.Value, false);
 
             m_SessionClass.AddTuneCycle(m_CurrentTuneCycle);
@@ -938,7 +946,7 @@ namespace Gen3MAF
             //
             AdjustObject.InitializeAirFlowFromTuneObject(tc);
             AdjustObject.ReadAdjustmentDataFromTuneObject(tc);
-            AdjustObject.ProcessAdjustmentData(1.0, m_AdjustThreshold);
+            AdjustObject.ProcessAdjustmentData(1.0, m_AdjustThreshold, true);
 
 
             double[] freq = new double[m_AdjustObject.GetFrequencyCount()];
@@ -987,7 +995,7 @@ namespace Gen3MAF
                 // 
                 AdjustObject.InitializeAirFlowFromTuneObject(tc);
                 AdjustObject.ReadAdjustmentDataFromTuneObject(tc);
-                AdjustObject.ProcessAdjustmentData(1.0, m_AdjustThreshold);
+                AdjustObject.ProcessAdjustmentData(1.0, m_AdjustThreshold, true);
 
                 double[] newAir = new double[m_AdjustObject.GetFrequencyCount()];
 
@@ -1106,6 +1114,11 @@ namespace Gen3MAF
         private void ThresholdValue_label_Click(object sender, EventArgs e)
         {
 
+        }
+
+        private void InterpolateMissingData_checkBox_CheckedChanged(object sender, EventArgs e)
+        {
+            ProcessAdjustmentData();
         }
     }
 

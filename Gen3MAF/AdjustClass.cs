@@ -231,7 +231,8 @@ namespace Gen3MAF
 
         public void ProcessAdjustmentData(
             double AdjustmentPercent,
-            double AdjustmentThreshold
+            double AdjustmentThreshold,
+            bool InterpolateMissingData
             )
         {
             int FirstUpdatedBucketIndex = -1;
@@ -426,18 +427,27 @@ namespace Gen3MAF
 
                     for (int k = i; k < j; k++)
                     {
-                        m_mafDataPoints[k].AirFlowAdjusted = m_mafDataPoints[i - 1].AirFlowAdjusted
+                        if (InterpolateMissingData)
+                        {
+                            m_mafDataPoints[k].AirFlowAdjusted = m_mafDataPoints[i - 1].AirFlowAdjusted
                                                              + (slope * (m_mafDataPoints[k].Frequency - m_mafDataPoints[i - 1].Frequency));
-
+                        }
+                        else
+                        {
+                            m_mafDataPoints[k].AirFlowAdjusted = m_mafDataPoints[k].AirFlow;
+                        }
                     }
+                
 
                     //  Move the index i to the next bucket index with an updated airflow value, which is j, so that we can continue processing the next buckets with missing updated airflow values
                     //
 
                     i = j;
-
                 }
             }
+        
+    
+            
 
             //  
             //  now we will go through the list checking to see if the change was above the thresh hold value, it not we but the original airflow back;
