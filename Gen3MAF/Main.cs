@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Reflection.Emit;
 using System.Windows.Forms;
 using System.Windows.Forms.DataVisualization.Charting;
 using System.Windows.Forms.Design;
@@ -372,7 +373,7 @@ namespace Gen3MAF
         private void ProcessAdjustmentData()
         {
             double AdjustmentPercent = AdjustmentPercent_trackBar.Value / 100.0f;
-           
+
             bool InterpolateMissingData = InterpolateMissingData_checkBox.Checked;
 
             m_AdjustObject.ProcessAdjustmentData(AdjustmentPercent, m_AdjustThreshold, InterpolateMissingData);
@@ -1119,6 +1120,28 @@ namespace Gen3MAF
         private void InterpolateMissingData_checkBox_CheckedChanged(object sender, EventArgs e)
         {
             ProcessAdjustmentData();
+        }
+
+        private void PlotRaw_button_Click(object sender, EventArgs e)
+        {
+            double[] Frequency = new double[1];
+            double[] AirFlow = new double[1];
+            double[] AdjustedAirflow = new double[1];
+            var adjusted = new List<double[]>();
+
+            
+
+            m_AdjustObject.ReadRawAirflowData(ref Frequency,ref AirFlow,ref AdjustedAirflow);
+
+            adjusted.Add(AirFlow);
+            adjusted.Add(AdjustedAirflow);
+
+            var f = new PlotForm1(
+                Frequency,
+                adjusted
+                );
+
+            f.Show(this);
         }
     }
 

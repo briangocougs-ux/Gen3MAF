@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -13,6 +14,20 @@ namespace Gen3MAF
 {
     public partial class PlotForm1 : Form
     {
+        private bool _panning;
+#if false
+        private double _panStartX;
+        private double _viewStartX;
+        private double _viewSizeX;
+#else
+        private double _panStartXVal, _panStartYVal;
+        private double _startPosX, _startPosY;
+        private double _sizeX, _sizeY;
+        private bool m_InMouseMove=false;   
+        private bool m_DirectionPicked=false;   
+        private bool m_Xpanning=false;  
+#endif
+
         public PlotForm1()
         {
             InitializeComponent();
@@ -23,7 +38,7 @@ namespace Gen3MAF
             InitializeComponent();
 
             int start = 0;
-            int end = x.Length-1;
+            int end = x.Length - 1;
 
             chart1.Series.Clear();
 
@@ -41,7 +56,7 @@ namespace Gen3MAF
                 BorderWidth = 2
             };
 
-         
+
             series.MarkerStyle = MarkerStyle.Circle;
             series.MarkerSize = 6;
             series.MarkerBorderWidth = 1;
@@ -51,7 +66,7 @@ namespace Gen3MAF
             for (int i = 0; i < n; i++)
             {
                 series.Points.AddXY(x[i], y[i]);
-               
+
 
                 if (Math.Abs(y[i]) > 0.001)
                 {
@@ -67,12 +82,12 @@ namespace Gen3MAF
             if (start > 1)
             {
                 start--;
-            }   
-             
-            if (end < n-1)
+            }
+
+            if (end < n - 1)
             {
                 end++;
-            }   
+            }
 
 
 
@@ -86,43 +101,10 @@ namespace Gen3MAF
         }
 
 
-        public PlotForm1(double[] frequency, List<double[]> airflowRows)
-        {
-            InitializeComponent();
 
-            chart1.Series.Clear();
 
-            var area = chart1.ChartAreas[0];
-            area.AxisX.Title = "Frequency (Hz)";
-            area.AxisY.Title = "Airflow";
-            area.AxisX.MajorGrid.Enabled = true;
-            area.AxisY.MajorGrid.Enabled = true;
 
-            int curveIndex = 1;
-
-            foreach (var airflow in airflowRows)
-            {
-                var series = new Series($"Curve {curveIndex++}")
-                {
-                    ChartType = SeriesChartType.Line,
-                    XValueType = ChartValueType.Double,
-                    YValueType = ChartValueType.Double,
-                    BorderWidth = 2
-                };
-
-                int n = Math.Min(frequency.Length, airflow.Length);
-                for (int i = 0; i < n; i++)
-                {
-                    series.Points.AddXY(frequency[i], airflow[i]);
-                }
-
-                chart1.Series.Add(series);
-            }
-
-            if (chart1.Legends.Count == 0)
-                chart1.Legends.Add(new Legend());
-        }
-
+        
 
         public PlotForm1(double[] xFreq, double[] oldAir, double[] newAir, string title)
         {
@@ -327,5 +309,311 @@ namespace Gen3MAF
         {
 
         }
+
+        private void chart1_DoubleClick(object sender, EventArgs e)
+        {
+
+            var area = chart1.ChartAreas[0];
+
+            area.AxisX.ScaleView.ZoomReset();
+            area.AxisY.ScaleView.ZoomReset();
+        }
+
+        private void chart1_MouseWheel(object sender, MouseEventArgs e)
+        {
+            var area = chart1.ChartAreas[0];
+
+            try
+            {
+                double xMin = area.AxisX.ScaleView.ViewMinimum;
+                double xMax = area.AxisX.ScaleView.ViewMaximum;
+
+                double yMin = area.AxisY.ScaleView.ViewMinimum;
+                double yMax = area.AxisY.ScaleView.ViewMaximum;
+
+                double cursorX = area.AxisX.PixelPositionToValue(e.Location.X);
+                double cursorY = area.AxisY.PixelPositionToValue(e.Location.Y);
+
+                if (e.Delta > 0) // zoom in
+                {
+                    double newSize = (xMax - xMin) / 2;
+                    area.AxisX.ScaleView.Zoom(cursorX - newSize / 2,
+                                              cursorX + newSize / 2);
+
+                    newSize = (yMax - yMin) / 2;
+                    area.AxisY.ScaleView.Zoom(cursorY - newSize / 2,
+                                              cursorY + newSize / 2);
+                }
+                else // zoom out
+                {
+                    area.AxisX.ScaleView.ZoomReset();
+                    area.AxisY.ScaleView.ZoomReset();
+                }
+            }
+            catch { }
+        }
+
+#if false
+        private void chart1_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (e.Button != MouseButtons.Right) return;
+
+            var area = chart1.ChartAreas[0];
+            var ax = area.AxisX;
+
+            // If not zoomed, there may be no view window to pan.
+            if (!ax.ScaleView.IsZoomed)
+                return;
+
+            _panning = true;
+
+            _panStartX = ax.PixelPositionToValue(e.X);
+            _viewStartX = ax.ScaleView.Position;
+            _viewSizeX = ax.ScaleView.Size;
+
+            chart1.Capture = true;
+        }
+
+        private void chart1_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (!_panning) return;
+
+            var area = chart1.ChartAreas[0];
+            var ax = area.AxisX;
+
+            double curX = ax.PixelPositionToValue(e.X);
+            double dx = _panStartX - curX;     // drag right -> pan left (feels natural)
+
+            double newPos = _viewStartX + dx;
+
+            // Clamp to axis range
+            double min = ax.Minimum;
+            double max = ax.Maximum;
+
+            // If Minimum/Maximum are NaN (autoscale), use ScaleView limits
+            //
+            if (double.IsNaN(min)) min = ax.ScaleView.ViewMinimum;
+            if (double.IsNaN(max)) max = ax.ScaleView.ViewMaximum;
+
+            double maxPos = max - _viewSizeX;
+            if (newPos < min) newPos = min;
+            if (newPos > maxPos) newPos = maxPos;
+
+            ax.ScaleView.Position = newPos;
+        }
+        private void chart1_MouseUp(object sender, MouseEventArgs e)
+        {
+            if (e.Button != MouseButtons.Right || !_panning)
+                return;
+           
+
+            _panning = false;
+            chart1.Capture = false;
+        }
+#else
+private void chart1_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (e.Button != MouseButtons.Right)
+                return;
+
+            var area = chart1.ChartAreas[0];
+            var ax = area.AxisX;
+            var ay = area.AxisY;
+
+            // Need an active view window to pan; easiest rule: pan only when zoomed.
+            if (!ax.ScaleView.IsZoomed && !ay.ScaleView.IsZoomed)
+                return;
+
+            m_DirectionPicked = false;
+            _panning = true;
+            chart1.Capture = true;
+
+            // Record where the mouse is (in axis units)
+            _panStartXVal = ax.PixelPositionToValue(e.X);
+            _panStartYVal = ay.PixelPositionToValue(e.Y);
+
+            // Record current view window
+            _startPosX = ax.ScaleView.Position;
+            _sizeX = ax.ScaleView.Size;
+
+            _startPosY = ay.ScaleView.Position;
+            _sizeY = ay.ScaleView.Size;
+
+            // IMPORTANT: prevent left-zoom selection cursors from also trying to select
+            // while we're right-dragging.
+            area.CursorX.IsUserSelectionEnabled = false;
+            area.CursorY.IsUserSelectionEnabled = false;
+        }
+
+        private void chart1_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (!_panning)
+                return;
+
+            Debug.Assert(!m_InMouseMove, "mouse move re-entered");
+            m_InMouseMove = true;
+
+            var area = chart1.ChartAreas[0];
+            var ax = area.AxisX;
+            var ay = area.AxisY;
+
+            // Current mouse position in axis units
+            double curXVal = ax.PixelPositionToValue(e.X);
+            double curYVal = ay.PixelPositionToValue(e.Y);
+
+            // Delta in axis units (drag right -> pan left feels natural)
+            double dx = _panStartXVal - curXVal;
+            double dy =  _panStartYVal - curYVal ; // Y axis is inverted in pixels
+
+            if (!m_DirectionPicked)
+            {
+                // 
+                //  no direction picked
+                //
+                if (Math.Abs(dx) > Math.Abs(dy))
+                {
+                    m_Xpanning = true;
+                }
+                else
+                {
+                    m_Xpanning = false;
+                }
+                m_DirectionPicked = true;
+            }
+
+            if (m_Xpanning)
+            {
+                // Apply pan if zoomed on that axis
+                if (ax.ScaleView.IsZoomed && _sizeX > 0)
+                {
+                    double newPosX = ClampViewPosition(ax, _startPosX + dx, _sizeX);
+                    ax.ScaleView.Position = newPosX;
+                }
+            }
+            else
+            { 
+                if (ay.ScaleView.IsZoomed && _sizeY > 0)
+                {
+                    double newPosY = ClampViewPosition(ay, _startPosY + dy, _sizeY);
+                    ay.ScaleView.Position = newPosY;
+                }
+            }
+
+            m_InMouseMove = false;
+        }
+        private static double ClampViewPosition(Axis axis, double proposedPos, double viewSize)
+        {
+            // Determine clamp bounds in axis units.
+            // If Minimum/Maximum are NaN (autoscale), use the current view min/max.
+            double min = axis.Minimum;
+            double max = axis.Maximum;
+
+            if (double.IsNaN(min)) min = axis.ScaleView.ViewMinimum;
+            if (double.IsNaN(max)) max = axis.ScaleView.ViewMaximum;
+
+            double maxPos = max - viewSize;
+
+            if (proposedPos < min) proposedPos = min;
+            if (proposedPos > maxPos) proposedPos = maxPos;
+
+            return proposedPos;
+        }
+
+        
+
+        private void chart1_MouseUp(object sender, MouseEventArgs e)
+        {
+            if (e.Button != MouseButtons.Right || !_panning)
+                return;
+            m_DirectionPicked = false;
+            _panning = false;
+            chart1.Capture = false;
+
+            // Re-enable left-drag zoom selection
+            var area = chart1.ChartAreas[0];
+            area.CursorX.IsUserSelectionEnabled = true;
+            area.CursorY.IsUserSelectionEnabled = true;
+        }
+
+#endif
+
+        public PlotForm1(double[] frequency, List<double[]> airflowRows)
+        {
+            InitializeComponent();
+            // Make mouse wheel / right-drag feel responsive (chart must have focus)
+            chart1.MouseEnter += (s, e) => chart1.Focus();
+
+            chart1.MouseWheel += chart1_MouseWheel;
+            chart1.MouseDown += chart1_MouseDown;
+            chart1.MouseMove += chart1_MouseMove;
+            chart1.MouseUp += chart1_MouseUp;
+
+            chart1.Series.Clear();
+
+            var area = chart1.ChartAreas[0];
+            area.AxisX.Title = "Frequency (Hz)";
+            area.AxisY.Title = "Airflow";
+            area.AxisX.MajorGrid.Enabled = true;
+            area.AxisY.MajorGrid.Enabled = true;
+
+            area.AxisX.ScaleView.Zoomable = true;
+            area.AxisY.ScaleView.Zoomable = true;
+
+            area.CursorX.IsUserEnabled = true;
+            area.CursorX.IsUserSelectionEnabled = true;
+
+            area.CursorY.IsUserEnabled = true;
+            area.CursorY.IsUserSelectionEnabled = true;
+            area.AxisX.LabelStyle.Format = "F0";  // 2 decimal places
+            area.AxisY.LabelStyle.Format = "F0";  // 1 decimal place
+
+
+            area.InnerPlotPosition.Auto = false;
+
+            // 3. Define the plot area (relative to the ChartArea's size)
+            // This leaves 15% space on the left/bottom for labels and 5% on top/right
+            area.InnerPlotPosition.X = 7;      // Left margin
+            area.InnerPlotPosition.Y = 1;       // Top margin
+            area.InnerPlotPosition.Width = 93;  // 100 - 15 (left) - 5 (right)
+            area.InnerPlotPosition.Height = 92; // 100 - 5 (top) - 15 (bottom)
+
+            int curveIndex = 1;
+
+            foreach (var airflow in airflowRows)
+            {
+                var series = new Series($"Curve {curveIndex++}")
+                {
+                    ChartType = SeriesChartType.Line,
+                    XValueType = ChartValueType.Double,
+                    YValueType = ChartValueType.Double,
+                    BorderWidth = 2
+                };
+
+                series.MarkerStyle = MarkerStyle.Circle;
+                series.MarkerSize = 6;
+                series.MarkerBorderWidth = 1;
+
+                series.ToolTip = "Hz: #VALX{f0}\nFlow: #VAL{f3}";
+
+                int n = Math.Min(frequency.Length, airflow.Length);
+                for (int i = 0; i < n; i++)
+                {
+                    series.Points.AddXY(frequency[i], airflow[i]);
+
+                    if ((i + 2) % 3 == 0)
+                    {
+                        series.Points[i].MarkerStyle = MarkerStyle.Diamond;
+                        series.Points[i].MarkerSize = 12;
+                    }
+                }
+
+                chart1.Series.Add(series);
+            }
+
+            if (chart1.Legends.Count == 0)
+                chart1.Legends.Add(new Legend());
+        }
+
     }
 }
+

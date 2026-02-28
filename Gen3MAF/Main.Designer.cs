@@ -67,6 +67,7 @@
             ThresholdText_label = new Label();
             GetAirFlowFromLast_button = new Button();
             InterpolateMissingData_checkBox = new CheckBox();
+            PlotRaw_button = new Button();
             contextMenuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)MAF_dataGridView).BeginInit();
             ((System.ComponentModel.ISupportInitialize)AdjustmentPercent_trackBar).BeginInit();
@@ -433,11 +434,22 @@
             InterpolateMissingData_checkBox.UseVisualStyleBackColor = true;
             InterpolateMissingData_checkBox.CheckedChanged += InterpolateMissingData_checkBox_CheckedChanged;
             // 
+            // PlotRaw_button
+            // 
+            PlotRaw_button.Location = new Point(867, 575);
+            PlotRaw_button.Name = "PlotRaw_button";
+            PlotRaw_button.Size = new Size(94, 29);
+            PlotRaw_button.TabIndex = 36;
+            PlotRaw_button.Text = "Plot Raw Data";
+            PlotRaw_button.UseVisualStyleBackColor = true;
+            PlotRaw_button.Click += PlotRaw_button_Click;
+            // 
             // Main
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1191, 888);
+            Controls.Add(PlotRaw_button);
             Controls.Add(InterpolateMissingData_checkBox);
             Controls.Add(GetAirFlowFromLast_button);
             Controls.Add(ThresholdText_label);
@@ -516,5 +528,6 @@
         private Label ThresholdText_label;
         private Button GetAirFlowFromLast_button;
         private CheckBox InterpolateMissingData_checkBox;
+        private Button PlotRaw_button;
     }
 }

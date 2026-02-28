@@ -52,6 +52,7 @@
             chart1.TabIndex = 0;
             chart1.Text = "chart1";
             chart1.Click += chart1_Click;
+            chart1.DoubleClick += chart1_DoubleClick;
             // 
             // PlotForm1
             // 

@@ -85,7 +85,7 @@ namespace Gen3MAF
             {
                 m_BucketCount = (uint)m_mafFrequencyCount * 2;
             }
-            else if(m_BucketStyle == BucketStyleEnum.Triple)
+            else if (m_BucketStyle == BucketStyleEnum.Triple)
             {
                 m_BucketCount = (uint)m_mafFrequencyCount * 3;
             }
@@ -132,7 +132,7 @@ namespace Gen3MAF
                     int CurrentFrequency = (int)m_mafDataPoints[i].Frequency;
 
                     m_mafDataPoints[i].LeftFrequency = (uint)LeftFrequency;
-                    m_mafDataPoints[i].LeftAirFlow = m_mafDataPoints[i-1].AirFlow;
+                    m_mafDataPoints[i].LeftAirFlow = m_mafDataPoints[i - 1].AirFlow;
 
                     AirflowDelta = (m_mafDataPoints[i - 1].AirFlow - m_mafDataPoints[i].AirFlow);
                     FrequencyDelta = (double)(LeftFrequency) - CurrentFrequency;
@@ -145,41 +145,41 @@ namespace Gen3MAF
                     m_mafDataPoints[i].RightFrequency = m_mafDataPoints[i + 1].Frequency;
                     m_mafDataPoints[i].RightAirFlow = m_mafDataPoints[i + 1].AirFlow;
 
-                    m_mafDataPoints[i].RightAirFlowSlope = (m_mafDataPoints[i + 1].AirFlow   - m_mafDataPoints[i].AirFlow)
+                    m_mafDataPoints[i].RightAirFlowSlope = (m_mafDataPoints[i + 1].AirFlow - m_mafDataPoints[i].AirFlow)
                                                         / (m_mafDataPoints[i + 1].Frequency - m_mafDataPoints[i].Frequency);
-                }   
+                }
 
             }
 
             //  at the edge there is no adjacent node
             //
-            m_mafDataPoints[0].LeftAirFlow      = double.NaN;
-            m_mafDataPoints[0].LeftAirFlowSlope = double.NaN; 
+            m_mafDataPoints[0].LeftAirFlow = double.NaN;
+            m_mafDataPoints[0].LeftAirFlowSlope = double.NaN;
 
-            m_mafDataPoints[m_mafFrequencyCount - 1].RightAirFlow      = double.NaN;
+            m_mafDataPoints[m_mafFrequencyCount - 1].RightAirFlow = double.NaN;
             m_mafDataPoints[m_mafFrequencyCount - 1].RightAirFlowSlope = double.NaN;
 
 
             for (int i = 0; i < (m_mafDataPoints.Length); i++)
             {
                 ref MafDataPoint Current = ref m_mafDataPoints[i];
-                double Step       = (double)m_MAFFrequencyStep;
+                double Step = (double)m_MAFFrequencyStep;
                 double BucketSize = Step / Current.DataPoints.Length;
                 double Frequency = (double)Current.Frequency;
 
                 for (int j = 0; j < (Current.DataPoints.Length); j++)
                 {
-                    
+
                     double BucketStart = (Frequency - (Step / 2.0)) + (BucketSize * j);
                     double BucketEnd = BucketStart + (BucketSize - 1);
 
                     double TargetFrequency = BucketStart + (BucketSize / 2.0);
-                    
+
                     double Slope = double.NaN;
                     double FrequencyDifference = TargetFrequency - Frequency;
 
-                    Current.DataPoints[j].BucketStart     = (uint)Math.Round(BucketStart);
-                    Current.DataPoints[j].BucketEnd       = (uint)Math.Round(BucketEnd);    
+                    Current.DataPoints[j].BucketStart = (uint)Math.Round(BucketStart);
+                    Current.DataPoints[j].BucketEnd = (uint)Math.Round(BucketEnd);
                     Current.DataPoints[j].TargetFrequency = (uint)Math.Round(TargetFrequency);
 
                     if (Current.DataPoints[j].TargetFrequency < Current.Frequency)
@@ -198,7 +198,7 @@ namespace Gen3MAF
                     Current.DataPoints[j].Airflow = m_mafDataPoints[i].AirFlow + (Slope * FrequencyDifference);
 
                 }
-                   
+
             }
 
 
@@ -228,6 +228,38 @@ namespace Gen3MAF
 
             }
         }
+
+        public void ReadRawAirflowData(
+            ref double[] Frequency,
+            ref double[] Airflow,
+            ref double[] AdjustedAirflow
+            )
+        {
+            Frequency = new double[ m_mafDataPoints.Length * m_mafDataPoints[0].DataPoints.Length ];
+            Airflow   = new double[m_mafDataPoints.Length * m_mafDataPoints[0].DataPoints.Length];
+            AdjustedAirflow = new double[m_mafDataPoints.Length * m_mafDataPoints[0].DataPoints.Length];
+
+            for (int i = 0; i < m_mafDataPoints.Length; i++)
+            {
+                ref MafDataPoint Current = ref m_mafDataPoints[i];
+
+                //
+                // read the adjustment data out of the tune cycle object and populate the MafDataPoint array with the adjustment values for each data point, based on the defined bucket style (single or double).
+                //
+
+                for (int j = 0; j < Current.DataPoints.Length; j++)
+                {
+                    Frequency[i * Current.DataPoints.Length + j] = Current.DataPoints[j].TargetFrequency;
+                    Airflow[i * Current.DataPoints.Length + j] = Current.DataPoints[j].Airflow;
+                    AdjustedAirflow[i * Current.DataPoints.Length + j] = Current.DataPoints[j].AirFlowAdjusted;
+
+                }
+
+
+            }
+        }
+           
+
 
         public void ProcessAdjustmentData(
             double AdjustmentPercent,
