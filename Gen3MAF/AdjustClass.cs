@@ -264,7 +264,9 @@ namespace Gen3MAF
         public void ProcessAdjustmentData(
             double AdjustmentPercent,
             double AdjustmentThreshold,
-            bool InterpolateMissingData
+            bool InterpolateMissingData,
+            double MinFrequency,
+            double MaxFrequency
             )
         {
             int FirstUpdatedBucketIndex = -1;
@@ -282,15 +284,15 @@ namespace Gen3MAF
                 ref MafDataPoint Current = ref m_mafDataPoints[i];
 
                 Current.BelowThreshold = false;
-                Current.AirFlowAdjusted = 0.0;
+                Current.AirFlowAdjusted = double.NaN;
                 Current.HasUpdatedAirFlow = false;
 
-
+                //
+                // Adjust the airflow for each bucket, applying overall reduction value'
+                //
                 for (int j = 0; j < Current.DataPoints.Length; j++)
                 {
                     double ModifiedAdjustmentPercent = Current.DataPoints[j].AirFlowAdjustment * AdjustmentPercent;
-
-
 
                     Current.DataPoints[j].AirFlowAdjusted = Current.DataPoints[j].Airflow * (1.0 + (ModifiedAdjustmentPercent / 100.0));
                 }
@@ -313,52 +315,17 @@ namespace Gen3MAF
                 }
                 else if (m_BucketStyle == BucketStyleEnum.Triple)
                 {
+                    ProcessTripleBucket(ref Current);
 
-                    double Bias = ((Current.DataPoints[0].Airflow + Current.DataPoints[2].Airflow) / 2) - Current.DataPoints[1].Airflow;
-                    Current.Bias = Bias;
-                    Current.LeftRightAverageAirflowAdjusted = (Current.DataPoints[0].AirFlowAdjusted + Current.DataPoints[2].AirFlowAdjusted) / 2;
+                }
 
-                    if (!double.IsNaN(Current.DataPoints[0].AirFlowAdjusted) &&
-                        !double.IsNaN(Current.DataPoints[1].AirFlowAdjusted) &&
-                        !double.IsNaN(Current.DataPoints[2].AirFlowAdjusted))
-                    {
-                        //
-                        //  We will take the value with the smaller change.
-                        //
-                        if (Math.Abs(Current.DataPoints[1].AirFlowAdjusted - Current.DataPoints[1].Airflow) <
-                             Math.Abs((Current.LeftRightAverageAirflowAdjusted - Bias) - Current.DataPoints[1].Airflow) ) 
-                        {
-                             Current.AirFlowAdjusted = Current.DataPoints[1].AirFlowAdjusted;
-                        }
-                        else
-                        {
-                             Current.AirFlowAdjusted = Current.LeftRightAverageAirflowAdjusted - Bias;
-                        }
-        
 
-                    }
-                    else if (!double.IsNaN(Current.DataPoints[1].AirFlowAdjusted))
-                    {
-                        //
-                        // if we only have the center bucket, just use the center bucket adjustment value as the adjusted airflow value for the current data point
-                        //
-                        Current.AirFlowAdjusted = Current.DataPoints[1].AirFlowAdjusted;
-                    }
-                    else if (!double.IsNaN(Current.DataPoints[0].AirFlowAdjusted) && !double.IsNaN(Current.DataPoints[2].AirFlowAdjusted))
-                    {
-                        //
-                        // if we only have the left and right buckets, just average the left and right bucket adjustment values together to get the adjusted airflow value for the current data point
-                        //
-                        
-                        Current.AirFlowAdjusted = Current.LeftRightAverageAirflowAdjusted - Bias;
-                    }
-                    else
-                    {
-                        //
-                        // if we don't have any valid adjustment values for the left, center, or right buckets, then we will just leave the adjusted airflow value as 0 for now, and we will deal with this case later when we go through the array to check for any missing updated airflow values and fill them in accordingly.
-                        //
-                        Current.AirFlowAdjusted = double.NaN;
-                    }
+                if (Current.Frequency < MinFrequency || Current.Frequency > MaxFrequency)
+                {
+                    //
+                    // everything not in range is set to NaN
+                    //
+                    Current.AirFlowAdjusted = double.NaN;
                 }
                 //  
                 //  if the adjusted airflow is NaN, it means we got not updated data from the scanner app. THis means no datapoints were collected
@@ -501,6 +468,50 @@ namespace Gen3MAF
 
                 return;
         }
+
+        void ProcessTripleBucket(
+             ref MafDataPoint Current
+            )
+        {
+            double Bias = (((Current.DataPoints[0].Airflow + Current.DataPoints[2].Airflow) / 2) - Current.DataPoints[1].Airflow) / Current.DataPoints[1].Airflow;
+            Current.Bias = Bias;
+            Current.LeftRightAverageAirflowAdjusted = (Current.DataPoints[0].AirFlowAdjusted + Current.DataPoints[2].AirFlowAdjusted) / 2;
+
+            Current.LeftRightAverageAirflowAdjusted = Current.LeftRightAverageAirflowAdjusted - (Current.LeftRightAverageAirflowAdjusted * Bias);
+
+            if (!double.IsNaN(Current.DataPoints[0].AirFlowAdjusted) &&
+                !double.IsNaN(Current.DataPoints[1].AirFlowAdjusted) &&
+                !double.IsNaN(Current.DataPoints[2].AirFlowAdjusted))
+            {
+                //
+                //  we have all three buckets, take the average of the center and the adjusted average of the left and right values
+                //
+                Current.AirFlowAdjusted = (Current.DataPoints[1].AirFlowAdjusted + ( Current.LeftRightAverageAirflowAdjusted * 2 ) ) / 3;
+            }
+            else if (!double.IsNaN(Current.DataPoints[1].AirFlowAdjusted))
+            {
+                //
+                // if we only have the center bucket, just use the center bucket adjustment value as the adjusted airflow value for the current data point
+                //
+                Current.AirFlowAdjusted = Current.DataPoints[1].AirFlowAdjusted;
+            }
+            else if (!double.IsNaN(Current.DataPoints[0].AirFlowAdjusted) && !double.IsNaN(Current.DataPoints[2].AirFlowAdjusted))
+            {
+                //
+                // if we only have the left and right buckets, just average the left and right bucket adjustment values together to get the adjusted airflow value for the current data point
+                //
+
+                Current.AirFlowAdjusted = Current.LeftRightAverageAirflowAdjusted;
+            }
+            else
+            {
+                //
+                // if we don't have any valid adjustment values for the left, center, or right buckets, then we will just leave the adjusted airflow value as 0 for now, and we will deal with this case later when we go through the array to check for any missing updated airflow values and fill them in accordingly.
+                //
+                Current.AirFlowAdjusted = double.NaN;
+            }
+        }
+
 
         public ReturnDataPoint GetDataPointAtIndex(int i)
         {

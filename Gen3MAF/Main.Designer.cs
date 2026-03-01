@@ -68,12 +68,19 @@
             GetAirFlowFromLast_button = new Button();
             InterpolateMissingData_checkBox = new CheckBox();
             PlotRaw_button = new Button();
+            MinFrequency_trackBar = new TrackBar();
+            MaxFrequency_trackBar = new TrackBar();
+            MinMax_label = new Label();
+            MinFrequency_label = new Label();
+            MaxFrequency_label = new Label();
             contextMenuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)MAF_dataGridView).BeginInit();
             ((System.ComponentModel.ISupportInitialize)AdjustmentPercent_trackBar).BeginInit();
             ((System.ComponentModel.ISupportInitialize)AdjustedAirflow_dataGridView).BeginInit();
             menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)AdjustmentThreshold_trackBar).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)MinFrequency_trackBar).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)MaxFrequency_trackBar).BeginInit();
             SuspendLayout();
             // 
             // contextMenuStrip1
@@ -219,7 +226,7 @@
             // 
             AdjustedAirflow_dataGridView.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             AdjustedAirflow_dataGridView.ContextMenuStrip = contextMenuStrip1;
-            AdjustedAirflow_dataGridView.Location = new Point(71, 633);
+            AdjustedAirflow_dataGridView.Location = new Point(27, 685);
             AdjustedAirflow_dataGridView.Name = "AdjustedAirflow_dataGridView";
             AdjustedAirflow_dataGridView.RowHeadersWidth = 51;
             AdjustedAirflow_dataGridView.ScrollBars = ScrollBars.Horizontal;
@@ -244,7 +251,7 @@
             menuStrip1.Items.AddRange(new ToolStripItem[] { session_ToolStripMenuItem, tuneToolStripMenuItem, plotAllToolStripMenuItem });
             menuStrip1.Location = new Point(0, 0);
             menuStrip1.Name = "menuStrip1";
-            menuStrip1.Size = new Size(1191, 28);
+            menuStrip1.Size = new Size(1211, 28);
             menuStrip1.TabIndex = 24;
             menuStrip1.Text = "menuStrip1";
             // 
@@ -331,7 +338,7 @@
             // 
             // CompleteCycle_button
             // 
-            CompleteCycle_button.Location = new Point(76, 844);
+            CompleteCycle_button.Location = new Point(73, 881);
             CompleteCycle_button.Name = "CompleteCycle_button";
             CompleteCycle_button.Size = new Size(94, 29);
             CompleteCycle_button.TabIndex = 26;
@@ -341,7 +348,7 @@
             // 
             // Discard_button
             // 
-            Discard_button.Location = new Point(234, 846);
+            Discard_button.Location = new Point(220, 881);
             Discard_button.Name = "Discard_button";
             Discard_button.Size = new Size(156, 29);
             Discard_button.TabIndex = 27;
@@ -363,7 +370,7 @@
             // Plot_button
             // 
             Plot_button.Enabled = false;
-            Plot_button.Location = new Point(977, 575);
+            Plot_button.Location = new Point(1105, 727);
             Plot_button.Name = "Plot_button";
             Plot_button.Size = new Size(94, 29);
             Plot_button.TabIndex = 29;
@@ -426,7 +433,7 @@
             InterpolateMissingData_checkBox.AutoSize = true;
             InterpolateMissingData_checkBox.Checked = true;
             InterpolateMissingData_checkBox.CheckState = CheckState.Checked;
-            InterpolateMissingData_checkBox.Location = new Point(837, 542);
+            InterpolateMissingData_checkBox.Location = new Point(78, 539);
             InterpolateMissingData_checkBox.Name = "InterpolateMissingData_checkBox";
             InterpolateMissingData_checkBox.Size = new Size(183, 24);
             InterpolateMissingData_checkBox.TabIndex = 35;
@@ -436,7 +443,7 @@
             // 
             // PlotRaw_button
             // 
-            PlotRaw_button.Location = new Point(867, 575);
+            PlotRaw_button.Location = new Point(1105, 780);
             PlotRaw_button.Name = "PlotRaw_button";
             PlotRaw_button.Size = new Size(94, 29);
             PlotRaw_button.TabIndex = 36;
@@ -444,11 +451,61 @@
             PlotRaw_button.UseVisualStyleBackColor = true;
             PlotRaw_button.Click += PlotRaw_button_Click;
             // 
+            // MinFrequency_trackBar
+            // 
+            MinFrequency_trackBar.Location = new Point(1003, 532);
+            MinFrequency_trackBar.Name = "MinFrequency_trackBar";
+            MinFrequency_trackBar.Size = new Size(152, 56);
+            MinFrequency_trackBar.TabIndex = 37;
+            MinFrequency_trackBar.Scroll += MinFrequency_trackBar_Scroll;
+            MinFrequency_trackBar.ValueChanged += MinFrequency_trackBar_ValueChanged;
+            // 
+            // MaxFrequency_trackBar
+            // 
+            MaxFrequency_trackBar.Location = new Point(1003, 594);
+            MaxFrequency_trackBar.Name = "MaxFrequency_trackBar";
+            MaxFrequency_trackBar.Size = new Size(152, 56);
+            MaxFrequency_trackBar.TabIndex = 38;
+            MaxFrequency_trackBar.Scroll += MaxFrequency_trackBar_Scroll;
+            MaxFrequency_trackBar.ValueChanged += MaxFrequency_trackBar_ValueChanged;
+            // 
+            // MinMax_label
+            // 
+            MinMax_label.AutoSize = true;
+            MinMax_label.Location = new Point(1003, 662);
+            MinMax_label.Name = "MinMax_label";
+            MinMax_label.Size = new Size(152, 20);
+            MinMax_label.TabIndex = 39;
+            MinMax_label.Text = "Min: 1500 Max: 12000";
+            // 
+            // MinFrequency_label
+            // 
+            MinFrequency_label.AutoSize = true;
+            MinFrequency_label.Location = new Point(942, 566);
+            MinFrequency_label.Name = "MinFrequency_label";
+            MinFrequency_label.Size = new Size(17, 20);
+            MinFrequency_label.TabIndex = 40;
+            MinFrequency_label.Text = "1";
+            // 
+            // MaxFrequency_label
+            // 
+            MaxFrequency_label.AutoSize = true;
+            MaxFrequency_label.Location = new Point(1162, 568);
+            MaxFrequency_label.Name = "MaxFrequency_label";
+            MaxFrequency_label.Size = new Size(49, 20);
+            MaxFrequency_label.TabIndex = 41;
+            MaxFrequency_label.Text = "99999";
+            // 
             // Main
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(1191, 888);
+            ClientSize = new Size(1211, 922);
+            Controls.Add(MaxFrequency_label);
+            Controls.Add(MinFrequency_label);
+            Controls.Add(MinMax_label);
+            Controls.Add(MaxFrequency_trackBar);
+            Controls.Add(MinFrequency_trackBar);
             Controls.Add(PlotRaw_button);
             Controls.Add(InterpolateMissingData_checkBox);
             Controls.Add(GetAirFlowFromLast_button);
@@ -486,6 +543,8 @@
             menuStrip1.ResumeLayout(false);
             menuStrip1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)AdjustmentThreshold_trackBar).EndInit();
+            ((System.ComponentModel.ISupportInitialize)MinFrequency_trackBar).EndInit();
+            ((System.ComponentModel.ISupportInitialize)MaxFrequency_trackBar).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -529,5 +588,10 @@
         private Button GetAirFlowFromLast_button;
         private CheckBox InterpolateMissingData_checkBox;
         private Button PlotRaw_button;
+        private TrackBar MinFrequency_trackBar;
+        private TrackBar MaxFrequency_trackBar;
+        private Label MinMax_label;
+        private Label MinFrequency_label;
+        private Label MaxFrequency_label;
     }
 }

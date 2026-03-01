@@ -94,7 +94,7 @@ namespace Gen3MAF
             LeftTuneAirflow_label.Text = DataPoint.LeftAirFlow.ToString("f3") + Flow;
             RightTuneAirflow_label.Text = DataPoint.RightAirFlow.ToString("f3") + Flow;
             TuneAirflow_label.Text = DataPoint.AirFlow.ToString("f3") + Flow;
-            Bias_label.Text = DataPoint.Bias.ToString("f3") + Flow;
+            Bias_label.Text = DataPoint.Bias.ToString("f5") + Flow;
 
             LeftRightAverage_label.Text = DataPoint.LeftRightAverageAirflowAdjusted.ToString("f3") + Flow;
             AdjustedAirflow_label.Text = DataPoint.AirFlowAdjusted.ToString("f3") + Flow;

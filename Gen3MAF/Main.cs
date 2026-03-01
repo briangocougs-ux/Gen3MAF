@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Reflection;
 using System.Reflection.Emit;
 using System.Windows.Forms;
 using System.Windows.Forms.DataVisualization.Charting;
@@ -116,6 +117,9 @@ namespace Gen3MAF
             InterpolateMissingData_checkBox.Enabled = false;
             InterpolateMissingData_checkBox.Checked = true;
 
+            MinFrequency_trackBar.Enabled = false;
+            MaxFrequency_trackBar.Enabled= false;   
+
 
             CompleteCycle_button.Enabled = false;
         }
@@ -126,6 +130,8 @@ namespace Gen3MAF
             ResetStateOfForm();
 
             m_SessionClass = NewSession;
+
+            InitRangeTrackBars(m_SessionClass.MinFrequency, m_SessionClass.MaxFrequency, m_SessionClass.FrequencyStep);
 
             m_AdjustObject = new AdjustClass(m_SessionClass.MinFrequency, m_SessionClass.MaxFrequency, m_SessionClass.FrequencyStep, m_SessionClass.BucketStyle);
 
@@ -285,6 +291,8 @@ namespace Gen3MAF
             CompleteCycle_button.Enabled = true;
             Plot_button.Enabled = true;
             InterpolateMissingData_checkBox.Enabled = true;
+            MinFrequency_trackBar.Enabled = true;
+            MaxFrequency_trackBar.Enabled = true;
 
             ProcessAdjustmentData();
 
@@ -375,11 +383,23 @@ namespace Gen3MAF
             double AdjustmentPercent = AdjustmentPercent_trackBar.Value / 100.0f;
 
             bool InterpolateMissingData = InterpolateMissingData_checkBox.Checked;
+            int MinFrequency = (MinFrequency_trackBar.Value * m_SessionClass.FrequencyStep) + m_SessionClass.MinFrequency;
+            int MaxFrequency = (MaxFrequency_trackBar.Value * m_SessionClass.FrequencyStep) + m_SessionClass.MinFrequency;
 
-            m_AdjustObject.ProcessAdjustmentData(AdjustmentPercent, m_AdjustThreshold, InterpolateMissingData);
+            if (m_AdjustObject != null)
+            {
+
+                m_AdjustObject.ProcessAdjustmentData(
+                    AdjustmentPercent,
+                    m_AdjustThreshold,
+                    InterpolateMissingData,
+                    MinFrequency,
+                    MaxFrequency
+                    );
 
 
-            UpdateAdjustedAirflowGrid();
+                UpdateAdjustedAirflowGrid();
+            }
 
             return;
         }
@@ -947,7 +967,13 @@ namespace Gen3MAF
             //
             AdjustObject.InitializeAirFlowFromTuneObject(tc);
             AdjustObject.ReadAdjustmentDataFromTuneObject(tc);
-            AdjustObject.ProcessAdjustmentData(1.0, m_AdjustThreshold, true);
+            AdjustObject.ProcessAdjustmentData(
+                1.0, 
+                m_AdjustThreshold, 
+                true, 
+                m_SessionClass.MinFrequency, 
+                m_SessionClass.MinFrequency
+                );
 
 
             double[] freq = new double[m_AdjustObject.GetFrequencyCount()];
@@ -996,7 +1022,13 @@ namespace Gen3MAF
                 // 
                 AdjustObject.InitializeAirFlowFromTuneObject(tc);
                 AdjustObject.ReadAdjustmentDataFromTuneObject(tc);
-                AdjustObject.ProcessAdjustmentData(1.0, m_AdjustThreshold, true);
+                AdjustObject.ProcessAdjustmentData(
+                    1.0, 
+                    m_AdjustThreshold, 
+                    true, 
+                    m_SessionClass.MinFrequency, 
+                    m_SessionClass.MinFrequency
+                    );
 
                 double[] newAir = new double[m_AdjustObject.GetFrequencyCount()];
 
@@ -1129,9 +1161,9 @@ namespace Gen3MAF
             double[] AdjustedAirflow = new double[1];
             var adjusted = new List<double[]>();
 
-            
 
-            m_AdjustObject.ReadRawAirflowData(ref Frequency,ref AirFlow,ref AdjustedAirflow);
+
+            m_AdjustObject.ReadRawAirflowData(ref Frequency, ref AirFlow, ref AdjustedAirflow);
 
             adjusted.Add(AirFlow);
             adjusted.Add(AdjustedAirflow);
@@ -1142,6 +1174,61 @@ namespace Gen3MAF
                 );
 
             f.Show(this);
+        }
+
+        private void MinFrequency_trackBar_Scroll(object sender, EventArgs e)
+        {
+
+        }
+
+        private void MaxFrequency_trackBar_Scroll(object sender, EventArgs e)
+        {
+
+        }
+
+        private void MinFrequency_trackBar_ValueChanged(object sender, EventArgs e)
+        {
+            if (MinFrequency_trackBar.Value > MaxFrequency_trackBar.Value)
+                MinFrequency_trackBar.Value = MaxFrequency_trackBar.Value;
+
+            UpdateRange();
+        }
+
+        private void MaxFrequency_trackBar_ValueChanged(object sender, EventArgs e)
+        {
+            if (MaxFrequency_trackBar.Value < MinFrequency_trackBar.Value)
+                MaxFrequency_trackBar.Value = MinFrequency_trackBar.Value;
+
+            UpdateRange();
+        }
+
+        private void UpdateRange()
+        {
+            int min = (MinFrequency_trackBar.Value * m_SessionClass.FrequencyStep) + m_SessionClass.MinFrequency;
+            int max = (MaxFrequency_trackBar.Value * m_SessionClass.FrequencyStep) + m_SessionClass.MinFrequency;
+
+            MinMax_label.Text = $"{min} - {max}";
+            ProcessAdjustmentData();
+        }
+
+        private void InitRangeTrackBars(int MinFrequency, int MaxFrequency, int Step)
+        {
+            MinFrequency_trackBar.Minimum = 0;
+            MaxFrequency_trackBar.Minimum = 0;
+            
+            MinFrequency_trackBar.Maximum = ((MaxFrequency - MinFrequency) / Step);
+            MaxFrequency_trackBar.Maximum = ((MaxFrequency - MinFrequency) / Step);
+
+            MinFrequency_trackBar.TickFrequency = 5;
+            MaxFrequency_trackBar.TickFrequency = 5;
+
+            MinFrequency_trackBar.Value=0;
+            MaxFrequency_trackBar.Value= ((MaxFrequency - MinFrequency) / Step);
+
+            MinFrequency_label.Text = MinFrequency.ToString();
+            MaxFrequency_label.Text = MaxFrequency.ToString();  
+
+
         }
     }
 
