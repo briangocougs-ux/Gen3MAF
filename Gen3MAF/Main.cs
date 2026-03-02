@@ -30,7 +30,7 @@ namespace Gen3MAF
         SessionClass m_SessionClass;
 
         TuneCycle m_CurrentTuneCycle;
-        bool m_TuneCycleReOpened = false;   
+        bool m_TuneCycleReOpened = false;
 
         string m_CurrentFilePath = "";
 
@@ -629,7 +629,7 @@ namespace Gen3MAF
 
         private void CompleteCycle_button_Click(object sender, EventArgs e)
         {
-            
+
 
             if (!m_TuneCycleReOpened)
             {
@@ -653,18 +653,13 @@ namespace Gen3MAF
 
                 m_SessionClass.AddTuneCycle(m_CurrentTuneCycle);
             }
-            
+
             m_TuneCycleReOpened = false;
             m_CurrentTuneCycle = null;
-#if false
-
-            RebuildTuneCyclesMenu();
-#endif
-
 
             ProcessOriginalAirflow_button.Enabled = false;
             ApplyAdjustments.Enabled = false;
-            plotAllToolStripMenuItem.Enabled = true; 
+            plotAllToolStripMenuItem.Enabled = true;
             tuneToolStripMenuItem.Enabled = true;
             ResetStateOfForm();
         }
@@ -778,10 +773,6 @@ namespace Gen3MAF
                     tuneToolStripMenuItem.Enabled = true;
                     if (m_SessionClass.HasCompletedTuneCycle())
                     {
-#if false
-
-                        RebuildTuneCyclesMenu();
-#endif
                         plotAllToolStripMenuItem.Enabled = true;
                     }
                     else
@@ -925,97 +916,6 @@ namespace Gen3MAF
 
             plot.ShowDialog();
         }
-#if false
-
-        private void EnsureTuneCyclesMenu()
-        {
-            if (_tuneCyclesMenu != null) return;
-
-            _tuneCyclesMenu = new ToolStripMenuItem("Graphs");
-            menuStrip1.Items.Add(_tuneCyclesMenu);
-        }
-
-        private void RebuildTuneCyclesMenu()
-        {
-            EnsureTuneCyclesMenu();
-
-            _tuneCyclesMenu.DropDownItems.Clear();
-
-            if (m_SessionClass == null || m_SessionClass.GetTuneCycleCount() == 0)
-            {
-                _tuneCyclesMenu.DropDownItems.Add(new ToolStripMenuItem("(none)") { Enabled = false });
-                return;
-            }
-
-            for (int i = 0; i < m_SessionClass.GetTuneCycleCount(); i++)
-            {
-                var tc = m_SessionClass.GetTuneCycleAtIndex(i);
-
-                // Pick whatever label makes sense in your app
-                DateTime Utc = tc.GetTimeStamp();
-                DateTime Local = Utc.ToLocalTime();
-
-                string label = Local.ToString();
-
-                var mi = new ToolStripMenuItem(label)
-                {
-                    Tag = tc // stash the object
-                };
-
-                mi.Click += TuneCycleMenuItem_Click;
-                _tuneCyclesMenu.DropDownItems.Add(mi);
-            }
-        }
-
-        private void TuneCycleMenuItem_Click(object? sender, EventArgs e)
-        {
-            if (sender is not ToolStripMenuItem mi) return;
-
-            if (mi.Tag is not TuneCycle tc) return;
-
-            // Pull arrays out of your TuneCycle (names here are placeholders)
-
-            var BaseTuneCycle = m_SessionClass.GetTuneCycleAtIndex(0);
-
-            //  Create an AdjustClass instance to  to use to recompute the adjusted airflow values based on the original airflow and adjustment data stored in the selected tune cycle. This allows us to display the original, adjusted, and base airflow values for comparison in the plot.
-            //  
-            //
-            AdjustClass AdjustObject = new AdjustClass(m_SessionClass.MinFrequency, m_SessionClass.MaxFrequency, m_SessionClass.FrequencyStep, m_SessionClass.BucketStyle);
-
-            //
-            //  recompute the adjusted airflow values based on the original airflow and adjustment data stored in the selected tune cycle. This allows us to display the original, adjusted, and base airflow values for comparison in the plot.
-            //
-            AdjustObject.InitializeAirFlowFromTuneObject(tc);
-            AdjustObject.ReadAdjustmentDataFromTuneObject(tc);
-            AdjustObject.ProcessAdjustmentData(
-                1.0,
-                m_AdjustThreshold,
-                true,
-                m_SessionClass.MinFrequency,
-                m_SessionClass.MaxFrequency
-                );
-
-
-            double[] freq = new double[m_AdjustObject.GetFrequencyCount()];
-            double[] baseAir = new double[m_AdjustObject.GetFrequencyCount()];
-            double[] oldAir = new double[m_AdjustObject.GetFrequencyCount()];
-            double[] newAir = new double[m_AdjustObject.GetFrequencyCount()];
-
-            for (int i = 0; i < m_AdjustObject.GetFrequencyCount(); i++)
-            {
-                ReturnDataPoint Point = AdjustObject.GetDataPointAtIndex(i);
-
-                freq[i] = (double)Point.Frequency;
-
-                baseAir[i] = BaseTuneCycle.GetAirflowAtIndex(i);
-                oldAir[i] = Point.Airflow;
-                newAir[i] = Point.AdjustedAirflow;
-            }
-
-            var f = new PlotForm1(freq, baseAir, oldAir, newAir, "TuneCycle");
-            f.Show(this);
-        }
-#endif
 
         private void plotAllToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -1296,20 +1196,7 @@ namespace Gen3MAF
                 root.DropDownItems.Add(mi);
             }
 
-#if false
 
-            // 3) Add your dynamic items at the bottom
-            foreach (var tc in GetRecentTuneCycles()) // your data source
-            {
-                var item = new ToolStripMenuItem(tc.DisplayName)
-                {
-                    Tag = tc, // stash object for click handler
-                };
-                item.Click += RecentTuneCycle_Click;
-
-                root.DropDownItems.Add(item);
-            }
-#endif
             // Optional: disable separator if no dynamic items
             _dynSep.Visible = root.DropDownItems.Count > sepIndex + 1;
         }
@@ -1319,8 +1206,7 @@ namespace Gen3MAF
             if (sender is not ToolStripMenuItem mi) return;
             if (mi.Tag is not TuneCycle tc) return;
 
-            //OpenTuneCycle(tc);
-
+           
             ApplyAdjustments.Enabled = false;
             CompleteCycle_button.Enabled = false;
             Pause_button.Enabled = false;
@@ -1329,10 +1215,7 @@ namespace Gen3MAF
 
             m_TuneCycleReOpened = true;
             m_CurrentTuneCycle = tc;
-#if false
 
-            m_CurrentTuneCycle.ChangePausedToAirflowPopulated();
-#endif
             //  fill out the airflow text box like it would be in the normal work flow so it looks the same to the user.
             //
             //
@@ -1372,6 +1255,11 @@ namespace Gen3MAF
             tuneToolStripMenuItem.Enabled = false; // disable the tune menu to prevent opening another tune cycle while we have one open, the user needs to complete or discard the current tune cycle before they can open another one.
 
             ProcessAdjustmentData();
+        }
+
+        private void MinMax_label_Click(object sender, EventArgs e)
+        {
+
         }
     }
 

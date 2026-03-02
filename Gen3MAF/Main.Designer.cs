@@ -109,10 +109,10 @@
             // 
             AirFlow_richTextBox.ContextMenuStrip = contextMenuStrip1;
             AirFlow_richTextBox.Font = new Font("Courier New", 9F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            AirFlow_richTextBox.Location = new Point(71, 149);
+            AirFlow_richTextBox.Location = new Point(27, 149);
             AirFlow_richTextBox.Name = "AirFlow_richTextBox";
             AirFlow_richTextBox.ScrollBars = RichTextBoxScrollBars.Horizontal;
-            AirFlow_richTextBox.Size = new Size(1072, 61);
+            AirFlow_richTextBox.Size = new Size(1172, 61);
             AirFlow_richTextBox.TabIndex = 1;
             AirFlow_richTextBox.Text = "";
             AirFlow_richTextBox.WordWrap = false;
@@ -121,7 +121,7 @@
             // ProcessOriginalAirflow_button
             // 
             ProcessOriginalAirflow_button.Enabled = false;
-            ProcessOriginalAirflow_button.Location = new Point(71, 216);
+            ProcessOriginalAirflow_button.Location = new Point(27, 216);
             ProcessOriginalAirflow_button.Name = "ProcessOriginalAirflow_button";
             ProcessOriginalAirflow_button.Size = new Size(188, 29);
             ProcessOriginalAirflow_button.TabIndex = 2;
@@ -134,12 +134,12 @@
             MAF_dataGridView.AllowUserToAddRows = false;
             MAF_dataGridView.AllowUserToDeleteRows = false;
             MAF_dataGridView.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            MAF_dataGridView.Location = new Point(71, 280);
+            MAF_dataGridView.Location = new Point(27, 280);
             MAF_dataGridView.MultiSelect = false;
             MAF_dataGridView.Name = "MAF_dataGridView";
             MAF_dataGridView.ReadOnly = true;
             MAF_dataGridView.RowHeadersWidth = 51;
-            MAF_dataGridView.Size = new Size(1072, 88);
+            MAF_dataGridView.Size = new Size(1172, 88);
             MAF_dataGridView.TabIndex = 3;
             MAF_dataGridView.CellContentClick += MAF_dataGridView_CellDoubleClick;
             MAF_dataGridView.CellContentDoubleClick += MAF_dataGridView_CellDoubleClick;
@@ -151,10 +151,10 @@
             // 
             Buckets_richTextBox.ContextMenuStrip = contextMenuStrip1;
             Buckets_richTextBox.Font = new Font("Courier New", 9F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            Buckets_richTextBox.Location = new Point(78, 51);
+            Buckets_richTextBox.Location = new Point(27, 55);
             Buckets_richTextBox.Name = "Buckets_richTextBox";
             Buckets_richTextBox.ReadOnly = true;
-            Buckets_richTextBox.Size = new Size(1065, 49);
+            Buckets_richTextBox.Size = new Size(1172, 49);
             Buckets_richTextBox.TabIndex = 4;
             Buckets_richTextBox.Text = "";
             Buckets_richTextBox.WordWrap = false;
@@ -162,7 +162,7 @@
             // label1
             // 
             label1.AutoSize = true;
-            label1.Location = new Point(68, 28);
+            label1.Location = new Point(27, 28);
             label1.Name = "label1";
             label1.Size = new Size(439, 20);
             label1.TabIndex = 8;
@@ -172,10 +172,10 @@
             // 
             AdjustmentBuckets_richTextBox.ContextMenuStrip = contextMenuStrip1;
             AdjustmentBuckets_richTextBox.Font = new Font("Courier New", 9F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            AdjustmentBuckets_richTextBox.Location = new Point(71, 472);
+            AdjustmentBuckets_richTextBox.Location = new Point(27, 457);
             AdjustmentBuckets_richTextBox.Name = "AdjustmentBuckets_richTextBox";
             AdjustmentBuckets_richTextBox.ScrollBars = RichTextBoxScrollBars.Horizontal;
-            AdjustmentBuckets_richTextBox.Size = new Size(1062, 54);
+            AdjustmentBuckets_richTextBox.Size = new Size(1172, 54);
             AdjustmentBuckets_richTextBox.TabIndex = 9;
             AdjustmentBuckets_richTextBox.Text = "";
             AdjustmentBuckets_richTextBox.WordWrap = false;
@@ -183,7 +183,7 @@
             // label2
             // 
             label2.AutoSize = true;
-            label2.Location = new Point(71, 449);
+            label2.Location = new Point(27, 434);
             label2.Name = "label2";
             label2.Size = new Size(319, 20);
             label2.TabIndex = 10;
@@ -191,7 +191,7 @@
             // 
             // ApplyAdjustments
             // 
-            ApplyAdjustments.Location = new Point(71, 571);
+            ApplyAdjustments.Location = new Point(27, 534);
             ApplyAdjustments.Name = "ApplyAdjustments";
             ApplyAdjustments.Size = new Size(158, 29);
             ApplyAdjustments.TabIndex = 11;
@@ -203,7 +203,7 @@
             // 
             AdjustmentPercent_trackBar.Enabled = false;
             AdjustmentPercent_trackBar.LargeChange = 10;
-            AdjustmentPercent_trackBar.Location = new Point(276, 571);
+            AdjustmentPercent_trackBar.Location = new Point(243, 623);
             AdjustmentPercent_trackBar.Maximum = 100;
             AdjustmentPercent_trackBar.Minimum = 1;
             AdjustmentPercent_trackBar.Name = "AdjustmentPercent_trackBar";
@@ -216,7 +216,7 @@
             // AdjustmentPercent_label
             // 
             AdjustmentPercent_label.AutoSize = true;
-            AdjustmentPercent_label.Location = new Point(438, 575);
+            AdjustmentPercent_label.Location = new Point(414, 623);
             AdjustmentPercent_label.Name = "AdjustmentPercent_label";
             AdjustmentPercent_label.Size = new Size(25, 20);
             AdjustmentPercent_label.TabIndex = 13;
@@ -239,7 +239,7 @@
             // Airflow_label
             // 
             Airflow_label.AutoSize = true;
-            Airflow_label.Location = new Point(71, 114);
+            Airflow_label.Location = new Point(27, 114);
             Airflow_label.Name = "Airflow_label";
             Airflow_label.Size = new Size(257, 20);
             Airflow_label.TabIndex = 22;
@@ -265,35 +265,35 @@
             // NewSession_ToolStripMenuItem
             // 
             NewSession_ToolStripMenuItem.Name = "NewSession_ToolStripMenuItem";
-            NewSession_ToolStripMenuItem.Size = new Size(224, 26);
+            NewSession_ToolStripMenuItem.Size = new Size(143, 26);
             NewSession_ToolStripMenuItem.Text = "&New";
             NewSession_ToolStripMenuItem.Click += create_ToolStripMenuItem_Click;
             // 
             // open_ToolStripMenuItem
             // 
             open_ToolStripMenuItem.Name = "open_ToolStripMenuItem";
-            open_ToolStripMenuItem.Size = new Size(224, 26);
+            open_ToolStripMenuItem.Size = new Size(143, 26);
             open_ToolStripMenuItem.Text = "&Open";
             open_ToolStripMenuItem.Click += open_ToolStripMenuItem_Click;
             // 
             // saveToolStripMenuItem
             // 
             saveToolStripMenuItem.Name = "saveToolStripMenuItem";
-            saveToolStripMenuItem.Size = new Size(224, 26);
+            saveToolStripMenuItem.Size = new Size(143, 26);
             saveToolStripMenuItem.Text = "&Save";
             saveToolStripMenuItem.Click += saveToolStripMenuItem_Click;
             // 
             // saveAsToolStripMenuItem
             // 
             saveAsToolStripMenuItem.Name = "saveAsToolStripMenuItem";
-            saveAsToolStripMenuItem.Size = new Size(224, 26);
+            saveAsToolStripMenuItem.Size = new Size(143, 26);
             saveAsToolStripMenuItem.Text = "Save &As";
             saveAsToolStripMenuItem.Click += saveAsToolStripMenuItem_Click;
             // 
             // closeToolStripMenuItem
             // 
             closeToolStripMenuItem.Name = "closeToolStripMenuItem";
-            closeToolStripMenuItem.Size = new Size(224, 26);
+            closeToolStripMenuItem.Size = new Size(143, 26);
             closeToolStripMenuItem.Text = "&Close";
             closeToolStripMenuItem.Click += closeToolStripMenuItem_Click;
             // 
@@ -331,7 +331,7 @@
             // CurrentMafCurve_label
             // 
             CurrentMafCurve_label.AutoSize = true;
-            CurrentMafCurve_label.Location = new Point(76, 257);
+            CurrentMafCurve_label.Location = new Point(27, 257);
             CurrentMafCurve_label.Name = "CurrentMafCurve_label";
             CurrentMafCurve_label.Size = new Size(239, 20);
             CurrentMafCurve_label.TabIndex = 25;
@@ -360,7 +360,7 @@
             // Pause_button
             // 
             Pause_button.Enabled = false;
-            Pause_button.Location = new Point(73, 396);
+            Pause_button.Location = new Point(27, 387);
             Pause_button.Name = "Pause_button";
             Pause_button.Size = new Size(94, 29);
             Pause_button.TabIndex = 28;
@@ -381,7 +381,7 @@
             // 
             // AdjustmentThreshold_trackBar
             // 
-            AdjustmentThreshold_trackBar.Location = new Point(580, 571);
+            AdjustmentThreshold_trackBar.Location = new Point(516, 623);
             AdjustmentThreshold_trackBar.Maximum = 60;
             AdjustmentThreshold_trackBar.Minimum = 1;
             AdjustmentThreshold_trackBar.Name = "AdjustmentThreshold_trackBar";
@@ -394,7 +394,7 @@
             // ThresholdValue_label
             // 
             ThresholdValue_label.AutoSize = true;
-            ThresholdValue_label.Location = new Point(731, 579);
+            ThresholdValue_label.Location = new Point(682, 623);
             ThresholdValue_label.Name = "ThresholdValue_label";
             ThresholdValue_label.Size = new Size(69, 20);
             ThresholdValue_label.TabIndex = 31;
@@ -404,7 +404,7 @@
             // AdjustText_label
             // 
             AdjustText_label.AutoSize = true;
-            AdjustText_label.Location = new Point(301, 543);
+            AdjustText_label.Location = new Point(255, 594);
             AdjustText_label.Name = "AdjustText_label";
             AdjustText_label.Size = new Size(121, 20);
             AdjustText_label.TabIndex = 32;
@@ -413,7 +413,7 @@
             // ThresholdText_label
             // 
             ThresholdText_label.AutoSize = true;
-            ThresholdText_label.Location = new Point(605, 543);
+            ThresholdText_label.Location = new Point(516, 594);
             ThresholdText_label.Name = "ThresholdText_label";
             ThresholdText_label.Size = new Size(147, 20);
             ThresholdText_label.TabIndex = 33;
@@ -421,9 +421,9 @@
             // 
             // GetAirFlowFromLast_button
             // 
-            GetAirFlowFromLast_button.Location = new Point(817, 110);
+            GetAirFlowFromLast_button.Location = new Point(945, 110);
             GetAirFlowFromLast_button.Name = "GetAirFlowFromLast_button";
-            GetAirFlowFromLast_button.Size = new Size(316, 29);
+            GetAirFlowFromLast_button.Size = new Size(254, 29);
             GetAirFlowFromLast_button.TabIndex = 34;
             GetAirFlowFromLast_button.Text = "`Copy Airflow from last cycle";
             GetAirFlowFromLast_button.UseVisualStyleBackColor = true;
@@ -434,7 +434,7 @@
             InterpolateMissingData_checkBox.AutoSize = true;
             InterpolateMissingData_checkBox.Checked = true;
             InterpolateMissingData_checkBox.CheckState = CheckState.Checked;
-            InterpolateMissingData_checkBox.Location = new Point(78, 539);
+            InterpolateMissingData_checkBox.Location = new Point(27, 638);
             InterpolateMissingData_checkBox.Name = "InterpolateMissingData_checkBox";
             InterpolateMissingData_checkBox.Size = new Size(183, 24);
             InterpolateMissingData_checkBox.TabIndex = 35;
@@ -454,7 +454,7 @@
             // 
             // MinFrequency_trackBar
             // 
-            MinFrequency_trackBar.Location = new Point(1003, 532);
+            MinFrequency_trackBar.Location = new Point(932, 558);
             MinFrequency_trackBar.Name = "MinFrequency_trackBar";
             MinFrequency_trackBar.Size = new Size(152, 56);
             MinFrequency_trackBar.TabIndex = 37;
@@ -463,7 +463,7 @@
             // 
             // MaxFrequency_trackBar
             // 
-            MaxFrequency_trackBar.Location = new Point(1003, 594);
+            MaxFrequency_trackBar.Location = new Point(932, 623);
             MaxFrequency_trackBar.Name = "MaxFrequency_trackBar";
             MaxFrequency_trackBar.Size = new Size(152, 56);
             MaxFrequency_trackBar.TabIndex = 38;
@@ -473,16 +473,17 @@
             // MinMax_label
             // 
             MinMax_label.AutoSize = true;
-            MinMax_label.Location = new Point(1003, 662);
+            MinMax_label.Location = new Point(932, 534);
             MinMax_label.Name = "MinMax_label";
             MinMax_label.Size = new Size(152, 20);
             MinMax_label.TabIndex = 39;
             MinMax_label.Text = "Min: 1500 Max: 12000";
+            MinMax_label.Click += MinMax_label_Click;
             // 
             // MinFrequency_label
             // 
             MinFrequency_label.AutoSize = true;
-            MinFrequency_label.Location = new Point(942, 566);
+            MinFrequency_label.Location = new Point(893, 594);
             MinFrequency_label.Name = "MinFrequency_label";
             MinFrequency_label.Size = new Size(17, 20);
             MinFrequency_label.TabIndex = 40;
@@ -491,7 +492,7 @@
             // MaxFrequency_label
             // 
             MaxFrequency_label.AutoSize = true;
-            MaxFrequency_label.Location = new Point(1162, 568);
+            MaxFrequency_label.Location = new Point(1090, 594);
             MaxFrequency_label.Name = "MaxFrequency_label";
             MaxFrequency_label.Size = new Size(49, 20);
             MaxFrequency_label.TabIndex = 41;
