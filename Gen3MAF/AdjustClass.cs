@@ -113,6 +113,8 @@ namespace Gen3MAF
         {
             //
             //  fill out the original airflow values from the current tune.
+            //  we do this first because we need the original airflow values to calculate the left and right bucket airflow values for the double and triple bucket styles, which are needed to calculate the adjusted airflow values for the left and right buckets based on the distance from the target frequency, using linear interpolation.
+            //
             //
             for (int i = 0; i < m_mafFrequencyCount; i++)
             {
@@ -122,6 +124,10 @@ namespace Gen3MAF
 
             }
 
+            //
+            //  Get the airflow and frequency from the neighboring data points,
+            //  so we can calculate the slope to the the neighebors left and right
+            //
             for (int i = 0; i < m_mafFrequencyCount; i++)
             {
                 if (i > 0)
@@ -159,7 +165,9 @@ namespace Gen3MAF
             m_mafDataPoints[m_mafFrequencyCount - 1].RightAirFlow = double.NaN;
             m_mafDataPoints[m_mafFrequencyCount - 1].RightAirFlowSlope = double.NaN;
 
-
+            //
+            //  Now we will fill out the bucket data for each data point
+            //
             for (int i = 0; i < (m_mafDataPoints.Length); i++)
             {
                 ref MafDataPoint Current = ref m_mafDataPoints[i];
@@ -200,8 +208,6 @@ namespace Gen3MAF
                 }
 
             }
-
-
 
             return;
         }

@@ -326,7 +326,7 @@
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(486, 419);
+            ClientSize = new Size(515, 419);
             Controls.Add(Bias_label);
             Controls.Add(LeftRightAverage_label);
             Controls.Add(RightTuneAirflow_label);
