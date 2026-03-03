@@ -39,8 +39,6 @@ namespace Gen3MAF
 
         double m_AdjustThreshold = DEFAULT_THRESHOLD_VALUE;
 
-        ToolStripMenuItem _tuneCyclesMenu;
-
         private readonly ToolStripSeparator _dynSep = new ToolStripSeparator();
 
         public Main()
@@ -70,11 +68,7 @@ namespace Gen3MAF
 
         private void Form1_Load(object sender, EventArgs e)
         {
-
-
             ResetStateOfForm();
-
-
         }
 
         private void UpdateTitle()
@@ -83,8 +77,11 @@ namespace Gen3MAF
                 ? Path.GetFileName(m_CurrentFilePath)
                 : "Untitled";
 
-            this.Text = $"MAF Tuning Tool - {fileName}" +
-                        (m_SessionClass.IsDirty() ? " *" : "");
+            if (m_SessionClass != null)
+            {
+                this.Text = $"MAF Tuning Tool - {fileName}" +
+                            (m_SessionClass.IsDirty() ? " *" : "");
+            }
         }
 
         void ResetStateOfForm()
@@ -127,6 +124,25 @@ namespace Gen3MAF
             CompleteCycle_button.Enabled = false;
         }
 
+        void SetMenusForSessionState(bool Active)
+        {
+
+            NewSession_ToolStripMenuItem.Enabled = !Active;
+            open_ToolStripMenuItem.Enabled = !Active;
+            saveToolStripMenuItem.Enabled = Active;
+            saveAsToolStripMenuItem.Enabled = Active;
+            closeToolStripMenuItem.Enabled = Active;
+
+            tuneToolStripMenuItem.Enabled = Active;
+
+            if (!Active)
+            {
+                //  disable on close, may or not be enabled depending on tune cycles later
+                //
+                plotAllToolStripMenuItem.Enabled = Active;
+            }
+        }
+
         void InitializeFormForNewSession(SessionClass NewSession)
         {
 
@@ -134,9 +150,48 @@ namespace Gen3MAF
 
             m_SessionClass = NewSession;
 
+            m_AdjustObject = new AdjustClass(m_SessionClass.MinFrequency, m_SessionClass.MaxFrequency, m_SessionClass.FrequencyStep, m_SessionClass.BucketStyle);
+
             InitRangeTrackBars(m_SessionClass.MinFrequency, m_SessionClass.MaxFrequency, m_SessionClass.FrequencyStep);
 
-            m_AdjustObject = new AdjustClass(m_SessionClass.MinFrequency, m_SessionClass.MaxFrequency, m_SessionClass.FrequencyStep, m_SessionClass.BucketStyle);
+            //
+            // assume it is a new session and enable menu here, if there is a previous tune cycle, we will adjust the menu state in the code below  
+            //
+            NewTuneCycle_toolStripMenuItem.Enabled = true;
+            Continue_ToolStripMenuItem.Enabled = false;
+
+            TuneCycle PreviousTuneCycle = null;
+
+            PreviousTuneCycle = m_SessionClass.GetLastTuneCycle();
+
+
+            if (PreviousTuneCycle != null)
+            {
+                if (PreviousTuneCycle.IsPaused())
+                {
+                    //
+                    //  the last tune cycle was paused, enable the continue menu and disable new menu
+                    //
+                    Continue_ToolStripMenuItem.Enabled = true;
+                    NewTuneCycle_toolStripMenuItem.Enabled = false;
+                }
+            }
+
+            // 
+            //  enable the top level menu in any case
+            //
+            tuneToolStripMenuItem.Enabled = true;
+
+            if (m_SessionClass.HasCompletedTuneCycle())
+            {
+                plotAllToolStripMenuItem.Enabled = true;
+            }
+            else
+            {
+                plotAllToolStripMenuItem.Enabled = false;
+            }
+
+            SetMenusForSessionState(true);
 
             return;
 
@@ -148,9 +203,8 @@ namespace Gen3MAF
             double[] mafAirflowValues = new double[m_AdjustObject.GetFrequencyCount()];
 
             //
-            //  user enter airflow value in the text box, parse them and put them in an array of doubles
+            //  user entered airflow value in the text box, parse them and put them in an array of doubles
             //
-
 
             mafAirflowStrings = AirFlow_richTextBox.Text.Split(
                                                     new[] { ' ', '\t', ',', '\r', '\n' },
@@ -242,6 +296,10 @@ namespace Gen3MAF
             }
         }
 
+
+        //
+        //  read the adjustment data from the text box and process it. This will cause the datagrid view to be populated
+        //
         private void button1_Click(object sender, EventArgs e)
         {
             double[] AdjustmentData;
@@ -281,10 +339,13 @@ namespace Gen3MAF
                 }
             }
 
-            //  the tune cycle object is the owner of the adjustment data, so we need to populate the adjustment data in the tune cycle object before we can read it out and apply it to the MafDataPoint array.
+            //  the tune cycle object is the owner of the adjustment data, so we need to populate the adjustment data into the tune cycle object before we can read it out and apply it to the MafDataPoint array.
             //
             m_CurrentTuneCycle.PopulateAirflowAdjustment(AdjustmentData);
 
+            //
+            //  the adjust object will now read the adjustment data back out of the tune object
+            //
             m_AdjustObject.ReadAdjustmentDataFromTuneObject(m_CurrentTuneCycle);
 
 
@@ -299,6 +360,9 @@ namespace Gen3MAF
             MinFrequency_trackBar.Enabled = true;
             MaxFrequency_trackBar.Enabled = true;
 
+            //
+            //  now kick off the processing of the adjustment data
+            //
             ProcessAdjustmentData();
 
         }
@@ -376,6 +440,9 @@ namespace Gen3MAF
 
         private void AdjustedAirflow_dataGridView_KeyDown(object sender, KeyEventArgs e)
         {
+            //  
+            //  handle control-c on the grid view to copy the data to the clipboard
+            //
             if (e.Control && e.KeyCode == Keys.C)
             {
                 CopyFourthRow(AdjustedAirflow_dataGridView);
@@ -402,13 +469,19 @@ namespace Gen3MAF
                     MaxFrequency
                     );
 
-
+                //
+                //  update the datagridview with new data
+                //
                 UpdateAdjustedAirflowGrid();
             }
 
             return;
         }
 
+
+        //
+        //  render the adjusted data into the grid view
+        //
         void UpdateAdjustedAirflowGrid()
         {
             AdjustedAirflow_dataGridView.ColumnCount = (int)m_AdjustObject.GetFrequencyCount(); ;
@@ -463,6 +536,9 @@ namespace Gen3MAF
 
         }
 
+        // 
+        //  user wnat to create a new session, open a dialog to get the info about the new seesion
+        //
         private void create_ToolStripMenuItem_Click(object sender, EventArgs e)
         {
             using (Vehicle frm = new Vehicle())
@@ -479,23 +555,17 @@ namespace Gen3MAF
 
                     InitializeFormForNewSession(Session);
 
-                    tuneToolStripMenuItem.Enabled = true;
-
                 }
             }
         }
 
+
+        //
+        //  brand new tune cycle
+        //
         private void newToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            //  
-            //  disable the buttons. They will be enable as the user goes through the process of creating a new tune cycle. This is to prevent the user from trying to process data before we have the necessary information to do so, such as the maf frequency points and the bucket style.
-            //
-
-            ApplyAdjustments.Enabled = false;
-            CompleteCycle_button.Enabled = false;
-
             
-
             //
             //  create a new tunecycle object
             //
@@ -512,17 +582,28 @@ namespace Gen3MAF
 
             InitializeBucketsTextbox();
 
+
+            //  
+            //  disable the buttons. They will be enable as the user goes through the process of creating a new tune cycle. This is to prevent the user from trying to process data before we have the necessary information to do so, such as the maf frequency points and the bucket style.
+            //
             ProcessOriginalAirflow_button.Enabled = true;
             Discard_button.Enabled = true;
+            ApplyAdjustments.Enabled = false;
+            CompleteCycle_button.Enabled = false;
 
             return;
         }
 
+        //
+        //  the user wants to continue a tune cycle that was previously paused, Re populate the form and continue on
+        //
         private void Continue_ToolStripMenuItem_Click(object sender, EventArgs e)
         {
 
             //  
-            //  disable the buttons. They will be enable as the user goes through the process of creating a new tune cycle. This is to prevent the user from trying to process data before we have the necessary information to do so, such as the maf frequency points and the bucket style.
+            //  disable the buttons. They will be enable as the user goes through the process of creating a new tune cycle.
+            //  This is to prevent the user from trying to process data before we have the necessary information to do so,
+            //  such as the maf frequency points and the bucket style.
             //
 
             ApplyAdjustments.Enabled = false;
@@ -548,13 +629,12 @@ namespace Gen3MAF
 
         void InitializeBucketsTextbox()
         {
- 
+
             //
             // fill the text box for buckets so the user can paste them into the tuning app.
             //  all we need to know is the frequency values
             //
             Buckets_richTextBox.Clear();
-
 
             for (int i = 0; i < m_AdjustObject.GetBucketCount(); i++)
             {
@@ -565,7 +645,9 @@ namespace Gen3MAF
 
                 if (m_SessionClass.BucketStyle == BucketStyleEnum.Single)
                 {
-
+                    //
+                    //  nothing to group
+                    //
 
                 }
                 else if (m_SessionClass.BucketStyle == BucketStyleEnum.Double)
@@ -574,7 +656,7 @@ namespace Gen3MAF
                     //  The second bucket starts at this frequency and goes the midpoint half way to the next frequency. The average point is half way in
                     //  the span of the bucket
                     //
-                    if ((i+1) % 2 == 0)
+                    if ((i + 1) % 2 == 0)
                     {
                         //  group them by 2s so we have a visual separation in the text box for each frequency point, as each frequency point will have 2 buckets for double bucket style and 3 buckets for triple bucket style. This is just for visual clarity for the user when they are looking at the buckets in the text box and comparing them to the frequencies in the maf data grid view.
                         //
@@ -585,7 +667,7 @@ namespace Gen3MAF
                 }
                 else if (m_SessionClass.BucketStyle == BucketStyleEnum.Triple)
                 {
-                    if ((i+1) % 3 == 0)
+                    if ((i + 1) % 3 == 0)
                     {
                         //
                         //  group them by 3 so you can see which frequency the group belongs to
@@ -605,23 +687,11 @@ namespace Gen3MAF
             }
         }
 
+        
 
-        private void saveToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if (m_SessionClass == null)
-                return;
-
-            if (string.IsNullOrEmpty(m_CurrentFilePath))
-            {
-                saveAsToolStripMenuItem_Click(sender, e);
-                return;
-            }
-
-            SessionFileStore.Save(m_CurrentFilePath, m_SessionClass);
-
-            UpdateTitle();
-        }
-
+        //
+        //  the user is done with this tune cycle, Save it at the end of the list and reset the form
+        //
         private void CompleteCycle_button_Click(object sender, EventArgs e)
         {
 
@@ -659,6 +729,9 @@ namespace Gen3MAF
             ResetStateOfForm();
         }
 
+        //
+        //  user does not want the result of the tune cycle, discard it
+        //
         private void Discard_button_Click(object sender, EventArgs e)
         {
             m_TuneCycleReOpened = false;
@@ -669,6 +742,9 @@ namespace Gen3MAF
             ResetStateOfForm();
         }
 
+        // 
+        // user wants to save the in progress tune cycle while this collect adjustment data from the scanner during a drive
+        //
         private void Pasue_button_Click(object sender, EventArgs e)
         {
 
@@ -687,6 +763,25 @@ namespace Gen3MAF
             NewTuneCycle_toolStripMenuItem.Enabled = false;
 
             ResetStateOfForm();
+        }
+
+        //
+        // user wants to save there session, we will pop up a file name dialog to get the path
+        //
+        private void saveToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (m_SessionClass == null)
+                return;
+
+            if (string.IsNullOrEmpty(m_CurrentFilePath))
+            {
+                saveAsToolStripMenuItem_Click(sender, e);
+                return;
+            }
+
+            SessionFileStore.Save(m_CurrentFilePath, m_SessionClass);
+
+            UpdateTitle();
         }
 
         private void saveAsToolStripMenuItem_Click(object sender, EventArgs e)
@@ -732,52 +827,14 @@ namespace Gen3MAF
                     Session = SessionFileStore.Load(dlg.FileName);
                     m_CurrentFilePath = dlg.FileName;
 
-                    InitializeFormForNewSession(Session);
-
                     UpdateTitle();
 
-
-                    //
-                    // assume it is a new session and enable menu here, if there is a previous tune cycle, we will adjust the menu state in the code below  
-                    //
-                    NewTuneCycle_toolStripMenuItem.Enabled = true;
-                    Continue_ToolStripMenuItem.Enabled = false;
-
-                    TuneCycle PreviousTuneCycle = null;
-
-                    PreviousTuneCycle = m_SessionClass.GetLastTuneCycle();
-
-
-                    if (PreviousTuneCycle != null)
-                    {
-                        if (PreviousTuneCycle.IsPaused())
-                        {
-                            //
-                            //  the last tune cycle was paused, enable the continue menu and disable new menu
-                            //
-
-                            Continue_ToolStripMenuItem.Enabled = true;
-                            NewTuneCycle_toolStripMenuItem.Enabled = false;
-
-                        }
-                    }
-
-                    // 
-                    //  enable the top level menu in any case
-                    //
-                    tuneToolStripMenuItem.Enabled = true;
-                    if (m_SessionClass.HasCompletedTuneCycle())
-                    {
-                        plotAllToolStripMenuItem.Enabled = true;
-                    }
-                    else
-                    {
-                        plotAllToolStripMenuItem.Enabled = false;
-                    }
+                    InitializeFormForNewSession(Session);
 
                 }
             }
         }
+
         private bool ConfirmDiscardIfDirty()
         {
             if (!m_SessionClass.IsDirty())
@@ -787,7 +844,8 @@ namespace Gen3MAF
                 "You have unsaved changes. Save now?",
                 "Unsaved Changes",
                 MessageBoxButtons.YesNoCancel,
-                MessageBoxIcon.Warning);
+                MessageBoxIcon.Warning
+                );
 
             if (result == DialogResult.Cancel)
                 return false;
@@ -796,11 +854,6 @@ namespace Gen3MAF
                 saveToolStripMenuItem_Click(this, EventArgs.Empty);
 
             return true;
-        }
-
-        private void AverageWithOriginal_checkBox_CheckedChanged(object sender, EventArgs e)
-        {
-            ProcessAdjustmentData();
         }
 
         private void AdjustedAirflow_dataGridView_CellContentClick(object sender, DataGridViewCellEventArgs e)
@@ -862,7 +915,7 @@ namespace Gen3MAF
             {
                 DialogResult result;
 
-                result = MessageBox.Show("There is a tuning session active, Do you really want to exit?",
+                result = MessageBox.Show("There is a tuning session active, Do you really want to close the session?",
                                          "Closing Confirm",
                                          MessageBoxButtons.YesNo,
                                          MessageBoxIcon.Hand
@@ -880,14 +933,51 @@ namespace Gen3MAF
             {
 
                 ConfirmDiscardIfDirty();
+            }
+
+            return;
+        }
+
+        private void closeToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (m_CurrentTuneCycle != null)
+            {
+                DialogResult result;
+
+                result = MessageBox.Show("There is a tuning session active, Do you really want to close the session?",
+                                         "Closing Confirm",
+                                         MessageBoxButtons.YesNo,
+                                         MessageBoxIcon.Hand
+                                         );
+
+                if (result == DialogResult.No)
+                {
+                    //e.Cancel = true;   // Stops the form from closing
+                    return;
+                }
+
+            }
+
+            if (m_SessionClass != null)
+            {
+
+                ConfirmDiscardIfDirty();
 
 
             }
 
+            SetMenusForSessionState(false);
+            ResetStateOfForm();
 
+            m_AdjustObject = null;
+            m_CurrentTuneCycle = null;
+            m_SessionClass=null;
         }
 
-        private void closeToolStripMenuItem_Click(object sender, EventArgs e)
+        //
+        //  user selected the exit menu item
+        //
+        private void exitToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Close();
         }
@@ -938,6 +1028,7 @@ namespace Gen3MAF
                 // 
                 AdjustObject.InitializeAirFlowFromTuneObject(tc);
                 AdjustObject.ReadAdjustmentDataFromTuneObject(tc);
+
                 AdjustObject.ProcessAdjustmentData(
                     1.0,
                     m_AdjustThreshold,
@@ -967,9 +1058,6 @@ namespace Gen3MAF
                 //
                 adjusted.Add(newAir);
 
-
-
-
             }
 
             var f = new PlotForm1(
@@ -982,43 +1070,12 @@ namespace Gen3MAF
             f.Show(this);
         }
 
-        private void MAF_dataGridView_CellContentClick(object sender, DataGridViewCellEventArgs e)
-        {
-            MessageBox.Show("cell content click in maf datagrid");
-        }
-
-        private void MAF_dataGridView_CellClick(object sender, DataGridViewCellEventArgs e)
-        {
-            int col = e.ColumnIndex;
-            MessageBox.Show("cell click in maf datagrid");
-
-        }
-
-        private void MAF_dataGridView_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
-        {
-            int col = e.ColumnIndex;
-
-            MessageBox.Show("cell double click in maf datagrid");
-            DataPointForm form = new DataPointForm(m_AdjustObject.GetFullDataPointAtIndex(col));
-
-            form.ShowDialog(this);
-        }
-
-        private void MAF_dataGridView_MouseDoubleClick(object sender, MouseEventArgs e)
-        {
-            MessageBox.Show("mouse double click in maf datagrid");
-        }
-
-        private void MAF_dataGridView_MouseClick(object sender, MouseEventArgs e)
-        {
-            var hit = MAF_dataGridView.HitTest(e.X, e.Y);
-            MessageBox.Show($"Hit: {hit.Type}, r={hit.RowIndex}, c={hit.ColumnIndex}");
-        }
-
+        //
+        //  pop up a dialog that shows all the info for the frequency
+        //
         private void AdjustedAirflow_dataGridView_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
             int col = e.ColumnIndex;
-
 
             DataPointForm form = new DataPointForm(m_AdjustObject.GetFullDataPointAtIndex(col));
 
@@ -1124,7 +1181,15 @@ namespace Gen3MAF
             int max = (MaxFrequency_trackBar.Value * m_SessionClass.FrequencyStep) + m_SessionClass.MinFrequency;
 
             MinMax_label.Text = $"{min} - {max}";
-            ProcessAdjustmentData();
+
+            if (MaxFrequency_trackBar.Enabled && MinFrequency_trackBar.Enabled)
+            {
+                //
+                //  only update the state if the change came from the user
+                //
+                ProcessAdjustmentData();
+            }
+            
         }
 
         private void InitRangeTrackBars(int MinFrequency, int MaxFrequency, int Step)
@@ -1168,7 +1233,7 @@ namespace Gen3MAF
 
             if (m_SessionClass == null || m_SessionClass.GetTuneCycleCount() == 0)
             {
-                _tuneCyclesMenu.DropDownItems.Add(new ToolStripMenuItem("(none)") { Enabled = false });
+                tuneToolStripMenuItem.DropDownItems.Add(new ToolStripMenuItem("(none)") { Enabled = false });
                 return;
             }
 
@@ -1201,13 +1266,13 @@ namespace Gen3MAF
             if (sender is not ToolStripMenuItem mi) return;
             if (mi.Tag is not TuneCycle tc) return;
 
-           
+
             ApplyAdjustments.Enabled = false;
             CompleteCycle_button.Enabled = false;
             Pause_button.Enabled = false;
 
-            
-            
+
+
 
             m_TuneCycleReOpened = true;
             m_CurrentTuneCycle = tc;
@@ -1259,6 +1324,8 @@ namespace Gen3MAF
         {
 
         }
+
+        
     }
 
 }

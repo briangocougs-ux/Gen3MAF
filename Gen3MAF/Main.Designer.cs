@@ -73,6 +73,7 @@
             MinMax_label = new Label();
             MinFrequency_label = new Label();
             MaxFrequency_label = new Label();
+            exitToolStripMenuItem = new ToolStripMenuItem();
             contextMenuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)MAF_dataGridView).BeginInit();
             ((System.ComponentModel.ISupportInitialize)AdjustmentPercent_trackBar).BeginInit();
@@ -141,11 +142,6 @@
             MAF_dataGridView.RowHeadersWidth = 51;
             MAF_dataGridView.Size = new Size(1172, 88);
             MAF_dataGridView.TabIndex = 3;
-            MAF_dataGridView.CellContentClick += MAF_dataGridView_CellDoubleClick;
-            MAF_dataGridView.CellContentDoubleClick += MAF_dataGridView_CellDoubleClick;
-            MAF_dataGridView.CellDoubleClick += MAF_dataGridView_CellDoubleClick;
-            MAF_dataGridView.MouseClick += MAF_dataGridView_MouseClick;
-            MAF_dataGridView.MouseDoubleClick += MAF_dataGridView_MouseDoubleClick;
             // 
             // Buckets_richTextBox
             // 
@@ -257,7 +253,7 @@
             // 
             // session_ToolStripMenuItem
             // 
-            session_ToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { NewSession_ToolStripMenuItem, open_ToolStripMenuItem, saveToolStripMenuItem, saveAsToolStripMenuItem, closeToolStripMenuItem });
+            session_ToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { NewSession_ToolStripMenuItem, open_ToolStripMenuItem, saveToolStripMenuItem, saveAsToolStripMenuItem, closeToolStripMenuItem, exitToolStripMenuItem });
             session_ToolStripMenuItem.Name = "session_ToolStripMenuItem";
             session_ToolStripMenuItem.Size = new Size(72, 24);
             session_ToolStripMenuItem.Text = "&Session";
@@ -265,35 +261,35 @@
             // NewSession_ToolStripMenuItem
             // 
             NewSession_ToolStripMenuItem.Name = "NewSession_ToolStripMenuItem";
-            NewSession_ToolStripMenuItem.Size = new Size(143, 26);
+            NewSession_ToolStripMenuItem.Size = new Size(224, 26);
             NewSession_ToolStripMenuItem.Text = "&New";
             NewSession_ToolStripMenuItem.Click += create_ToolStripMenuItem_Click;
             // 
             // open_ToolStripMenuItem
             // 
             open_ToolStripMenuItem.Name = "open_ToolStripMenuItem";
-            open_ToolStripMenuItem.Size = new Size(143, 26);
+            open_ToolStripMenuItem.Size = new Size(224, 26);
             open_ToolStripMenuItem.Text = "&Open";
             open_ToolStripMenuItem.Click += open_ToolStripMenuItem_Click;
             // 
             // saveToolStripMenuItem
             // 
             saveToolStripMenuItem.Name = "saveToolStripMenuItem";
-            saveToolStripMenuItem.Size = new Size(143, 26);
+            saveToolStripMenuItem.Size = new Size(224, 26);
             saveToolStripMenuItem.Text = "&Save";
             saveToolStripMenuItem.Click += saveToolStripMenuItem_Click;
             // 
             // saveAsToolStripMenuItem
             // 
             saveAsToolStripMenuItem.Name = "saveAsToolStripMenuItem";
-            saveAsToolStripMenuItem.Size = new Size(143, 26);
+            saveAsToolStripMenuItem.Size = new Size(224, 26);
             saveAsToolStripMenuItem.Text = "Save &As";
             saveAsToolStripMenuItem.Click += saveAsToolStripMenuItem_Click;
             // 
             // closeToolStripMenuItem
             // 
             closeToolStripMenuItem.Name = "closeToolStripMenuItem";
-            closeToolStripMenuItem.Size = new Size(143, 26);
+            closeToolStripMenuItem.Size = new Size(224, 26);
             closeToolStripMenuItem.Text = "&Close";
             closeToolStripMenuItem.Click += closeToolStripMenuItem_Click;
             // 
@@ -309,14 +305,14 @@
             // NewTuneCycle_toolStripMenuItem
             // 
             NewTuneCycle_toolStripMenuItem.Name = "NewTuneCycle_toolStripMenuItem";
-            NewTuneCycle_toolStripMenuItem.Size = new Size(224, 26);
+            NewTuneCycle_toolStripMenuItem.Size = new Size(151, 26);
             NewTuneCycle_toolStripMenuItem.Text = "&New";
             NewTuneCycle_toolStripMenuItem.Click += newToolStripMenuItem_Click;
             // 
             // Continue_ToolStripMenuItem
             // 
             Continue_ToolStripMenuItem.Name = "Continue_ToolStripMenuItem";
-            Continue_ToolStripMenuItem.Size = new Size(224, 26);
+            Continue_ToolStripMenuItem.Size = new Size(151, 26);
             Continue_ToolStripMenuItem.Text = "Continue";
             Continue_ToolStripMenuItem.Click += Continue_ToolStripMenuItem_Click;
             // 
@@ -498,6 +494,13 @@
             MaxFrequency_label.TabIndex = 41;
             MaxFrequency_label.Text = "99999";
             // 
+            // exitToolStripMenuItem
+            // 
+            exitToolStripMenuItem.Name = "exitToolStripMenuItem";
+            exitToolStripMenuItem.Size = new Size(224, 26);
+            exitToolStripMenuItem.Text = "Exit";
+            exitToolStripMenuItem.Click += exitToolStripMenuItem_Click;
+            // 
             // Main
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
@@ -595,5 +598,6 @@
         private Label MinMax_label;
         private Label MinFrequency_label;
         private Label MaxFrequency_label;
+        private ToolStripMenuItem exitToolStripMenuItem;
     }
 }
