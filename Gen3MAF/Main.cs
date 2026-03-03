@@ -494,7 +494,7 @@ namespace Gen3MAF
             ApplyAdjustments.Enabled = false;
             CompleteCycle_button.Enabled = false;
 
-            InitializeForNewTuneCycle();
+            
 
             //
             //  create a new tunecycle object
@@ -510,7 +510,7 @@ namespace Gen3MAF
                 GetAirFlowFromLast_button.Enabled = true;
             }
 
-
+            InitializeBucketsTextbox();
 
             ProcessOriginalAirflow_button.Enabled = true;
             Discard_button.Enabled = true;
@@ -528,10 +528,11 @@ namespace Gen3MAF
             ApplyAdjustments.Enabled = false;
             CompleteCycle_button.Enabled = false;
 
-            InitializeForNewTuneCycle();
 
             m_CurrentTuneCycle = m_SessionClass.RemoveLastTuneCycle();
             m_CurrentTuneCycle.ChangePausedToAirflowPopulated();
+
+            InitializeBucketsTextbox();
 
             double[] OriginalAirflow = new double[m_AdjustObject.GetFrequencyCount()];
 
@@ -545,12 +546,9 @@ namespace Gen3MAF
             ProcessOriginalAirflowData();
         }
 
-        void InitializeForNewTuneCycle()
+        void InitializeBucketsTextbox()
         {
-            //  This method can be used to initialize the form for a new tune cycle, such as clearing previous data, resetting controls, and preparing the form for user input.
-            //  For now, the initialization is done directly in the newToolStripMenuItem_Click event handler, but this method can be called from there if we want to separate concerns and keep the event handler cleaner.
-
-
+ 
             //
             // fill the text box for buckets so the user can paste them into the tuning app.
             //  all we need to know is the frequency values
@@ -558,15 +556,16 @@ namespace Gen3MAF
             Buckets_richTextBox.Clear();
 
 
-            for (int i = 0; i < m_AdjustObject.GetFrequencyCount(); i++)
+            for (int i = 0; i < m_AdjustObject.GetBucketCount(); i++)
             {
-                ReturnDataPoint DataPoint = m_AdjustObject.GetDataPointAtIndex(i);
+                uint Bucket = m_AdjustObject.GetBucketAtIndex(i);
+
+                Buckets_richTextBox.AppendText(Bucket.ToString());
+                Buckets_richTextBox.AppendText(" ");
 
                 if (m_SessionClass.BucketStyle == BucketStyleEnum.Single)
                 {
 
-                    Buckets_richTextBox.AppendText((DataPoint.Frequency - (m_SessionClass.FrequencyStep / 2)).ToString());
-                    Buckets_richTextBox.AppendText(" ");
 
                 }
                 else if (m_SessionClass.BucketStyle == BucketStyleEnum.Double)
@@ -575,29 +574,25 @@ namespace Gen3MAF
                     //  The second bucket starts at this frequency and goes the midpoint half way to the next frequency. The average point is half way in
                     //  the span of the bucket
                     //
-                    Buckets_richTextBox.AppendText((DataPoint.Frequency - (m_SessionClass.FrequencyStep / 2)).ToString());
-                    Buckets_richTextBox.AppendText(" ");
+                    if ((i+1) % 2 == 0)
+                    {
+                        //  group them by 2s so we have a visual separation in the text box for each frequency point, as each frequency point will have 2 buckets for double bucket style and 3 buckets for triple bucket style. This is just for visual clarity for the user when they are looking at the buckets in the text box and comparing them to the frequencies in the maf data grid view.
+                        //
+                        Buckets_richTextBox.AppendText(" ");
 
-                    Buckets_richTextBox.AppendText((DataPoint.Frequency).ToString());
-                    Buckets_richTextBox.AppendText("  ");
+                    }
 
                 }
                 else if (m_SessionClass.BucketStyle == BucketStyleEnum.Triple)
                 {
-                    double Step = m_SessionClass.FrequencyStep;
-                    double StartPoint = DataPoint.Frequency - (Step / 2.0);
+                    if ((i+1) % 3 == 0)
+                    {
+                        //
+                        //  group them by 3 so you can see which frequency the group belongs to
+                        //
+                        Buckets_richTextBox.AppendText(" ");
 
-                    Buckets_richTextBox.AppendText(StartPoint.ToString("f0"));
-                    Buckets_richTextBox.AppendText(" ");
-                    StartPoint += Step / 3.0;
-
-
-                    Buckets_richTextBox.AppendText(StartPoint.ToString("f0"));
-                    Buckets_richTextBox.AppendText(" ");
-                    StartPoint += Step / 3.0;
-
-                    Buckets_richTextBox.AppendText(StartPoint.ToString("f0"));
-                    Buckets_richTextBox.AppendText("  ");
+                    }
 
                 }
                 else
@@ -1211,10 +1206,13 @@ namespace Gen3MAF
             CompleteCycle_button.Enabled = false;
             Pause_button.Enabled = false;
 
-            InitializeForNewTuneCycle();
+            
+            
 
             m_TuneCycleReOpened = true;
             m_CurrentTuneCycle = tc;
+
+            InitializeBucketsTextbox();
 
             //  fill out the airflow text box like it would be in the normal work flow so it looks the same to the user.
             //

@@ -45,7 +45,7 @@ namespace Gen3MAF
         public double LeftAirFlowSlope;
         public double RightAirFlowSlope;
 
-        public AdjustmentDataPoint[] DataPoints;
+        public AdjustmentDataPoint[] SubDataPoints;
 
         public bool HasUpdatedAirFlow;
 
@@ -102,7 +102,36 @@ namespace Gen3MAF
             {
                 m_mafDataPoints[i].Frequency = (uint)(m_MinMAFFrequency + (i * m_MAFFrequencyStep));
                 m_mafDataPoints[i].AirFlow = double.NaN; // Placeholder for actual airflow values
-                m_mafDataPoints[i].DataPoints = new AdjustmentDataPoint[(int)m_BucketStyle];
+                m_mafDataPoints[i].SubDataPoints = new AdjustmentDataPoint[(int)m_BucketStyle];
+            }
+
+            //
+            //  Now we will fill out the bucket data for each data point, slope will be filled out later when the airflow is filled out
+            //
+            for (int i = 0; i < (m_mafDataPoints.Length); i++)
+            {
+                ref MafDataPoint Current = ref m_mafDataPoints[i];
+                double Step = (double)m_MAFFrequencyStep;
+                double BucketSize = Step / Current.SubDataPoints.Length;
+                double Frequency = (double)Current.Frequency;
+
+                for (int j = 0; j < (Current.SubDataPoints.Length); j++)
+                {
+
+                    double BucketStart = (Frequency - (Step / 2.0)) + (BucketSize * j);
+                    double BucketEnd = BucketStart + (BucketSize - 1);
+
+                    double TargetFrequency = BucketStart + (BucketSize / 2.0);
+
+                    //double Slope = double.NaN;
+                    double FrequencyDifference = TargetFrequency - Frequency;
+
+                    Current.SubDataPoints[j].BucketStart = (uint)Math.Round(BucketStart);
+                    Current.SubDataPoints[j].BucketEnd = (uint)Math.Round(BucketEnd);
+                    Current.SubDataPoints[j].TargetFrequency = (uint)Math.Round(TargetFrequency);
+
+
+                }
             }
         }
 
@@ -166,35 +195,23 @@ namespace Gen3MAF
             m_mafDataPoints[m_mafFrequencyCount - 1].RightAirFlowSlope = double.NaN;
 
             //
-            //  Now we will fill out the bucket data for each data point
+            //  Fill out the airflow for the bucket targets
             //
             for (int i = 0; i < (m_mafDataPoints.Length); i++)
             {
                 ref MafDataPoint Current = ref m_mafDataPoints[i];
-                double Step = (double)m_MAFFrequencyStep;
-                double BucketSize = Step / Current.DataPoints.Length;
-                double Frequency = (double)Current.Frequency;
 
-                for (int j = 0; j < (Current.DataPoints.Length); j++)
+                for (int j = 0; j < (Current.SubDataPoints.Length); j++)
                 {
 
-                    double BucketStart = (Frequency - (Step / 2.0)) + (BucketSize * j);
-                    double BucketEnd = BucketStart + (BucketSize - 1);
-
-                    double TargetFrequency = BucketStart + (BucketSize / 2.0);
-
                     double Slope = double.NaN;
-                    double FrequencyDifference = TargetFrequency - Frequency;
+                    double FrequencyDifference = (double)Current.SubDataPoints[j].TargetFrequency - (double)Current.Frequency;
 
-                    Current.DataPoints[j].BucketStart = (uint)Math.Round(BucketStart);
-                    Current.DataPoints[j].BucketEnd = (uint)Math.Round(BucketEnd);
-                    Current.DataPoints[j].TargetFrequency = (uint)Math.Round(TargetFrequency);
-
-                    if (Current.DataPoints[j].TargetFrequency < Current.Frequency)
+                    if (Current.SubDataPoints[j].TargetFrequency < Current.Frequency)
                     {
                         Slope = Current.LeftAirFlowSlope;
 
-                    } else if (Current.DataPoints[j].TargetFrequency > Current.Frequency)
+                    } else if (Current.SubDataPoints[j].TargetFrequency > Current.Frequency)
                     {
                         Slope = Current.RightAirFlowSlope;
                     }
@@ -203,7 +220,7 @@ namespace Gen3MAF
                         Slope = 1.0;
                     }
 
-                    Current.DataPoints[j].Airflow = m_mafDataPoints[i].AirFlow + (Slope * FrequencyDifference);
+                    Current.SubDataPoints[j].Airflow = m_mafDataPoints[i].AirFlow + (Slope * FrequencyDifference);
 
                 }
 
@@ -226,9 +243,9 @@ namespace Gen3MAF
                 // read the adjustment data out of the tune cycle object and populate the MafDataPoint array with the adjustment values for each data point, based on the defined bucket style (single or double).
                 //
 
-                for (int j = 0; j < Current.DataPoints.Length; j++)
+                for (int j = 0; j < Current.SubDataPoints.Length; j++)
                 {
-                    Current.DataPoints[j].AirFlowAdjustment = Tune.GetAdjustmentDataAtIndex((i * Current.DataPoints.Length) + j);
+                    Current.SubDataPoints[j].AirFlowAdjustment = Tune.GetAdjustmentDataAtIndex((i * Current.SubDataPoints.Length) + j);
                 }
 
 
@@ -241,9 +258,9 @@ namespace Gen3MAF
             ref double[] AdjustedAirflow
             )
         {
-            Frequency = new double[ m_mafDataPoints.Length * m_mafDataPoints[0].DataPoints.Length ];
-            Airflow   = new double[m_mafDataPoints.Length * m_mafDataPoints[0].DataPoints.Length];
-            AdjustedAirflow = new double[m_mafDataPoints.Length * m_mafDataPoints[0].DataPoints.Length];
+            Frequency = new double[ m_mafDataPoints.Length * m_mafDataPoints[0].SubDataPoints.Length ];
+            Airflow   = new double[m_mafDataPoints.Length * m_mafDataPoints[0].SubDataPoints.Length];
+            AdjustedAirflow = new double[m_mafDataPoints.Length * m_mafDataPoints[0].SubDataPoints.Length];
 
             for (int i = 0; i < m_mafDataPoints.Length; i++)
             {
@@ -253,11 +270,11 @@ namespace Gen3MAF
                 // read the adjustment data out of the tune cycle object and populate the MafDataPoint array with the adjustment values for each data point, based on the defined bucket style (single or double).
                 //
 
-                for (int j = 0; j < Current.DataPoints.Length; j++)
+                for (int j = 0; j < Current.SubDataPoints.Length; j++)
                 {
-                    Frequency[i * Current.DataPoints.Length + j] = Current.DataPoints[j].TargetFrequency;
-                    Airflow[i * Current.DataPoints.Length + j] = Current.DataPoints[j].Airflow;
-                    AdjustedAirflow[i * Current.DataPoints.Length + j] = Current.DataPoints[j].AirFlowAdjusted;
+                    Frequency[i * Current.SubDataPoints.Length + j] = Current.SubDataPoints[j].TargetFrequency;
+                    Airflow[i * Current.SubDataPoints.Length + j] = Current.SubDataPoints[j].Airflow;
+                    AdjustedAirflow[i * Current.SubDataPoints.Length + j] = Current.SubDataPoints[j].AirFlowAdjusted;
 
                 }
 
@@ -296,11 +313,11 @@ namespace Gen3MAF
                 //
                 // Adjust the airflow for each bucket, applying overall reduction value'
                 //
-                for (int j = 0; j < Current.DataPoints.Length; j++)
+                for (int j = 0; j < Current.SubDataPoints.Length; j++)
                 {
-                    double ModifiedAdjustmentPercent = Current.DataPoints[j].AirFlowAdjustment * AdjustmentPercent;
+                    double ModifiedAdjustmentPercent = Current.SubDataPoints[j].AirFlowAdjustment * AdjustmentPercent;
 
-                    Current.DataPoints[j].AirFlowAdjusted = Current.DataPoints[j].Airflow * (1.0 + (ModifiedAdjustmentPercent / 100.0));
+                    Current.SubDataPoints[j].AirFlowAdjusted = Current.SubDataPoints[j].Airflow * (1.0 + (ModifiedAdjustmentPercent / 100.0));
                 }
 
                 if (m_BucketStyle == BucketStyleEnum.Single)
@@ -308,7 +325,7 @@ namespace Gen3MAF
                     //
                     //   single bucket, just apply the adjustment to the orignal airflow
                     //
-                    Current.AirFlowAdjusted = Current.DataPoints[0].AirFlowAdjusted;
+                    Current.AirFlowAdjusted = Current.SubDataPoints[0].AirFlowAdjusted;
 
                 }
                 else if (m_BucketStyle == BucketStyleEnum.Double)
@@ -316,7 +333,7 @@ namespace Gen3MAF
                     //
                     // since the left and right values are an equal distance from the target frequency, just average them together
                     //
-                    Current.AirFlowAdjusted = (Current.DataPoints[0].AirFlowAdjusted + Current.DataPoints[1].AirFlowAdjusted) / 2.0f;
+                    Current.AirFlowAdjusted = (Current.SubDataPoints[0].AirFlowAdjusted + Current.SubDataPoints[1].AirFlowAdjusted) / 2.0f;
 
                 }
                 else if (m_BucketStyle == BucketStyleEnum.Triple)
@@ -479,29 +496,29 @@ namespace Gen3MAF
              ref MafDataPoint Current
             )
         {
-            double Bias = (((Current.DataPoints[0].Airflow + Current.DataPoints[2].Airflow) / 2) - Current.DataPoints[1].Airflow) / Current.DataPoints[1].Airflow;
+            double Bias = (((Current.SubDataPoints[0].Airflow + Current.SubDataPoints[2].Airflow) / 2) - Current.SubDataPoints[1].Airflow) / Current.SubDataPoints[1].Airflow;
             Current.Bias = Bias;
-            Current.LeftRightAverageAirflowAdjusted = (Current.DataPoints[0].AirFlowAdjusted + Current.DataPoints[2].AirFlowAdjusted) / 2;
+            Current.LeftRightAverageAirflowAdjusted = (Current.SubDataPoints[0].AirFlowAdjusted + Current.SubDataPoints[2].AirFlowAdjusted) / 2;
 
             Current.LeftRightAverageAirflowAdjusted = Current.LeftRightAverageAirflowAdjusted - (Current.LeftRightAverageAirflowAdjusted * Bias);
 
-            if (!double.IsNaN(Current.DataPoints[0].AirFlowAdjusted) &&
-                !double.IsNaN(Current.DataPoints[1].AirFlowAdjusted) &&
-                !double.IsNaN(Current.DataPoints[2].AirFlowAdjusted))
+            if (!double.IsNaN(Current.SubDataPoints[0].AirFlowAdjusted) &&
+                !double.IsNaN(Current.SubDataPoints[1].AirFlowAdjusted) &&
+                !double.IsNaN(Current.SubDataPoints[2].AirFlowAdjusted))
             {
                 //
                 //  we have all three buckets, take the average of the center and the adjusted average of the left and right values
                 //
-                Current.AirFlowAdjusted = (Current.DataPoints[1].AirFlowAdjusted + ( Current.LeftRightAverageAirflowAdjusted * 2 ) ) / 3;
+                Current.AirFlowAdjusted = (Current.SubDataPoints[1].AirFlowAdjusted + ( Current.LeftRightAverageAirflowAdjusted * 2 ) ) / 3;
             }
-            else if (!double.IsNaN(Current.DataPoints[1].AirFlowAdjusted))
+            else if (!double.IsNaN(Current.SubDataPoints[1].AirFlowAdjusted))
             {
                 //
                 // if we only have the center bucket, just use the center bucket adjustment value as the adjusted airflow value for the current data point
                 //
-                Current.AirFlowAdjusted = Current.DataPoints[1].AirFlowAdjusted;
+                Current.AirFlowAdjusted = Current.SubDataPoints[1].AirFlowAdjusted;
             }
-            else if (!double.IsNaN(Current.DataPoints[0].AirFlowAdjusted) && !double.IsNaN(Current.DataPoints[2].AirFlowAdjusted))
+            else if (!double.IsNaN(Current.SubDataPoints[0].AirFlowAdjusted) && !double.IsNaN(Current.SubDataPoints[2].AirFlowAdjusted))
             {
                 //
                 // if we only have the left and right buckets, just average the left and right bucket adjustment values together to get the adjusted airflow value for the current data point
@@ -544,6 +561,14 @@ namespace Gen3MAF
         public MafDataPoint GetFullDataPointAtIndex(int i)
         {
             return m_mafDataPoints[i];
+        }
+
+        public uint GetBucketAtIndex(int i)
+        {
+            int j = i / m_mafDataPoints[0].SubDataPoints.Length;
+            int k = i % m_mafDataPoints[0].SubDataPoints.Length;   
+
+            return m_mafDataPoints[j].SubDataPoints[k].BucketStart;
         }
     }
 }

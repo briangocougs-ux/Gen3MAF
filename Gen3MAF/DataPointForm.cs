@@ -32,7 +32,7 @@ namespace Gen3MAF
 
             
 
-            if (DataPoint.DataPoints.Length == 1)
+            if (DataPoint.SubDataPoints.Length == 1)
             {
                 //
                 //   single bucket, just apply the adjustment to the orignal airflow
@@ -43,7 +43,7 @@ namespace Gen3MAF
                
 
             }
-            else if (DataPoint.DataPoints.Length == 2)
+            else if (DataPoint.SubDataPoints.Length == 2)
             {
                 //
                 // since the left and right values are an equal distance from the target frequency, just average them together
@@ -52,40 +52,40 @@ namespace Gen3MAF
                 Right = 1;
                 
             }
-            else if (DataPoint.DataPoints.Length == 3)
+            else if (DataPoint.SubDataPoints.Length == 3)
             {
                 Left = 0;
                 Center = 1;
                 Right = 2;
             }
 
-            LeftFrequncy_label.Text = DataPoint.DataPoints[Left].TargetFrequency.ToString() + Hertz;
-            RightFrequency_label.Text = DataPoint.DataPoints[Right].TargetFrequency.ToString() + Hertz;
+            LeftFrequncy_label.Text = DataPoint.SubDataPoints[Left].TargetFrequency.ToString() + Hertz;
+            RightFrequency_label.Text = DataPoint.SubDataPoints[Right].TargetFrequency.ToString() + Hertz;
 
-            CenterBucket_label.Text = DataPoint.DataPoints[Center].BucketStart.ToString() + Hertz;
-            CenterBucketEnd_label.Text = DataPoint.DataPoints[Center].BucketEnd.ToString() + Hertz;
+            CenterBucket_label.Text = DataPoint.SubDataPoints[Center].BucketStart.ToString() + Hertz;
+            CenterBucketEnd_label.Text = DataPoint.SubDataPoints[Center].BucketEnd.ToString() + Hertz;
 
-            LeftBucket_label.Text = DataPoint.DataPoints[Left].BucketStart.ToString() + Hertz;
-            LeftBucketEnd_label.Text = DataPoint.DataPoints[Left].BucketEnd.ToString() + Hertz;
+            LeftBucket_label.Text = DataPoint.SubDataPoints[Left].BucketStart.ToString() + Hertz;
+            LeftBucketEnd_label.Text = DataPoint.SubDataPoints[Left].BucketEnd.ToString() + Hertz;
 
-            RightBucket_label.Text = DataPoint.DataPoints[Right].BucketStart.ToString() + Hertz;
-            RightBucketEnd_label.Text = DataPoint.DataPoints[Right].BucketEnd.ToString() + Hertz;
+            RightBucket_label.Text = DataPoint.SubDataPoints[Right].BucketStart.ToString() + Hertz;
+            RightBucketEnd_label.Text = DataPoint.SubDataPoints[Right].BucketEnd.ToString() + Hertz;
 
 
             
             
 
-            LeftAirflow_label.Text = DataPoint.DataPoints[Left].Airflow.ToString("f3") + Flow;
-            LeftAirflowAdjustment_label.Text = DataPoint.DataPoints[Left].AirFlowAdjustment.ToString("f3") + Percent;
-            AdjustedAirflowLeft_label.Text = DataPoint.DataPoints[Left].AirFlowAdjusted.ToString("f3") + Flow;
+            LeftAirflow_label.Text = DataPoint.SubDataPoints[Left].Airflow.ToString("f3") + Flow;
+            LeftAirflowAdjustment_label.Text = DataPoint.SubDataPoints[Left].AirFlowAdjustment.ToString("f3") + Percent;
+            AdjustedAirflowLeft_label.Text = DataPoint.SubDataPoints[Left].AirFlowAdjusted.ToString("f3") + Flow;
 
 
-            RightAirflow_label.Text = DataPoint.DataPoints[Right].Airflow.ToString("f3") + Flow;
-            RightAirflowAdjustment_label.Text = DataPoint.DataPoints[Right].AirFlowAdjustment.ToString("f3") + Percent;
-            AdjustedAirflowRight_label.Text = DataPoint.DataPoints[Right].AirFlowAdjusted.ToString("f3") + Flow;
+            RightAirflow_label.Text = DataPoint.SubDataPoints[Right].Airflow.ToString("f3") + Flow;
+            RightAirflowAdjustment_label.Text = DataPoint.SubDataPoints[Right].AirFlowAdjustment.ToString("f3") + Percent;
+            AdjustedAirflowRight_label.Text = DataPoint.SubDataPoints[Right].AirFlowAdjusted.ToString("f3") + Flow;
 
-            AirflowAdjustment_label.Text = DataPoint.DataPoints[Center].AirFlowAdjustment.ToString("f3") + Percent;
-            IntermediateAdjustedAirflow_label.Text = DataPoint.DataPoints[Center].AirFlowAdjusted.ToString("f3") + Flow;
+            AirflowAdjustment_label.Text = DataPoint.SubDataPoints[Center].AirFlowAdjustment.ToString("f3") + Percent;
+            IntermediateAdjustedAirflow_label.Text = DataPoint.SubDataPoints[Center].AirFlowAdjusted.ToString("f3") + Flow;
 
             SlopeLeft_label.Text = DataPoint.LeftAirFlowSlope.ToString("f4");
             SlopeRight_label.Text = DataPoint.RightAirFlowSlope.ToString("f4");
