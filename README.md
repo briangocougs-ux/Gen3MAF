@@ -4,17 +4,17 @@ I created this utility to aid in the tuning of the MAF curve on a GEN 3 LS, in p
 I am a novice to the tuning world. The only reason I bought the tuner hardware was to enable the e-fans in my vehicle when coverted from mechanical.
 Since I paid $400 for the product, I decided to see what else I could do with it, so I started playing with tuning the MAF and VE tables. In the process I felt like I would like more systemmatic way of managing the correction data and how it is applied to create a new MAF curve.
 
-I am guessing the audience for this app is mostly people like me. I'm think a profession tuner will probably not have so much use for this.
+I am guessing the audience for this app is mostly people like me. I'm thinking a profession tuner will probably not have so much use for this.
 
 The app logically fits in between the workflow between the tuner editor and the tuner scanning app. You input the current MAF curve of your vehicle and the feaback back data from the scanner histogram data of the STFT or AFR err.
 
-In the app you can look look at the resulting new MAF curve graphically and apply adjustment as you see fit. The app can can optionally linearly interpolate between buckets missing correction data. You can adjust the what percentage of the correction is applied to the existing curve. You can set a threshold that that must be exceeded to have the correction applied. You can also restrict the range of freaquencies that the correction is applied to.
+In the app you can look at the resulting new MAF curve graphically and apply adjustment as you see fit. The app can can optionally linearly interpolate between buckets missing correction data. You can adjust the what percentage of the correction is applied to the existing curve. You can set a threshold that that must be exceeded to have the correction applied. You can also restrict the range of freaquencies that the correction is applied to.
 
 Once you have adjusted the correction as you see fit, You can copy the new curve from the app and paste it in the tune editor.
 
 The app records each cycle of of generating a new curve from the scanner correction data. You can later review each one.
 
-The application also supports two modes of processing feadback data. A single bucket mode where it applies a single bucket of histogram correction data to each frequency in the curve. It also supports generating three histogram buckets of correction data for each frequency in the curve. The goal of using three bucket is reduce noise from the correction data.
+The application also supports two modes of processing feadback data. A single bucket mode where it applies a single bucket of histogram correction data to each frequency in the curve. This is like how you would do it now, except the bucket is aligned over the frequency. It also supports generating three histogram buckets of correction data for each frequency in the curve. The goal of using three bucket is reduce noise from the correction data.
 
 The app is pretty simple and utititarian. Hopefully the workflow it pretty obvious.
 
@@ -30,10 +30,12 @@ Vehicle name is required, ECU and OS are optional. You can then pick the start a
 
 After that you choose how many buckets you wnat. Signle buck most closely resembles what you normally do with the tuning editor and scanner. The one differenct it the bucket it centered on the frequency instead of after it. 
 
-With triple bucket there is one bucket centered on the target frequecy and one 1/3 of the distance to the ajoining frequency targets. When processing the correction data the app tries to pick and average value for the final correction value. This was really my whole motivation for writing the app.
+With triple bucket there is one bucket centered on the target frequecy and one 1/3 of the distance to the ajoining frequency targets. When processing the correction data the app tries to pick an average value for the final correction value. This was really my whole motivation for writing the app.
 
 Now you create a new Tune cycle.
+
 <img width="478" height="182" alt="image" src="https://github.com/user-attachments/assets/f1e8b4ab-77c5-4438-bdf5-c11a493af95f" />
+
 
 With this you begin the process.
 
@@ -56,7 +58,7 @@ Once you have pasted the info, press the button to process it. The GridView belo
 
 <img width="941" height="265" alt="image" src="https://github.com/user-attachments/assets/b48f16ad-0e8a-4580-818d-6c1805a7f616" />
 
-At this point you can pause to work and come back to it later when you collect the correction data from a drive. Lets assume you already have it.
+At this point you can pause your work and come back to it later when you have collected the correction data from a drive. Lets assume you already have it.
 
 Go to the scanner app and copy it like this.
 
@@ -75,10 +77,10 @@ The TextBox will likely be empty becuase there are alot of tabs with no data to 
 <img width="1208" height="402" alt="image" src="https://github.com/user-attachments/assets/7d77a417-f629-4911-938e-46ba126f82f6" />
 
 Now the correction data has been processed. You can adjust things at this point as you desire. 
-1. You can reduce the correction that is applied. It starts at 100%. You may want to reduce it so the change is less likely to overshoot.
-2. You can set a minimum threshold for the correction to exceed before it is applied. This can be used to reduce the occislation around the ideal airflow.
-3. You can have the program interpolate between bockets with no correction data. If it is for the initial correct from stock, this is probably fine. For more fine adjustments you may want to turn it off.
-4. You can constrain the range of frequecys that the correction data will be applied to. For example with you are tunning WOT P.E stuff and you have a bunch of random correction data at low airflow rate, you can exclude those.
+1. You can reduce the correction that is applied. It starts at 100%. You may want to reduce it so the change is less likely to overshoot the goal airflow.
+2. You can set a minimum threshold for the correction to exceed before it is applied. This can be used to reduce the oscillation around the ideal airflow.
+3. You can have the program interpolate between buckets with no correction data. If it is for the initial correction from stock, this is probably fine. For more fine adjustments you may want to turn it off.
+4. You can constrain the range of frequecies that the correction data will be applied to. For example with you are tunning WOT P.E stuff and you have a bunch of random correction data at low airflow rates, you can exclude those.
 
 You can plot the adjustment data by pressing the button.
 
