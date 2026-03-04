@@ -126,11 +126,11 @@ namespace Gen3MAF
             }
             else if (BucketStyle_comboBox.SelectedIndex == 1)
             {
-                m_BucketStyle = BucketStyleEnum.Double;   
+                m_BucketStyle = BucketStyleEnum.Single;   
             }
             else if (BucketStyle_comboBox.SelectedIndex == 2)
             {
-                m_BucketStyle = BucketStyleEnum.Single;
+                m_BucketStyle = BucketStyleEnum.Double;
             }
 
             Close();

@@ -570,5 +570,10 @@ namespace Gen3MAF
 
             return m_mafDataPoints[j].SubDataPoints[k].BucketStart;
         }
+
+        public int GetBucketsPerFrequency()
+        {
+            return m_mafDataPoints[0].SubDataPoints.Length;
+        }
     }
 }

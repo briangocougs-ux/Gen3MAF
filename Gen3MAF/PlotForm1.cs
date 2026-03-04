@@ -537,7 +537,7 @@ private void chart1_MouseDown(object sender, MouseEventArgs e)
 
 #endif
 
-        public PlotForm1(double[] frequency, List<double[]> airflowRows)
+        public PlotForm1(double[] frequency, int BuckestPerFrquency, List<double[]> airflowRows)
         {
             InitializeComponent();
             // Make mouse wheel / right-drag feel responsive (chart must have focus)
@@ -600,7 +600,7 @@ private void chart1_MouseDown(object sender, MouseEventArgs e)
                 {
                     series.Points.AddXY(frequency[i], airflow[i]);
 
-                    if ((i + 2) % 3 == 0)
+                    if ((i + (BuckestPerFrquency -1)) % BuckestPerFrquency == 0)
                     {
                         series.Points[i].MarkerStyle = MarkerStyle.Diamond;
                         series.Points[i].MarkerSize = 12;

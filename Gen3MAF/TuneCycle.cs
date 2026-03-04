@@ -28,10 +28,15 @@ namespace Gen3MAF
         public TuneCycleStateEnum m_State = TuneCycleStateEnum.Created;
         public int m_AdjustmentPercent = 100;
         public bool m_AverageWithOriginal = true;
+        public bool m_StockTune = false;
+        public bool m_InterpolateMissingData = false;   
+        public double m_ChangeThreshold = 0;
+        public int m_MinFrequency = -1;  
+        public int m_MaxFrequency = -1;
 
         public double[] m_InitialAirflow = Array.Empty<double>();
         public double[] m_AdjustmentAirflowData = Array.Empty<double>();
-        public Double[] m_AdjustedAirflow = Array.Empty<double>();
+        public double[] m_AdjustedAirflow = Array.Empty<double>();
 
         public TuneCycle()
         {
@@ -40,6 +45,11 @@ namespace Gen3MAF
             m_State = TuneCycleStateEnum.Created;
             m_AdjustmentPercent = 0;
             m_AverageWithOriginal = false;
+            m_StockTune = false;
+            m_InterpolateMissingData = false;
+            m_MinFrequency = -1;    
+            m_MaxFrequency = -1;
+            m_ChangeThreshold = -1;
         }
 
         public void InitTuneCycle(uint SequenceNumber, int AirflowCount, int AdjustmentAirflowCount)
@@ -122,13 +132,26 @@ namespace Gen3MAF
             m_State = TuneCycleStateEnum.AdjustedAirflowBuilt;
         }
 
-        public void MarkAsCompleted(int AdjustmentPecentage, bool AverageWithOriginal)
+        public void MarkAsCompleted(
+            bool StockTune, 
+            int AdjustmentPecentage, 
+            bool InterpolateMissingData,
+            double ChangeThreshold, 
+            int MinFrequency, 
+            int MaxFrequency
+            )
         {
             if (m_State != TuneCycleStateEnum.AdjustedAirflowBuilt)
                 throw new InvalidOperationException("Adjusted Airflow must be built before marking complete.");
 
             m_AdjustmentPercent = AdjustmentPecentage;
-            m_AverageWithOriginal = AverageWithOriginal;
+            m_AverageWithOriginal = false;
+            m_StockTune = StockTune;    
+            m_ChangeThreshold = ChangeThreshold;    
+            m_MinFrequency = MinFrequency;  
+            m_MaxFrequency = MaxFrequency;
+            m_InterpolateMissingData = InterpolateMissingData;
+
 
             m_Timestamp = DateTime.UtcNow;
             m_State = TuneCycleStateEnum.Completed;
@@ -151,6 +174,11 @@ namespace Gen3MAF
         public bool IsPaused()
         {
             return m_State == TuneCycleStateEnum.Paused;
+        }
+
+        public bool IsStockTune()
+        {
+            return m_StockTune;
         }
 
         public void ChangePausedToAirflowPopulated()

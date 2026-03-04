@@ -52,6 +52,7 @@
             saveToolStripMenuItem = new ToolStripMenuItem();
             saveAsToolStripMenuItem = new ToolStripMenuItem();
             closeToolStripMenuItem = new ToolStripMenuItem();
+            exitToolStripMenuItem = new ToolStripMenuItem();
             tuneToolStripMenuItem = new ToolStripMenuItem();
             NewTuneCycle_toolStripMenuItem = new ToolStripMenuItem();
             Continue_ToolStripMenuItem = new ToolStripMenuItem();
@@ -73,7 +74,7 @@
             MinMax_label = new Label();
             MinFrequency_label = new Label();
             MaxFrequency_label = new Label();
-            exitToolStripMenuItem = new ToolStripMenuItem();
+            StockTune_button = new Button();
             contextMenuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)MAF_dataGridView).BeginInit();
             ((System.ComponentModel.ISupportInitialize)AdjustmentPercent_trackBar).BeginInit();
@@ -293,6 +294,13 @@
             closeToolStripMenuItem.Text = "&Close";
             closeToolStripMenuItem.Click += closeToolStripMenuItem_Click;
             // 
+            // exitToolStripMenuItem
+            // 
+            exitToolStripMenuItem.Name = "exitToolStripMenuItem";
+            exitToolStripMenuItem.Size = new Size(224, 26);
+            exitToolStripMenuItem.Text = "Exit";
+            exitToolStripMenuItem.Click += exitToolStripMenuItem_Click;
+            // 
             // tuneToolStripMenuItem
             // 
             tuneToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { NewTuneCycle_toolStripMenuItem, Continue_ToolStripMenuItem });
@@ -494,18 +502,22 @@
             MaxFrequency_label.TabIndex = 41;
             MaxFrequency_label.Text = "99999";
             // 
-            // exitToolStripMenuItem
+            // StockTune_button
             // 
-            exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            exitToolStripMenuItem.Size = new Size(224, 26);
-            exitToolStripMenuItem.Text = "Exit";
-            exitToolStripMenuItem.Click += exitToolStripMenuItem_Click;
+            StockTune_button.Location = new Point(1052, 387);
+            StockTune_button.Name = "StockTune_button";
+            StockTune_button.Size = new Size(147, 29);
+            StockTune_button.TabIndex = 42;
+            StockTune_button.Text = "Create Stock Tune";
+            StockTune_button.UseVisualStyleBackColor = true;
+            StockTune_button.Click += StockTune_button_Click;
             // 
             // Main
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1211, 922);
+            Controls.Add(StockTune_button);
             Controls.Add(MaxFrequency_label);
             Controls.Add(MinFrequency_label);
             Controls.Add(MinMax_label);
@@ -599,5 +611,6 @@
         private Label MinFrequency_label;
         private Label MaxFrequency_label;
         private ToolStripMenuItem exitToolStripMenuItem;
+        private Button StockTune_button;
     }
 }

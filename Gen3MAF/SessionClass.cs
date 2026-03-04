@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
@@ -62,6 +63,13 @@ namespace Gen3MAF
         {
             m_TuneCycles.Add(tuneCycle);
             m_IsDirty=true;
+        }
+
+        public void AddTuneCycleToFront(TuneCycle tuneCycle)
+        {
+            m_TuneCycles.Insert(0,tuneCycle);
+
+            m_IsDirty = true;
         }
 
         public TuneCycle GetLastTuneCycle()
@@ -135,6 +143,17 @@ namespace Gen3MAF
             {
                 var lastTuneCycle = m_TuneCycles.Last();
                 return (lastTuneCycle.m_State == TuneCycleStateEnum.Completed);
+            }
+            return false;
+        }
+
+        public bool HasStockTuneCycle()
+        {
+            if (m_TuneCycles.Count > 0)
+            {
+                var FirstTuneCycle = m_TuneCycles[0];
+
+                return FirstTuneCycle.IsStockTune();
             }
             return false;
         }
