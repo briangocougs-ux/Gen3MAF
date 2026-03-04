@@ -74,6 +74,33 @@ The TextBox will likely be empty becuase there are alot of tabs with no data to 
 
 <img width="1208" height="402" alt="image" src="https://github.com/user-attachments/assets/7d77a417-f629-4911-938e-46ba126f82f6" />
 
+Now the correction data has been processed. You can adjust things at this point as you desire. 
+1. You can reduce the correction that is applied. It starts at 100%. You may want to reduce it so the change is less likely to overshoot.
+2. You can set a minimum threshold for the correction to exceed before it is applied. This can be used to reduce the occislation around the ideal airflow.
+3. You can have the program interpolate between bockets with no correction data. If it is for the initial correct from stock, this is probably fine. For more fine adjustments you may want to turn it off.
+4. You can constrain the range of frequecys that the correction data will be applied to. For example with you are tunning WOT P.E stuff and you have a bunch of random correction data at low airflow rate, you can exclude those.
+
+You can plot the adjustment data by pressing the button.
+
+
+<img width="1162" height="612" alt="image" src="https://github.com/user-attachments/assets/11d504cf-b34b-4a1d-a001-d78674aa21ee" />
+
+You can also plot all the raw data.
+
+<img width="1152" height="617" alt="image" src="https://github.com/user-attachments/assets/850e1546-9d3c-459b-8415-53c0ca4321c9" />
+
+You can zoom in by left clicking the mouse and drawing a rectangle.
+
+<img width="1160" height="615" alt="image" src="https://github.com/user-attachments/assets/206ccb36-a49d-4500-a33e-5de86003ef8c" />
+
+The blue line it the original MAF curve, The yellow is the curve with the correction data applied. The diamond markers are the actual frequency points from the MAF curve. The small marker are the extra tuning points added for the triple buckets.
+
+Once you are happy with the changes, right click and select copy. You now paste this back into the tune editor.
+
+<img width="1203" height="236" alt="image" src="https://github.com/user-attachments/assets/da706655-3505-41f4-8699-4adf619f80ea" />
+
+You can now complete the tune cycle and save it, or just discard it.
+
 
 
 
