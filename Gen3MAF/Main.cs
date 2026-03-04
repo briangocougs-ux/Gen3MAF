@@ -102,6 +102,7 @@ namespace Gen3MAF
 
             Pause_button.Enabled = false;
             Plot_button.Enabled = false;
+            PlotRaw_button.Enabled = false;
             Discard_button.Enabled = false;
             GetAirFlowFromLast_button.Enabled = false;
             StockTune_button.Enabled = false;
@@ -717,7 +718,8 @@ namespace Gen3MAF
 
         void CompleteCurrentTuneCycle(bool Discard, bool Stock)
         {
-            if (!Discard) {
+            if (!Discard)
+            {
                 //
                 //  we are kepping this tunecycle, add it to the list in the session object, Save the adjusted airflow in
                 //  the tune object, so we can look at it later
@@ -745,11 +747,11 @@ namespace Gen3MAF
                     int MaxFrequency = (MaxFrequency_trackBar.Value * m_SessionClass.FrequencyStep) + m_SessionClass.MinFrequency;
 
                     m_CurrentTuneCycle.MarkAsCompleted(
-                        Stock, 
-                        AdjustmentPercent_trackBar.Value, 
+                        Stock,
+                        AdjustmentPercent_trackBar.Value,
                         InterpolateMissingData_checkBox.Checked,
-                        m_AdjustThreshold, 
-                        MinFrequency, 
+                        m_AdjustThreshold,
+                        MinFrequency,
                         MaxFrequency
                         );
 
@@ -775,14 +777,14 @@ namespace Gen3MAF
                     //
                 }
 
-                   
+
             }
             else
             {
                 //
                 //  discarding
                 //
-               
+
             }
 
             m_TuneCycleReOpened = false;
@@ -1074,7 +1076,7 @@ namespace Gen3MAF
                 {
                     labels[i] = tc.GetTimeStamp().ToLocalTime().ToString();
                 }
-                else 
+                else
                 {
                     labels[i] = "Stock";
                 }
@@ -1329,7 +1331,7 @@ namespace Gen3MAF
             ApplyAdjustments.Enabled = false;
             CompleteCycle_button.Enabled = false;
             Pause_button.Enabled = false;
-            StockTune_button.Enabled = false;   
+            StockTune_button.Enabled = false;
 
             m_TuneCycleReOpened = true;
             m_CurrentTuneCycle = tc;
@@ -1383,7 +1385,7 @@ namespace Gen3MAF
 
         private void MinMax_label_Click(object sender, EventArgs e)
         {
-            
+
         }
 
         private void StockTune_button_Click(object sender, EventArgs e)
@@ -1413,6 +1415,13 @@ namespace Gen3MAF
             ProcessAdjustmentData();
 
             CompleteCurrentTuneCycle(false, true);
+        }
+
+        private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var f = new AboutForm();
+
+            f.Show(this);
         }
     }
 

@@ -190,7 +190,7 @@ namespace Gen3MAF
             )
         {
             InitializeComponent();
-            Text = $"% Change - Airflow Differnce percentage";
+            Text = $" Change - Airflow Differnce ";
 
             chart1.Series.Clear();
 
@@ -353,64 +353,7 @@ namespace Gen3MAF
             catch { }
         }
 
-#if false
-        private void chart1_MouseDown(object sender, MouseEventArgs e)
-        {
-            if (e.Button != MouseButtons.Right) return;
 
-            var area = chart1.ChartAreas[0];
-            var ax = area.AxisX;
-
-            // If not zoomed, there may be no view window to pan.
-            if (!ax.ScaleView.IsZoomed)
-                return;
-
-            _panning = true;
-
-            _panStartX = ax.PixelPositionToValue(e.X);
-            _viewStartX = ax.ScaleView.Position;
-            _viewSizeX = ax.ScaleView.Size;
-
-            chart1.Capture = true;
-        }
-
-        private void chart1_MouseMove(object sender, MouseEventArgs e)
-        {
-            if (!_panning) return;
-
-            var area = chart1.ChartAreas[0];
-            var ax = area.AxisX;
-
-            double curX = ax.PixelPositionToValue(e.X);
-            double dx = _panStartX - curX;     // drag right -> pan left (feels natural)
-
-            double newPos = _viewStartX + dx;
-
-            // Clamp to axis range
-            double min = ax.Minimum;
-            double max = ax.Maximum;
-
-            // If Minimum/Maximum are NaN (autoscale), use ScaleView limits
-            //
-            if (double.IsNaN(min)) min = ax.ScaleView.ViewMinimum;
-            if (double.IsNaN(max)) max = ax.ScaleView.ViewMaximum;
-
-            double maxPos = max - _viewSizeX;
-            if (newPos < min) newPos = min;
-            if (newPos > maxPos) newPos = maxPos;
-
-            ax.ScaleView.Position = newPos;
-        }
-        private void chart1_MouseUp(object sender, MouseEventArgs e)
-        {
-            if (e.Button != MouseButtons.Right || !_panning)
-                return;
-           
-
-            _panning = false;
-            chart1.Capture = false;
-        }
-#else
 private void chart1_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button != MouseButtons.Right)
@@ -535,7 +478,6 @@ private void chart1_MouseDown(object sender, MouseEventArgs e)
             area.CursorY.IsUserSelectionEnabled = true;
         }
 
-#endif
 
         public PlotForm1(double[] frequency, int BuckestPerFrquency, List<double[]> airflowRows)
         {

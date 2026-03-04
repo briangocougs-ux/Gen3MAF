@@ -61,7 +61,7 @@
             ClientSize = new Size(1163, 578);
             Controls.Add(chart1);
             Name = "PlotForm1";
-            Text = "PlotForm1";
+            Text = "Gen 3 MAF Graph";
             ((System.ComponentModel.ISupportInitialize)chart1).EndInit();
             ResumeLayout(false);
         }
