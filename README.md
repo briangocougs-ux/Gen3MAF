@@ -67,7 +67,11 @@ Once you have paste it into the next TextBox.
 
 <img width="763" height="147" alt="image" src="https://github.com/user-attachments/assets/64e968a7-fc5e-4812-a64f-118e2c752ae8" />
 
-<img width="1207" height="247" alt="image" src="https://github.com/user-attachments/assets/b00a734d-9a3a-492c-ba85-739fb519f666" />
+The TextBox will likely be empty becuase there are alot of tabs with no data to be displayed, but a scrol bar will appear and you can scroll to verify that there is somehting there. Now press the button to Apply the adjustments. The GridView below will fill out.
+
+<img width="1205" height="400" alt="image" src="https://github.com/user-attachments/assets/c20cf380-325e-4e89-8199-96df71a005ab" />
+
+
 
 
 
