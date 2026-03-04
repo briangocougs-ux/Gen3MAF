@@ -51,6 +51,23 @@ Then right click and paste.
 
 <img width="562" height="142" alt="image" src="https://github.com/user-attachments/assets/1bf777eb-5987-4f05-877c-ec7037feff24" />
 
+Once you have pasted the info, press the button to process it. The GridView below will fill out with the MAF curve. You can verify with what is on the editor app.
+
+
+<img width="941" height="265" alt="image" src="https://github.com/user-attachments/assets/b48f16ad-0e8a-4580-818d-6c1805a7f616" />
+
+At this point you can pause to work and come back to it later when you collect the correction data from a drive. Lets assume you already have it.
+
+Go to the scanner app and copy it like this.
+
+<img width="1207" height="247" alt="image" src="https://github.com/user-attachments/assets/b00a734d-9a3a-492c-ba85-739fb519f666" />
+
+Once you have paste it into the next TextBox.
+
+
+<img width="763" height="147" alt="image" src="https://github.com/user-attachments/assets/64e968a7-fc5e-4812-a64f-118e2c752ae8" />
+
+<img width="1207" height="247" alt="image" src="https://github.com/user-attachments/assets/b00a734d-9a3a-492c-ba85-739fb519f666" />
 
 
 
