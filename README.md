@@ -104,6 +104,9 @@ Once you are happy with the changes, right click and select copy. You now paste 
 
 You can now complete the tune cycle and save it or just discard it.
 
+Send feedback to mailto:gmt800.owner@gmail.com
+
+
 
 
 
