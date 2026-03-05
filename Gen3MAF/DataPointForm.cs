@@ -22,15 +22,15 @@ namespace Gen3MAF
             string Hertz = " Hz";
             string Flow = " g/s";
             string Percent = " %";
-            int Left= 0;
+            int Left = 0;
             int Center = 0;
-            int Right= 0;
+            int Right = 0;
 
             InitializeComponent();
             Frequency_label.Text = DataPoint.Frequency.ToString() + Hertz;
             Airflow_label.Text = DataPoint.AirFlow.ToString("f3") + " g/s";
 
-            
+
 
             if (DataPoint.SubDataPoints.Length == 1)
             {
@@ -39,8 +39,8 @@ namespace Gen3MAF
                 //
                 Center = 0;
                 Left = 0;
-                Right= 0;
-               
+                Right = 0;
+
 
             }
             else if (DataPoint.SubDataPoints.Length == 2)
@@ -50,7 +50,7 @@ namespace Gen3MAF
                 //
                 Left = 0;
                 Right = 1;
-                
+
             }
             else if (DataPoint.SubDataPoints.Length == 3)
             {
@@ -61,6 +61,7 @@ namespace Gen3MAF
 
             LeftFrequncy_label.Text = DataPoint.SubDataPoints[Left].TargetFrequency.ToString() + Hertz;
             RightFrequency_label.Text = DataPoint.SubDataPoints[Right].TargetFrequency.ToString() + Hertz;
+            CenterTargetFrequncy_label.Text = DataPoint.SubDataPoints[Center].TargetFrequency.ToString() + Hertz;
 
             CenterBucket_label.Text = DataPoint.SubDataPoints[Center].BucketStart.ToString() + Hertz;
             CenterBucketEnd_label.Text = DataPoint.SubDataPoints[Center].BucketEnd.ToString() + Hertz;
@@ -72,8 +73,8 @@ namespace Gen3MAF
             RightBucketEnd_label.Text = DataPoint.SubDataPoints[Right].BucketEnd.ToString() + Hertz;
 
 
-            
-            
+
+
 
             LeftAirflow_label.Text = DataPoint.SubDataPoints[Left].Airflow.ToString("f3") + Flow;
             LeftAirflowAdjustment_label.Text = DataPoint.SubDataPoints[Left].AirFlowAdjustment.ToString("f3") + Percent;
@@ -112,6 +113,26 @@ namespace Gen3MAF
         }
 
         private void Airflow_label_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label4_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label3_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label12_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void AdjustedAirflow_label_Click(object sender, EventArgs e)
         {
 
         }

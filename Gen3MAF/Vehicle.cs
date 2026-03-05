@@ -14,19 +14,17 @@ namespace Gen3MAF
     public partial class Vehicle : Form
     {
 
-        private string m_VehicleName;
-        private string m_ECU;
-        private string m_OS;
+        private string? m_VehicleName;
+        private string? m_ECU;
+        private string? m_OS;
         private int m_MinFrequency;
         private int m_MaxFrequency;
         private int m_FrequencyStep;
         private BucketStyleEnum m_BucketStyle;
-        private uint m_TuneCycleSequenceNumber;
 
 
         public Vehicle()
         {
-
 
             InitializeComponent();
 
@@ -37,8 +35,8 @@ namespace Gen3MAF
         }
 
         public string VehicleName { get { return m_VehicleName; } }
-        public string ECU { get { return m_ECU; } }
-        public string OS { get { return m_OS; } }
+        public string? ECU { get { return m_ECU; } }
+        public string? OS { get { return m_OS; } }
         public int MinFrequency { get { return m_MinFrequency; } }
         public int MaxFrequency { get { return m_MaxFrequency; } }
         public int FrequencyStep { get { return m_FrequencyStep; } }

@@ -159,18 +159,16 @@ namespace Gen3MAF
             //
             for (int i = 0; i < m_mafFrequencyCount; i++)
             {
+                double AirflowDelta = 0;
+                double FrequencyDelta = 0;
+
                 if (i > 0)
                 {
-                    double AirflowDelta = 0;
-                    double FrequencyDelta = 0;
-                    int LeftFrequency = (int)m_mafDataPoints[i - 1].Frequency;
-                    int CurrentFrequency = (int)m_mafDataPoints[i].Frequency;
+                    m_mafDataPoints[i].LeftFrequency = m_mafDataPoints[i - 1].Frequency;
+                    m_mafDataPoints[i].LeftAirFlow   = m_mafDataPoints[i - 1].AirFlow;
 
-                    m_mafDataPoints[i].LeftFrequency = (uint)LeftFrequency;
-                    m_mafDataPoints[i].LeftAirFlow = m_mafDataPoints[i - 1].AirFlow;
-
-                    AirflowDelta = (m_mafDataPoints[i - 1].AirFlow - m_mafDataPoints[i].AirFlow);
-                    FrequencyDelta = (double)(LeftFrequency) - CurrentFrequency;
+                    AirflowDelta = m_mafDataPoints[i - 1].AirFlow - m_mafDataPoints[i].AirFlow;
+                    FrequencyDelta = ((double)m_mafDataPoints[i - 1].Frequency) - m_mafDataPoints[i].Frequency;
 
                     m_mafDataPoints[i].LeftAirFlowSlope = AirflowDelta / FrequencyDelta;
                 }
@@ -178,10 +176,12 @@ namespace Gen3MAF
                 if (i < (m_mafFrequencyCount - 1))
                 {
                     m_mafDataPoints[i].RightFrequency = m_mafDataPoints[i + 1].Frequency;
-                    m_mafDataPoints[i].RightAirFlow = m_mafDataPoints[i + 1].AirFlow;
+                    m_mafDataPoints[i].RightAirFlow   = m_mafDataPoints[i + 1].AirFlow;
 
-                    m_mafDataPoints[i].RightAirFlowSlope = (m_mafDataPoints[i + 1].AirFlow - m_mafDataPoints[i].AirFlow)
-                                                        / (m_mafDataPoints[i + 1].Frequency - m_mafDataPoints[i].Frequency);
+                    AirflowDelta = m_mafDataPoints[i + 1].AirFlow - m_mafDataPoints[i].AirFlow;
+                    FrequencyDelta = ((double)m_mafDataPoints[i + 1].Frequency) - m_mafDataPoints[i].Frequency;
+
+                    m_mafDataPoints[i].RightAirFlowSlope = AirflowDelta / FrequencyDelta; 
                 }
 
             }

@@ -27,15 +27,15 @@ namespace Gen3MAF
 
 
 
-        SessionClass m_SessionClass;
+        SessionClass? m_SessionClass = null;
 
-        TuneCycle m_CurrentTuneCycle;
+        TuneCycle? m_CurrentTuneCycle = null;
         bool m_TuneCycleReOpened = false;
 
         string m_CurrentFilePath = "";
 
 
-        AdjustClass m_AdjustObject;
+        AdjustClass? m_AdjustObject = null;
 
         double m_AdjustThreshold = DEFAULT_THRESHOLD_VALUE;
 
@@ -69,6 +69,8 @@ namespace Gen3MAF
         private void Form1_Load(object sender, EventArgs e)
         {
             ResetStateOfForm();
+
+            SetMenusForSessionState(false);
         }
 
         private void UpdateTitle()
@@ -117,7 +119,7 @@ namespace Gen3MAF
             ThresholdValue_label.Text = m_AdjustThreshold.ToString("f2") + "%";
 
             InterpolateMissingData_checkBox.Enabled = false;
-            InterpolateMissingData_checkBox.Checked = true;
+            InterpolateMissingData_checkBox.Checked = false;
 
             MinFrequency_trackBar.Enabled = false;
             MaxFrequency_trackBar.Enabled = false;
@@ -363,6 +365,7 @@ namespace Gen3MAF
             AdjustmentThreshold_trackBar.Enabled = true;
             CompleteCycle_button.Enabled = true;
             Plot_button.Enabled = true;
+            PlotRaw_button.Enabled = true;
             InterpolateMissingData_checkBox.Enabled = true;
             MinFrequency_trackBar.Enabled = true;
             MaxFrequency_trackBar.Enabled = true;
@@ -556,7 +559,7 @@ namespace Gen3MAF
                 {
                     //  We can access the properties of the form to get the user input values and use them to populate the main form's controls or data structures as needed.
                     //
-                    SessionClass Session = null;
+                    SessionClass Session;
 
                     Session = frm.GetSessionInfo();
 
@@ -1422,6 +1425,11 @@ namespace Gen3MAF
             var f = new AboutForm();
 
             f.Show(this);
+        }
+
+        private void AdjustmentPercent_label_Click(object sender, EventArgs e)
+        {
+
         }
     }
 

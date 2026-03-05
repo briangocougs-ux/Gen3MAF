@@ -57,6 +57,8 @@
             NewTuneCycle_toolStripMenuItem = new ToolStripMenuItem();
             Continue_ToolStripMenuItem = new ToolStripMenuItem();
             plotAllToolStripMenuItem = new ToolStripMenuItem();
+            helpToolStripMenuItem = new ToolStripMenuItem();
+            aboutToolStripMenuItem = new ToolStripMenuItem();
             CurrentMafCurve_label = new Label();
             CompleteCycle_button = new Button();
             Discard_button = new Button();
@@ -75,8 +77,7 @@
             MinFrequency_label = new Label();
             MaxFrequency_label = new Label();
             StockTune_button = new Button();
-            helpToolStripMenuItem = new ToolStripMenuItem();
-            aboutToolStripMenuItem = new ToolStripMenuItem();
+            groupBox1 = new GroupBox();
             contextMenuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)MAF_dataGridView).BeginInit();
             ((System.ComponentModel.ISupportInitialize)AdjustmentPercent_trackBar).BeginInit();
@@ -85,6 +86,7 @@
             ((System.ComponentModel.ISupportInitialize)AdjustmentThreshold_trackBar).BeginInit();
             ((System.ComponentModel.ISupportInitialize)MinFrequency_trackBar).BeginInit();
             ((System.ComponentModel.ISupportInitialize)MaxFrequency_trackBar).BeginInit();
+            groupBox1.SuspendLayout();
             SuspendLayout();
             // 
             // contextMenuStrip1
@@ -215,17 +217,19 @@
             // AdjustmentPercent_label
             // 
             AdjustmentPercent_label.AutoSize = true;
+            AdjustmentPercent_label.BorderStyle = BorderStyle.FixedSingle;
             AdjustmentPercent_label.Location = new Point(414, 623);
             AdjustmentPercent_label.Name = "AdjustmentPercent_label";
-            AdjustmentPercent_label.Size = new Size(25, 20);
+            AdjustmentPercent_label.Size = new Size(27, 22);
             AdjustmentPercent_label.TabIndex = 13;
             AdjustmentPercent_label.Text = "99";
+            AdjustmentPercent_label.Click += AdjustmentPercent_label_Click;
             // 
             // AdjustedAirflow_dataGridView
             // 
             AdjustedAirflow_dataGridView.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             AdjustedAirflow_dataGridView.ContextMenuStrip = contextMenuStrip1;
-            AdjustedAirflow_dataGridView.Location = new Point(27, 685);
+            AdjustedAirflow_dataGridView.Location = new Point(27, 706);
             AdjustedAirflow_dataGridView.Name = "AdjustedAirflow_dataGridView";
             AdjustedAirflow_dataGridView.RowHeadersWidth = 51;
             AdjustedAirflow_dataGridView.ScrollBars = ScrollBars.Horizontal;
@@ -334,6 +338,20 @@
             plotAllToolStripMenuItem.Text = "Plot All";
             plotAllToolStripMenuItem.Click += plotAllToolStripMenuItem_Click;
             // 
+            // helpToolStripMenuItem
+            // 
+            helpToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { aboutToolStripMenuItem });
+            helpToolStripMenuItem.Name = "helpToolStripMenuItem";
+            helpToolStripMenuItem.Size = new Size(55, 24);
+            helpToolStripMenuItem.Text = "Help";
+            // 
+            // aboutToolStripMenuItem
+            // 
+            aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
+            aboutToolStripMenuItem.Size = new Size(133, 26);
+            aboutToolStripMenuItem.Text = "About";
+            aboutToolStripMenuItem.Click += aboutToolStripMenuItem_Click;
+            // 
             // CurrentMafCurve_label
             // 
             CurrentMafCurve_label.AutoSize = true;
@@ -400,9 +418,10 @@
             // ThresholdValue_label
             // 
             ThresholdValue_label.AutoSize = true;
+            ThresholdValue_label.BorderStyle = BorderStyle.FixedSingle;
             ThresholdValue_label.Location = new Point(682, 623);
             ThresholdValue_label.Name = "ThresholdValue_label";
-            ThresholdValue_label.Size = new Size(69, 20);
+            ThresholdValue_label.Size = new Size(71, 22);
             ThresholdValue_label.TabIndex = 31;
             ThresholdValue_label.Text = "label32.0";
             ThresholdValue_label.Click += ThresholdValue_label_Click;
@@ -438,8 +457,6 @@
             // InterpolateMissingData_checkBox
             // 
             InterpolateMissingData_checkBox.AutoSize = true;
-            InterpolateMissingData_checkBox.Checked = true;
-            InterpolateMissingData_checkBox.CheckState = CheckState.Checked;
             InterpolateMissingData_checkBox.Location = new Point(27, 638);
             InterpolateMissingData_checkBox.Name = "InterpolateMissingData_checkBox";
             InterpolateMissingData_checkBox.Size = new Size(183, 24);
@@ -460,7 +477,7 @@
             // 
             // MinFrequency_trackBar
             // 
-            MinFrequency_trackBar.Location = new Point(932, 558);
+            MinFrequency_trackBar.Location = new Point(77, 50);
             MinFrequency_trackBar.Name = "MinFrequency_trackBar";
             MinFrequency_trackBar.Size = new Size(152, 56);
             MinFrequency_trackBar.TabIndex = 37;
@@ -469,7 +486,7 @@
             // 
             // MaxFrequency_trackBar
             // 
-            MaxFrequency_trackBar.Location = new Point(932, 623);
+            MaxFrequency_trackBar.Location = new Point(77, 104);
             MaxFrequency_trackBar.Name = "MaxFrequency_trackBar";
             MaxFrequency_trackBar.Size = new Size(152, 56);
             MaxFrequency_trackBar.TabIndex = 38;
@@ -479,7 +496,7 @@
             // MinMax_label
             // 
             MinMax_label.AutoSize = true;
-            MinMax_label.Location = new Point(932, 534);
+            MinMax_label.Location = new Point(77, 23);
             MinMax_label.Name = "MinMax_label";
             MinMax_label.Size = new Size(152, 20);
             MinMax_label.TabIndex = 39;
@@ -489,18 +506,20 @@
             // MinFrequency_label
             // 
             MinFrequency_label.AutoSize = true;
-            MinFrequency_label.Location = new Point(893, 594);
+            MinFrequency_label.BorderStyle = BorderStyle.FixedSingle;
+            MinFrequency_label.Location = new Point(30, 73);
             MinFrequency_label.Name = "MinFrequency_label";
-            MinFrequency_label.Size = new Size(17, 20);
+            MinFrequency_label.Size = new Size(19, 22);
             MinFrequency_label.TabIndex = 40;
             MinFrequency_label.Text = "1";
             // 
             // MaxFrequency_label
             // 
             MaxFrequency_label.AutoSize = true;
-            MaxFrequency_label.Location = new Point(1090, 594);
+            MaxFrequency_label.BorderStyle = BorderStyle.FixedSingle;
+            MaxFrequency_label.Location = new Point(253, 73);
             MaxFrequency_label.Name = "MaxFrequency_label";
-            MaxFrequency_label.Size = new Size(49, 20);
+            MaxFrequency_label.Size = new Size(51, 22);
             MaxFrequency_label.TabIndex = 41;
             MaxFrequency_label.Text = "99999";
             // 
@@ -514,31 +533,27 @@
             StockTune_button.UseVisualStyleBackColor = true;
             StockTune_button.Click += StockTune_button_Click;
             // 
-            // helpToolStripMenuItem
+            // groupBox1
             // 
-            helpToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { aboutToolStripMenuItem });
-            helpToolStripMenuItem.Name = "helpToolStripMenuItem";
-            helpToolStripMenuItem.Size = new Size(55, 24);
-            helpToolStripMenuItem.Text = "Help";
-            // 
-            // aboutToolStripMenuItem
-            // 
-            aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
-            aboutToolStripMenuItem.Size = new Size(224, 26);
-            aboutToolStripMenuItem.Text = "About";
-            aboutToolStripMenuItem.Click += aboutToolStripMenuItem_Click;
+            groupBox1.Controls.Add(MinMax_label);
+            groupBox1.Controls.Add(MinFrequency_trackBar);
+            groupBox1.Controls.Add(MaxFrequency_trackBar);
+            groupBox1.Controls.Add(MaxFrequency_label);
+            groupBox1.Controls.Add(MinFrequency_label);
+            groupBox1.Location = new Point(874, 534);
+            groupBox1.Name = "groupBox1";
+            groupBox1.Size = new Size(325, 166);
+            groupBox1.TabIndex = 43;
+            groupBox1.TabStop = false;
+            groupBox1.Text = "Frequency Range Constriant";
             // 
             // Main
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1211, 922);
+            Controls.Add(groupBox1);
             Controls.Add(StockTune_button);
-            Controls.Add(MaxFrequency_label);
-            Controls.Add(MinFrequency_label);
-            Controls.Add(MinMax_label);
-            Controls.Add(MaxFrequency_trackBar);
-            Controls.Add(MinFrequency_trackBar);
             Controls.Add(PlotRaw_button);
             Controls.Add(InterpolateMissingData_checkBox);
             Controls.Add(GetAirFlowFromLast_button);
@@ -578,6 +593,8 @@
             ((System.ComponentModel.ISupportInitialize)AdjustmentThreshold_trackBar).EndInit();
             ((System.ComponentModel.ISupportInitialize)MinFrequency_trackBar).EndInit();
             ((System.ComponentModel.ISupportInitialize)MaxFrequency_trackBar).EndInit();
+            groupBox1.ResumeLayout(false);
+            groupBox1.PerformLayout();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -630,5 +647,6 @@
         private Button StockTune_button;
         private ToolStripMenuItem helpToolStripMenuItem;
         private ToolStripMenuItem aboutToolStripMenuItem;
+        private GroupBox groupBox1;
     }
 }

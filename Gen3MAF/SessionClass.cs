@@ -72,7 +72,7 @@ namespace Gen3MAF
             m_IsDirty = true;
         }
 
-        public TuneCycle GetLastTuneCycle()
+        public TuneCycle? GetLastTuneCycle()
         {
             if (m_TuneCycles.Count == 0)
             { 
@@ -82,7 +82,7 @@ namespace Gen3MAF
             return m_TuneCycles.Last();
         }
 
-        public TuneCycle RemoveLastTuneCycle()
+        public TuneCycle? RemoveLastTuneCycle()
         {
             TuneCycle LastTuneCycle = null;
 
