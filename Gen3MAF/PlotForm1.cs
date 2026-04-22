@@ -393,57 +393,65 @@ private void chart1_MouseDown(object sender, MouseEventArgs e)
             if (!_panning)
                 return;
 
-            Debug.Assert(!m_InMouseMove, "mouse move re-entered");
+            if (m_InMouseMove)
+                return;
+
             m_InMouseMove = true;
 
-            var area = chart1.ChartAreas[0];
-            var ax = area.AxisX;
-            var ay = area.AxisY;
-
-            // Current mouse position in axis units
-            double curXVal = ax.PixelPositionToValue(e.X);
-            double curYVal = ay.PixelPositionToValue(e.Y);
-
-            // Delta in axis units (drag right -> pan left feels natural)
-            double dx = _panStartXVal - curXVal;
-            double dy =  _panStartYVal - curYVal ; // Y axis is inverted in pixels
-
-            if (!m_DirectionPicked)
+            try
             {
-                // 
-                //  no direction picked
-                //
-                if (Math.Abs(dx) > Math.Abs(dy))
+                var area = chart1.ChartAreas[0];
+                var ax = area.AxisX;
+                var ay = area.AxisY;
+
+                // Only convert mouse coordinates if the pointer is inside the plot rectangle.
+                var inner = area.InnerPlotPosition;
+                var pos = area.Position;
+
+                double left = chart1.ClientSize.Width * (pos.X + inner.X * pos.Width / 100.0) / 100.0;
+                double top = chart1.ClientSize.Height * (pos.Y + inner.Y * pos.Height / 100.0) / 100.0;
+                double width = chart1.ClientSize.Width * (inner.Width * pos.Width / 100.0) / 100.0;
+                double height = chart1.ClientSize.Height * (inner.Height * pos.Height / 100.0) / 100.0;
+
+                if (e.X < left || e.X > left + width || e.Y < top || e.Y > top + height)
+                    return;
+
+                double curXVal = ax.PixelPositionToValue(e.X);
+                double curYVal = ay.PixelPositionToValue(e.Y);
+
+                double dx = _panStartXVal - curXVal;
+                double dy = _panStartYVal - curYVal;
+
+                if (!m_DirectionPicked)
                 {
-                    m_Xpanning = true;
+                    m_Xpanning = Math.Abs(dx) > Math.Abs(dy);
+                    m_DirectionPicked = true;
+                }
+
+                if (m_Xpanning)
+                {
+                    if (ax.ScaleView.IsZoomed && _sizeX > 0)
+                    {
+                        double newPosX = ClampViewPosition(ax, _startPosX + dx, _sizeX);
+                        ax.ScaleView.Position = newPosX;
+                    }
                 }
                 else
                 {
-                    m_Xpanning = false;
+                    if (ay.ScaleView.IsZoomed && _sizeY > 0)
+                    {
+                        double newPosY = ClampViewPosition(ay, _startPosY + dy, _sizeY);
+                        ay.ScaleView.Position = newPosY;
+                    }
                 }
-                m_DirectionPicked = true;
             }
-
-            if (m_Xpanning)
+            finally
             {
-                // Apply pan if zoomed on that axis
-                if (ax.ScaleView.IsZoomed && _sizeX > 0)
-                {
-                    double newPosX = ClampViewPosition(ax, _startPosX + dx, _sizeX);
-                    ax.ScaleView.Position = newPosX;
-                }
+                m_InMouseMove = false;
             }
-            else
-            { 
-                if (ay.ScaleView.IsZoomed && _sizeY > 0)
-                {
-                    double newPosY = ClampViewPosition(ay, _startPosY + dy, _sizeY);
-                    ay.ScaleView.Position = newPosY;
-                }
-            }
-
-            m_InMouseMove = false;
+            return;
         }
+
         private static double ClampViewPosition(Axis axis, double proposedPos, double viewSize)
         {
             // Determine clamp bounds in axis units.
