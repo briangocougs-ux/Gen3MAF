@@ -351,7 +351,7 @@ namespace Gen3MAF
                     Current.AirFlowAdjusted = double.NaN;
                 }
                 //  
-                //  if the adjusted airflow is NaN, it means we got not updated data from the scanner app. THis means no datapoints were collected
+                //  if the adjusted airflow is NaN, it means we did not get updated data from the scanner app. This means no datapoints were collected
                 //  for this frequency. '
                 //  
                 //  we will scan through the array to find the first and last frequncies with valid data. No adjustments will be applied to the value before and after
